@@ -17,3 +17,19 @@ $app->get('/', function () use ($app) {
 
 
 $app->get('/bts_off', 'BtsController@get_bts_off'); 
+$app->post('/register', 'UserController@register'); 
+$app->get('/user/{id}', ['middleware' => 'auth', 'uses' =>  'UserController@get_user']);
+
+// getAllSite
+$app->get('/getAllSite', 'SiteController@getAllSite'); 
+$app->get('/getAllSiteDown', 'SiteController@getAllSiteDown'); 
+// getMySite
+$app->post('/getMySite', 'SiteController@getMySite'); 
+$app->post('/getMySiteDown', 'SiteController@getMySiteDown'); 
+
+// getMyMbp
+$app->get('/getAllMbp', 'MbpController@getAllMbp'); 
+$app->get('/getAllMbpOnProggress', 'MbpController@getAllMbpOnProggress'); 
+// getMySite
+$app->post('/getMyMbp', 'MbpController@getMyMbp'); 
+$app->post('/getMySiteDown', 'SiteController@getMySiteDown'); 
