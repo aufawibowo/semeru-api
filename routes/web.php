@@ -33,9 +33,11 @@ $app->get('/getAllMbpOnProggress', 'MbpController@getAllMbpOnProggress');
 // getMySite
 $app->post('/getMyMbp', 'MbpController@getMyMbp'); 
 $app->post('/getMyMbpOnProgress', 'MbpController@getMyMbpOnProgress'); 
+$app->post('/getMyMbpavailable', 'MbpController@getMyMbpavailable'); 
+// getMyMbpavaible
 
 // RecommendationController, hitungJarakDuaPoint
-$app->get('/hitungJarakDuaPoint', 'RecommendationController@hitungJarakDuaPoint'); 
+$app->post('/calculateDistance', 'RecommendationController@calculateDistance'); 
 
 // requestMbpToSiteDown, RtpoController
 $app->post('/requestMbpToSiteDown', 'RtpoController@requestMbpToSiteDown'); 

@@ -18,16 +18,16 @@ class MbpController extends Controller
         
           return response($res);
         }else{
-          $polys['success'] = false;
-          $polys['message'] = 'Cannot find polys!';
+          $res['success'] = false;
+          $res['message'] = 'Cannot find data!';
         
-          return response($btss);
+          return response($res);
         }
 
     }
     
     public function getAllMbpOnProggress(Request $request){
-      $data_site = DB::table('mbp')->select('*')->where('status','=','0')->get();
+      $data_site = DB::table('mbp')->select('*')->where('status','=','1')->get();
 
         if ($data_site) {
           $res['success'] = true;
@@ -36,10 +36,10 @@ class MbpController extends Controller
         
           return response($res);
         }else{
-          $polys['success'] = false;
-          $polys['message'] = 'Cannot find polys!';
+          $res['success'] = false;
+          $res['message'] = 'Cannot find data!';
         
-          return response($btss);
+          return response($res);
         }
 
     }
@@ -59,15 +59,38 @@ class MbpController extends Controller
         
           return response($res);
         }else{
-          $polys['success'] = false;
-          $polys['message'] = 'Cannot find polys!';
+          $res['success'] = false;
+          $res['message'] = 'Cannot find data!';
         
-          return response($btss);
+          return response($res);
         }
 
     }
 
     public function getMyMbpOnProgress(Request $request){
+
+
+      $rtpo_id = $request->input('rtpo_id');
+
+      $data_site = DB::table('mbp')->select('*')->where('rtpo_id','=',$rtpo_id)->where('status','=','1')->get();
+
+
+        if ($data_site) {
+          $res['success'] = true;
+          $res['message'] = 'Success!';
+          $res['data'] = $data_site;
+        
+          return response($res);
+        }else{
+          $res['success'] = false;
+          $res['message'] = 'Cannot find data!';
+        
+          return response($res);
+        }
+
+    }
+
+    public function getMyMbpavailable(Request $request){
 
 
       $rtpo_id = $request->input('rtpo_id');
@@ -82,10 +105,10 @@ class MbpController extends Controller
         
           return response($res);
         }else{
-          $polys['success'] = false;
-          $polys['message'] = 'Cannot find polys!';
+          $res['success'] = false;
+          $res['message'] = 'Cannot find data!';
         
-          return response($btss);
+          return response($res);
         }
 
     }
