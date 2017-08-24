@@ -32,4 +32,12 @@ $app->get('/getAllMbp', 'MbpController@getAllMbp');
 $app->get('/getAllMbpOnProggress', 'MbpController@getAllMbpOnProggress'); 
 // getMySite
 $app->post('/getMyMbp', 'MbpController@getMyMbp'); 
-$app->post('/getMySiteDown', 'SiteController@getMySiteDown'); 
+$app->post('/getMyMbpOnProgress', 'MbpController@getMyMbpOnProgress'); 
+
+// RecommendationController, hitungJarakDuaPoint
+$app->get('/hitungJarakDuaPoint', 'RecommendationController@hitungJarakDuaPoint'); 
+
+// requestMbpToSiteDown, RtpoController
+$app->post('/requestMbpToSiteDown', 'RtpoController@requestMbpToSiteDown'); 
+
+

@@ -67,12 +67,12 @@ class MbpController extends Controller
 
     }
 
-    public function getMySiteDown(Request $request){
+    public function getMyMbpOnProgress(Request $request){
 
 
       $rtpo_id = $request->input('rtpo_id');
 
-      $data_site = DB::table('site')->select('*')->where('rtpo_id','=',$rtpo_id)->where('status','=','0')->get();
+      $data_site = DB::table('mbp')->select('*')->where('rtpo_id','=',$rtpo_id)->where('status','=','0')->get();
 
 
         if ($data_site) {
