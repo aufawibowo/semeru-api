@@ -13,20 +13,20 @@ class BtsController extends Controller
     public function get_bts_off(Request $request)
     {
 
-        $btss = DB::table('bts')->select('*')->where('status','=','0')->get();
+      $btss = DB::table('bts')->select('*')->where('status','=','0')->get();
 
 
-        if ($btss) {
-              $res['success'] = true;
-              $res['message'] = 'Success!';
-              $res['data'] = $btss;
+      if ($btss) {
+        $res['success'] = true;
+        $res['message'] = 'Success!';
+        $res['data'] = $btss;
         
-              return response($res);
-        }else{
-          $polys['success'] = false;
-          $polys['message'] = 'Cannot find polys!';
+        return response($res);
+      }else{
+        $polys['success'] = false;
+        $polys['message'] = 'Cannot find polys!';
         
-          return response($btss);
-        }
+        return response($btss);
+      }
     }
-}
+  }

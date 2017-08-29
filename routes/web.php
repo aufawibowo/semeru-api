@@ -12,7 +12,7 @@
 */
 
 $app->get('/', function () use ($app) {
-    return $app->version();
+	return $app->version();
 });
 
 
@@ -70,3 +70,6 @@ $app->post('/getSiteClassTertinggiDariMbpTerdekat', 'RecommendationController@ge
 
 // getSiteDariMbpTerdekat
 $app->post('/getSiteDariMbpTerdekat', 'RecommendationController@getSiteDariMbpTerdekat'); //DONE..:D dan 
+
+// getMyMbpCategory
+$app->post('/getMyMbpCategory', 'MbpController@getMyMbpCategory'); 

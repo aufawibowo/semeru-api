@@ -12,26 +12,26 @@ class UserController extends Controller
      */
     public function register(Request $request)
     {
-        $hasher = app()->make('hash');
-        $username = $request->input('username');
-        $email = $request->input('email');
-        $user_type = $request->input('user_type');
-        $password = $hasher->make($request->input('password'));
-        $register = User::create([
-            'username'=> $username,
-            'email'=> $email,
-            'user_type'=> $user_type,
-            'password'=> $password,
-        ]);
-        if ($register) {
-            $res['success'] = true;
-            $res['message'] = 'Success register!';
-            return response($res);
-        }else{
-            $res['success'] = false;
-            $res['message'] = 'Failed to register!';
-            return response($res);
-        }
+      $hasher = app()->make('hash');
+      $username = $request->input('username');
+      $email = $request->input('email');
+      $user_type = $request->input('user_type');
+      $password = $hasher->make($request->input('password'));
+      $register = User::create([
+        'username'=> $username,
+        'email'=> $email,
+        'user_type'=> $user_type,
+        'password'=> $password,
+      ]);
+      if ($register) {
+        $res['success'] = true;
+        $res['message'] = 'Success register!';
+        return response($res);
+      }else{
+        $res['success'] = false;
+        $res['message'] = 'Failed to register!';
+        return response($res);
+      }
     }
 
      /**
@@ -39,20 +39,20 @@ class UserController extends Controller
      *
      * URL /user/{id}
      */
-    public function get_user(Request $request, $id)
-    {
-        $user = User::where('id', $id)->get();
-        if ($user) {
-              $res['success'] = true;
-              $res['message'] = $user;
+     public function get_user(Request $request, $id)
+     {
+      $user = User::where('id', $id)->get();
+      if ($user) {
+        $res['success'] = true;
+        $res['message'] = $user;
         
-              return response($res);
-        }else{
-          $res['success'] = false;
-          $res['message'] = 'Cannot find user!';
+        return response($res);
+      }else{
+        $res['success'] = false;
+        $res['message'] = 'Cannot find user!';
         
-          return response($res);
-        }
+        return response($res);
+      }
     }
 
-}
+  }
