@@ -67,3 +67,6 @@ $app->post('/getSiteTercepatDariMbp', 'RecommendationController@getSiteTercepatD
 //getSiteClassTertinggiDariMbp
 $app->post('/getSiteClassTertinggiDariMbpTercepat', 'RecommendationController@getSiteClassTertinggiDariMbpTercepat'); //DONE..:D dan sudah di urutkan dari class tertinggi dan waktu tempuh tercepat
 $app->post('/getSiteClassTertinggiDariMbpTerdekat', 'RecommendationController@getSiteClassTertinggiDariMbpTerdekat'); //DONE..:D dan sudah di urutkan dari class tertinggi dan jarak tempuh terdekat
+
+// getSiteDariMbpTerdekat
+$app->post('/getSiteDariMbpTerdekat', 'RecommendationController@getSiteDariMbpTerdekat'); //DONE..:D dan 
