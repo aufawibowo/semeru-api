@@ -15,10 +15,17 @@ class RtpoController extends Controller
     ->select('*')
     ->where('site_id','=',$site_id)
     ->get();
+    // $mbp_data = DB::table('mbp')
+    // ->select('*')
+    // ->where('mbp_id','=',$mbp_id)
+    // ->get();
     $mbp_data = DB::table('mbp')
-    ->select('*')
+    ->join('user_mbp', 'mbp.mbp_id', '=', 'user_mbp.mbp_id')
+    ->select('mbp.*','user_mbp.user_id')
     ->where('mbp_id','=',$mbp_id)
     ->get();
+
+
     $mbp_result = json_decode($mbp_data, true);
     $site_result = json_decode($site_data, true);
 
@@ -30,7 +37,7 @@ class RtpoController extends Controller
       if($site_status=='0'){
         if($site_booked=='0'){
 
-          
+
       // set waktu menjadi waktu indonesia barat
           date_default_timezone_set("Asia/Jakarta");
 
@@ -39,9 +46,15 @@ class RtpoController extends Controller
           $date_now = $mydate['year'].'-'.$mydate['mon'].'-'.$mydate['mday'].' '.$mydate['hours'].':'.$mydate['minutes'].':'.$mydate['seconds'];
 
       // fungsi edit status mbp to WAITING
+          // $editMbp = DB::table('mbp')
+          // ->where('mbp_id', $mbp_id)
+          // ->update(['status' => 'WAITING']);
+
           $editMbp = DB::table('mbp')
+          ->join('user_mbp', 'mbp.mbp_id', '=', 'user_mbp.mbp_id')
           ->where('mbp_id', $mbp_id)
           ->update(['status' => 'WAITING']);
+
 
       // fungsi edit status mbp to WAITING
           $editMbp = DB::table('site')
@@ -68,6 +81,7 @@ class RtpoController extends Controller
               $res['message'] = 'Request mbp to Site Failed!';
               
               $editMbp = DB::table('mbp')
+              ->join('user_mbp', 'mbp.mbp_id', '=', 'user_mbp.mbp_id')
               ->where('mbp_id', $mbp_id)
               ->update(['status' => '0']);
 

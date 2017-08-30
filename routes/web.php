@@ -18,6 +18,9 @@ $app->get('/', function () use ($app) {
 
 $app->get('/bts_off', 'BtsController@get_bts_off'); 
 $app->post('/register', 'UserController@register'); 
+// login
+$app->post('/login', 'UserController@login'); 
+
 $app->get('/user/{id}', ['middleware' => 'auth', 'uses' =>  'UserController@get_user']);
 // getMyMbpSiteToMAp
 $app->post('/getMyMbpSiteToMAp', 'MapController@getMyMbpSiteToMAp');
@@ -35,7 +38,8 @@ $app->get('/getAllMbpOnProggress', 'MbpController@getAllMbpOnProggress');
 // getMySite
 $app->post('/getMyMbp', 'MbpController@getMyMbp'); 
 $app->post('/getMyMbpOnProgress', 'MbpController@getMyMbpOnProgress'); 
-$app->post('/getMyMbpavailable', 'MbpController@getMyMbpavailable'); 
+$app->post('/getMyMbpAvailable', 'MbpController@getMyMbpAvailable'); 
+$app->post('/getMyMbpWaiting', 'MbpController@getMyMbpWaiting'); 
 // getMyMbpavaible
 
 // RecommendationController, hitungJarakDuaPoint

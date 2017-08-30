@@ -26,14 +26,10 @@ class RecommendationController extends Controller
     $data_traffic['distance'] = $data['rows'][0]['elements'][0]['distance']['text'];
     $data_traffic['duration'] = $data['rows'][0]['elements'][0]['duration']['text'];
 
-      // $nilaiJarak = $data['rows'][0]['elements'][0]['distance']['text'];
-      // $nilaiDurasi = $data['rows'][0]['elements'][0]['duration']['text'];
-
     if ($dataJson) {
       $res['success'] = true;
       $res['message'] = 'Success!';
       $res['data'] = $data_traffic;
-          // $res['durasi'] = $nilaiDurasi;
       
       return response($res);
     }else{
@@ -52,7 +48,13 @@ class RecommendationController extends Controller
 
     $data_site = DB::table('site')->select('*')->where('rtpo_id','=',$rtpo_id)->where('status','=','0')->get();
 
-    $data_mbp = DB::table('mbp')->select('*')->where('rtpo_id','=',$rtpo_id)->where('status','=','0')->get();
+    // $data_mbp = DB::table('mbp')->select('*')->where('rtpo_id','=',$rtpo_id)->where('status','=','0')->get();
+    $data_mbp = DB::table('mbp')
+    ->join('user_mbp', 'mbp.mbp_id', '=', 'user_mbp.mbp_id')
+    ->select('mbp.*','user_mbp.user_id')
+    ->where('rtpo_id','=',$rtpo_id)
+    ->where('status','=','0')
+    ->get();
 
     if ($data_site) {
       $res['success'] = true;
@@ -108,20 +110,16 @@ class RecommendationController extends Controller
 
     $site_data = DB::table('site')->select('*')->where('site_id','=',$site_id)->get();
     $site_result = json_decode($site_data, true);
-
-      // return response($site_result[0]['latitude']);
-      // // example mbp
-      // $site_data['site_id'] = 1;
-      // $site_data['site_name'] = 'bts_sby01';
-      // $site_data['status'] = 0;
-      // $site_data['class_name'] = 'platinum';
-      // $site_data['revenue'] = '8000000000';
-      // $site_data['latitude'] = -7.283447;
-      // $site_data['longitude'] = 112.754425;
     
     $rtpo_id = 3;
 
-    $mbp_data = DB::table('mbp')->select('*')->where('rtpo_id','=',$rtpo_id)->where('status','=','1')->get();
+    // $mbp_data = DB::table('mbp')->select('*')->where('rtpo_id','=',$rtpo_id)->where('status','=','1')->get();
+    $mbp_data = DB::table('mbp')
+    ->join('user_mbp', 'mbp.mbp_id', '=', 'user_mbp.mbp_id')
+    ->select('mbp.*','user_mbp.user_id')
+    ->where('rtpo_id','=',$rtpo_id)
+    ->where('status','=','1')
+    ->get();
 
     $result = json_decode($mbp_data, true);
 
@@ -175,7 +173,13 @@ class RecommendationController extends Controller
 
     $mbp_id = 2;
 
-    $mbp_data = DB::table('mbp')->select('*')->where('mbp_id','=',$mbp_id)->where('status','=','1')->get();
+    // $mbp_data = DB::table('mbp')->select('*')->where('mbp_id','=',$mbp_id)->where('status','=','1')->get();
+    $mbp_data = DB::table('mbp')
+    ->join('user_mbp', 'mbp.mbp_id', '=', 'user_mbp.mbp_id')
+    ->select('mbp.*','user_mbp.user_id')
+    ->where('mbp_id','=',$mbp_id)
+    ->where('status','=','1')
+    ->get();
 
     $result = json_decode($mbp_data, true);
 
@@ -226,7 +230,13 @@ class RecommendationController extends Controller
     $mbp_id = $request->input('mbp_id');
       // $mbp_id = 2;
 
-    $mbp_data = DB::table('mbp')->select('*')->where('mbp_id','=',$mbp_id)/*->where('status','=','1')*/->get();
+    // $mbp_data = DB::table('mbp')->select('*')->where('mbp_id','=',$mbp_id)/*->where('status','=','1')*/->get();
+    $mbp_data = DB::table('mbp')
+    ->join('user_mbp', 'mbp.mbp_id', '=', 'user_mbp.mbp_id')
+    ->select('mbp.*','user_mbp.user_id')
+    ->where('mbp_id','=',$mbp_id)
+    // ->where('status','=','1')
+    ->get();
 
     $result = json_decode($mbp_data, true);
 
@@ -296,7 +306,13 @@ class RecommendationController extends Controller
     $mbp_id = $request->input('mbp_id');
       // $mbp_id = 2;
 
-    $mbp_data = DB::table('mbp')->select('*')->where('mbp_id','=',$mbp_id)/*->where('status','=','1')*/->get();
+    // $mbp_data = DB::table('mbp')->select('*')->where('mbp_id','=',$mbp_id)/*->where('status','=','1')*/->get();
+    $mbp_data = DB::table('mbp')
+    ->join('user_mbp', 'mbp.mbp_id', '=', 'user_mbp.mbp_id')
+    ->select('mbp.*','user_mbp.user_id')
+    ->where('mbp_id','=',$mbp_id)
+    // ->where('status','=','1')
+    ->get();
 
     $result = json_decode($mbp_data, true);
 
@@ -366,7 +382,13 @@ class RecommendationController extends Controller
     $mbp_id = $request->input('mbp_id');
       // $mbp_id = 2;
 
-    $mbp_data = DB::table('mbp')->select('*')->where('mbp_id','=',$mbp_id)/*->where('status','=','1')*/->get();
+    // $mbp_data = DB::table('mbp')->select('*')->where('mbp_id','=',$mbp_id)/*->where('status','=','1')*/->get();
+    $mbp_data = DB::table('mbp')
+    ->join('user_mbp', 'mbp.mbp_id', '=', 'user_mbp.mbp_id')
+    ->select('mbp.*','user_mbp.user_id')
+    ->where('mbp_id','=',$mbp_id)
+    // ->where('status','=','1')
+    ->get();
 
     $result = json_decode($mbp_data, true);
 
@@ -436,7 +458,13 @@ class RecommendationController extends Controller
     $mbp_id = $request->input('mbp_id');
       // $mbp_id = 2;
 
-    $mbp_data = DB::table('mbp')->select('*')->where('mbp_id','=',$mbp_id)/*->where('status','=','1')*/->get();
+    // $mbp_data = DB::table('mbp')->select('*')->where('mbp_id','=',$mbp_id)/*->where('status','=','1')*/->get();
+    $mbp_data = DB::table('mbp')
+    ->join('user_mbp', 'mbp.mbp_id', '=', 'user_mbp.mbp_id')
+    ->select('mbp.*','user_mbp.user_id')
+    ->where('mbp_id','=',$mbp_id)
+    // ->where('status','=','1')
+    ->get();
 
     $result = json_decode($mbp_data, true);
 
@@ -505,7 +533,13 @@ class RecommendationController extends Controller
     $mbp_id = $request->input('mbp_id');
       // $mbp_id = 2;
 
-    $mbp_data = DB::table('mbp')->select('*')->where('mbp_id','=',$mbp_id)/*->where('status','=','1')*/->get();
+    // $mbp_data = DB::table('mbp')->select('*')->where('mbp_id','=',$mbp_id)/*->where('status','=','1')*/->get();
+    $mbp_data = DB::table('mbp')
+    ->join('user_mbp', 'mbp.mbp_id', '=', 'user_mbp.mbp_id')
+    ->select('mbp.*','user_mbp.user_id')
+    ->where('mbp_id','=',$mbp_id)
+    // ->where('status','=','1')
+    ->get();
 
     $result = json_decode($mbp_data, true);
 
