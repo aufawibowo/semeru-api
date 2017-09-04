@@ -46,7 +46,7 @@ class RecommendationController extends Controller
 
     $rtpo_id = $request->input('rtpo_id');
 
-    $data_site = DB::table('site')->select('*')->where('rtpo_id','=',$rtpo_id)->where('status','=','0')->get();
+    $data_site = DB::table('site')->select('*')->where('rtpo_id','=',$rtpo_id)->where('status','=','0')->where('booked','=','0')->get();
 
     // $data_mbp = DB::table('mbp')->select('*')->where('rtpo_id','=',$rtpo_id)->where('status','=','0')->get();
     $data_mbp = DB::table('mbp')
@@ -77,6 +77,7 @@ class RecommendationController extends Controller
     ->join('class', 'site.class_id', '=', 'class.class_id')
     ->select('site.site_id','site.site_name','site.status', 'class.class_name', 'class.revenue','site.latitude','site.longitude')
     ->where('status','=','0')
+    ->where('booked','=','0')
     ->get();
     
     $result = json_decode($site_data, true);
@@ -177,7 +178,7 @@ class RecommendationController extends Controller
     $mbp_data = DB::table('mbp')
     ->join('user_mbp', 'mbp.mbp_id', '=', 'user_mbp.mbp_id')
     ->select('mbp.*','user_mbp.user_id')
-    ->where('mbp_id','=',$mbp_id)
+    ->where('mbp.mbp_id','=',$mbp_id)
     ->where('status','=','1')
     ->get();
 
@@ -234,7 +235,7 @@ class RecommendationController extends Controller
     $mbp_data = DB::table('mbp')
     ->join('user_mbp', 'mbp.mbp_id', '=', 'user_mbp.mbp_id')
     ->select('mbp.*','user_mbp.user_id')
-    ->where('mbp_id','=',$mbp_id)
+    ->where('mbp.mbp_id','=',$mbp_id)
     // ->where('status','=','1')
     ->get();
 
@@ -248,6 +249,7 @@ class RecommendationController extends Controller
     ->select('site.site_id','site.site_name','site.status', 'class.class_name', /*'class.revenue',*/'site.latitude','site.longitude')
     ->where('rtpo_id','=',$result[0]['rtpo_id'])
     ->where('status','=','0')
+    ->where('booked','=','0')
     ->get();
 
     $site_result = json_decode($site_data, true);
@@ -310,7 +312,7 @@ class RecommendationController extends Controller
     $mbp_data = DB::table('mbp')
     ->join('user_mbp', 'mbp.mbp_id', '=', 'user_mbp.mbp_id')
     ->select('mbp.*','user_mbp.user_id')
-    ->where('mbp_id','=',$mbp_id)
+    ->where('mbp.mbp_id','=',$mbp_id)
     // ->where('status','=','1')
     ->get();
 
@@ -324,6 +326,7 @@ class RecommendationController extends Controller
     ->select('site.site_id','site.site_name','site.status', 'class.class_name', /*'class.revenue',*/'site.latitude','site.longitude')
     ->where('rtpo_id','=',$result[0]['rtpo_id'])
     ->where('status','=','0')
+    ->where('booked','=','0')
     ->get();
 
     $site_result = json_decode($site_data, true);
@@ -386,7 +389,7 @@ class RecommendationController extends Controller
     $mbp_data = DB::table('mbp')
     ->join('user_mbp', 'mbp.mbp_id', '=', 'user_mbp.mbp_id')
     ->select('mbp.*','user_mbp.user_id')
-    ->where('mbp_id','=',$mbp_id)
+    ->where('mbp.mbp_id','=',$mbp_id)
     // ->where('status','=','1')
     ->get();
 
@@ -399,6 +402,7 @@ class RecommendationController extends Controller
     ->select('site.site_id','site.site_name','site.status', 'class.class_name', 'class.revenue','site.latitude','site.longitude')
     ->where('rtpo_id','=',$result[0]['rtpo_id'])
     ->where('status','=','0')
+    ->where('booked','=','0')
     ->get();
 
     $site_result = json_decode($site_data, true);
@@ -462,7 +466,7 @@ class RecommendationController extends Controller
     $mbp_data = DB::table('mbp')
     ->join('user_mbp', 'mbp.mbp_id', '=', 'user_mbp.mbp_id')
     ->select('mbp.*','user_mbp.user_id')
-    ->where('mbp_id','=',$mbp_id)
+    ->where('mbp.mbp_id','=',$mbp_id)
     // ->where('status','=','1')
     ->get();
 
@@ -475,6 +479,7 @@ class RecommendationController extends Controller
     ->select('site.site_id','site.site_name','site.status', 'class.class_name', 'class.revenue','site.latitude','site.longitude')
     ->where('rtpo_id','=',$result[0]['rtpo_id'])
     ->where('status','=','0')
+    ->where('booked','=','0')
     ->get();
 
     $site_result = json_decode($site_data, true);
@@ -537,7 +542,7 @@ class RecommendationController extends Controller
     $mbp_data = DB::table('mbp')
     ->join('user_mbp', 'mbp.mbp_id', '=', 'user_mbp.mbp_id')
     ->select('mbp.*','user_mbp.user_id')
-    ->where('mbp_id','=',$mbp_id)
+    ->where('mbp.mbp_id','=',$mbp_id)
     // ->where('status','=','1')
     ->get();
 
@@ -550,6 +555,7 @@ class RecommendationController extends Controller
     ->select('site.site_id','site.site_name','site.status', 'class.class_name', 'class.revenue','site.latitude','site.longitude')
     ->where('rtpo_id','=',$result[0]['rtpo_id'])
     ->where('status','=','0')
+    ->where('booked','=','0')
     ->get();
 
     $site_result = json_decode($site_data, true);

@@ -40,6 +40,9 @@ $app->post('/getMyMbp', 'MbpController@getMyMbp');
 $app->post('/getMyMbpOnProgress', 'MbpController@getMyMbpOnProgress'); 
 $app->post('/getMyMbpAvailable', 'MbpController@getMyMbpAvailable'); 
 $app->post('/getMyMbpWaiting', 'MbpController@getMyMbpWaiting'); 
+// updateLatLongMbp
+$app->post('/updateLatLongMbp', 'MbpController@updateLatLongMbp'); 
+
 // getMyMbpavaible
 
 // RecommendationController, hitungJarakDuaPoint

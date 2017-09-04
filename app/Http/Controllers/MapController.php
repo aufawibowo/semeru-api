@@ -20,7 +20,7 @@ class MapController extends Controller
 
     $data_site = DB::table('site')
     ->join('class', 'site.class_id', '=', 'class.class_id')
-    ->select(['site.site_id','site.site_name', 'class.class_name', /*'class.revenue',*/'site.latitude','site.longitude',DB::raw('(case when (status > 0) then "NORMAL" else "MAINS FAIL" end) as status'),DB::raw('(case when (booked > 0) then "booked" else "no" end) as booked')])
+    ->select(['site.site_id','site.site_name', 'class.class_name', /*'class.revenue',*/'site.latitude','site.longitude',DB::raw('(case when (status > 0) then "NORMAL" else "MAINS FAIL" end) as status'),DB::raw('(case when (booked > 0) then "true" else "false" end) as is_allocated')])
     ->where('rtpo_id','=',$rtpo_id)
     ->get();
 

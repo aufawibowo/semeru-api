@@ -22,7 +22,7 @@ class RtpoController extends Controller
     $mbp_data = DB::table('mbp')
     ->join('user_mbp', 'mbp.mbp_id', '=', 'user_mbp.mbp_id')
     ->select('mbp.*','user_mbp.user_id')
-    ->where('mbp_id','=',$mbp_id)
+    ->where('mbp.mbp_id','=',$mbp_id)
     ->get();
 
 
@@ -52,7 +52,7 @@ class RtpoController extends Controller
 
           $editMbp = DB::table('mbp')
           ->join('user_mbp', 'mbp.mbp_id', '=', 'user_mbp.mbp_id')
-          ->where('mbp_id', $mbp_id)
+          ->where('mbp.mbp_id', $mbp_id)
           ->update(['status' => 'WAITING']);
 
 
@@ -67,22 +67,22 @@ class RtpoController extends Controller
               [
                 'mbp_id' => $mbp_id, 
                 'site_id' => $site_id,
-                'date' => $date_now
+                // 'date_waiting' => $date_now
               ]
             );
 
             if ($insertSP) {
               $res['success'] = true;
-              $res['message'] = 'Request mbp to Site Success!';
+              $res['message'] = 'SUCCESS_INSERT_TO_DATABASE';
           // $res['data'] = $data_site;
               return response($res);
             }else{
               $res['success'] = false;
-              $res['message'] = 'Request mbp to Site Failed!';
+              $res['message'] = 'FAILED_INSERT_TO_DATABASE';
               
               $editMbp = DB::table('mbp')
               ->join('user_mbp', 'mbp.mbp_id', '=', 'user_mbp.mbp_id')
-              ->where('mbp_id', $mbp_id)
+              ->where('mbp.mbp_id', $mbp_id)
               ->update(['status' => '0']);
 
               return response($res);
@@ -90,23 +90,23 @@ class RtpoController extends Controller
 
           }else{
             $res['success'] = false;
-            $res['message'] = 'Request mbp to Site Failed because mbp is still working!';
+            $res['message'] = 'MBP_IS_ALLOCATED';
             return response($res);
           }
 
         }else{
           $res['success'] = false;
-          $res['message'] = 'Site has been booked!';
+          $res['message'] = 'SITE_IS_ALLOCATED';
           return response($res);
         }
       }else{
         $res['success'] = false;
-        $res['message'] = 'Site status normal!';
+        $res['message'] = 'SITE_STATUS_NORMAL';
         return response($res);
       }
     }else{
       $res['success'] = false;
-      $res['message'] = 'Mbp not Available!';
+      $res['message'] = 'MBP_IS_ALLOCATED';
       return response($res);
     }
 

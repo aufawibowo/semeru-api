@@ -14,6 +14,7 @@ class UserController extends Controller
     {
       $hasher = app()->make('hash');
       $username = $request->input('username');
+      $name = $request->input('name');
       $email = $request->input('email');
       $password = $hasher->make($request->input('password'));
       $user_type = $request->input('user_type'); // RTPO / MBP
@@ -22,6 +23,7 @@ class UserController extends Controller
       $register = DB::table('users')->insert(
         [
           'username'=> $username,
+          'name'=> $name,
           'email'=> $email,
           'user_type'=> $user_type,
           'password'=> $password,
@@ -101,7 +103,7 @@ class UserController extends Controller
 
       if (!$login) {
         $res['success'] = false;
-        $res['message'] = 'INCORRECT_USERNAME';
+        $res['message'] = 'INCORRECT_USERNAME_PASSWORD';
         return response($res);
       }else{
 
@@ -119,6 +121,7 @@ class UserController extends Controller
 
             if ($check_rtpo) {
               $data['user_id']=$login->id;
+              $data['name']=$login->name;
               $data['username']=$login->username;
               $data['email']=$login->email;
               $data['user_type']=$login->user_type;
@@ -148,6 +151,7 @@ class UserController extends Controller
 
             if ($check_mbp) {
               $data['user_id']=$login->id;
+              $data['name']=$login->name;
               $data['username']=$login->username;
               $data['email']=$login->email;
               $data['user_type']=$login->user_type;
@@ -170,7 +174,7 @@ class UserController extends Controller
           }
         }else{
           $res['success'] = false;
-          $res['message'] = 'INCORRECT_PASSWORD';
+          $res['message'] = 'INCORRECT_USERNAME_PASSWORD';
           return response($res);
         }
       }

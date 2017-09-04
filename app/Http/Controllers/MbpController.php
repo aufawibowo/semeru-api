@@ -225,4 +225,34 @@ class MbpController extends Controller
     }
 
   }
+
+  public function updateLatLongMbp(Request $request){
+
+    $mbp_name = $request->input('mbp_name');
+    $latitude = $request->input('latitude');
+    $longitude = $request->input('longitude');
+
+    $editMbp = DB::table('mbp')
+    ->join('user_mbp', 'mbp.mbp_id', '=', 'user_mbp.mbp_id')
+    ->where('mbp.mbp_name', $mbp_name)
+    ->update(
+      [
+        'latitude' => $latitude,
+        'longitude' => $longitude,
+      ]
+    );
+
+    if ($editMbp) {
+      $res['success'] = true;
+      $res['message'] = 'SUCCESS';
+      // $res['data'] = $editMbp;
+
+      return response($res);
+    }else{
+      $res['success'] = false;
+      $res['message'] = 'CANNOT_FIND_DATA';
+
+      return response($res);
+    }
+  }
 }
