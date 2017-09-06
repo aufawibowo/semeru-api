@@ -8,6 +8,7 @@ class RtpoController extends Controller
 
     $mbp_id = $request->input('mbp_id');
     $site_id = $request->input('site_id');
+    $user_id = $request->input('user_id');
 
 
       // fungsi cek apakah mbp atau site masih memungkinkan untuk di order
@@ -31,11 +32,11 @@ class RtpoController extends Controller
 
     $mbp_status =$mbp_result[0]['status'].'';
     $site_status=$site_result[0]['status'].'';
-    $site_booked=$site_result[0]['booked'].'';
+    $site_is_allocated=$site_result[0]['is_allocated'].'';
 
     if ($mbp_status=='AVAILABLE') {
       if($site_status=='0'){
-        if($site_booked=='0'){
+        if($site_is_allocated=='0'){
 
 
       // set waktu menjadi waktu indonesia barat
@@ -59,7 +60,7 @@ class RtpoController extends Controller
       // fungsi edit status mbp to WAITING
           $editMbp = DB::table('site')
           ->where('site_id', $site_id)
-          ->update(['booked' => '1']);
+          ->update(['is_allocated' => '1']);
 
           if ($editMbp) {
         // fungsi create new suppliyinf power
@@ -67,7 +68,8 @@ class RtpoController extends Controller
               [
                 'mbp_id' => $mbp_id, 
                 'site_id' => $site_id,
-                // 'date_waiting' => $date_now
+                'user_id' => $user_id,
+                'date_waiting' => date('Y-m-d H:i:s'),
               ]
             );
 
@@ -83,7 +85,7 @@ class RtpoController extends Controller
               $editMbp = DB::table('mbp')
               ->join('user_mbp', 'mbp.mbp_id', '=', 'user_mbp.mbp_id')
               ->where('mbp.mbp_id', $mbp_id)
-              ->update(['status' => '0']);
+              ->update(['status' => 'AVAILABLE']);
 
               return response($res);
             }

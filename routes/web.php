@@ -42,6 +42,16 @@ $app->post('/getMyMbpAvailable', 'MbpController@getMyMbpAvailable');
 $app->post('/getMyMbpWaiting', 'MbpController@getMyMbpWaiting'); 
 // updateLatLongMbp
 $app->post('/updateLatLongMbp', 'MbpController@updateLatLongMbp'); 
+// getStatusMbp
+$app->post('/getStatusMbp', 'MbpController@getStatusMbp');
+// updateStatusMbptoOnProgress
+$app->post('/updateStatusMbptoOnProgress', 'MbpController@updateStatusMbptoOnProgress');
+// updateStatusMbptoCheckin
+$app->post('/updateStatusMbptoCheckin', 'MbpController@updateStatusMbptoCheckin');
+// updateStatusMbptoAvailable
+$app->post('/updateStatusMbptoDone', 'MbpController@updateStatusMbptoDone');
+// updateStatusMbp
+$app->post('/updateStatusMbp', 'MbpController@updateStatusMbp');
 
 // getMyMbpavaible
 

@@ -114,7 +114,7 @@ class UserController extends Controller
           // $check_rtpo = DB::table('rtpo')->select('*')->where('user_id','=',$login->id)->first();
             $check_rtpo = DB::table('rtpo')
             ->join('user_rtpo', 'rtpo.rtpo_id', '=', 'user_rtpo.rtpo_id')
-            ->select('rtpo.rtpo_name')
+            ->select('rtpo.rtpo_name','rtpo.rtpo_id')
             ->where('user_rtpo.user_id','=',$login->id)
             ->first();
 
@@ -126,6 +126,7 @@ class UserController extends Controller
               $data['email']=$login->email;
               $data['user_type']=$login->user_type;
               $data['user_type_name']=$check_rtpo->rtpo_name;
+              $data['user_type_id']=$check_rtpo->rtpo_id;
 
               $api_token = sha1(time());
               $create_token = DB::table('users')->where('id','=',$login->id)->update(['api_token' => $api_token]);
@@ -145,7 +146,7 @@ class UserController extends Controller
           // $check_mbp = DB::table('mbp')->select('*')->where('user_id','=',$login->id)->first();
             $check_mbp = DB::table('mbp')
             ->join('user_mbp', 'mbp.mbp_id', '=', 'user_mbp.mbp_id')
-            ->select('mbp.mbp_name')
+            ->select('mbp.mbp_name','mbp.mbp_id')
             ->where('user_mbp.user_id','=',$login->id)
             ->first();
 
@@ -156,6 +157,7 @@ class UserController extends Controller
               $data['email']=$login->email;
               $data['user_type']=$login->user_type;
               $data['user_type_name']=$check_mbp->mbp_name;
+              $data['user_type_id']=$check_mbp->mbp_id;
 
               $api_token = sha1(time());
               $create_token = DB::table('users')->where('id','=',$login->id)->update(['api_token' => $api_token]);
