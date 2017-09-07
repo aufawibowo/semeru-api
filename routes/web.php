@@ -90,3 +90,24 @@ $app->post('/getSiteDariMbpTerdekat', 'RecommendationController@getSiteDariMbpTe
 
 // getMyMbpCategory
 $app->post('/getMyMbpCategory', 'MbpController@getMyMbpCategory'); 
+
+
+// sendMessage
+$app->post('/sendMessage', 'MessageController@sendMessage'); 
+// getMessage
+$app->post('/getMessage', 'MessageController@getMessage'); 
+// getMessageDetil
+$app->post('/getMessageDetil', 'MessageController@getMessageDetil'); 
+
+
+// sendCancellationLetterToRtpo
+$app->post('/sendCancellationLetterToRtpo', 'CancelController@sendCancellationLetterToRtpo'); 
+// acceptCancellationLetterfromMbp
+$app->post('/acceptCancellationLetterfromMbp', 'CancelController@acceptCancellationLetterfromMbp'); 
+// getCancellationLetter
+$app->post('/getCancellationLetter', 'CancelController@getCancellationLetter'); 
+// deleteCancellationLetterFromMbp
+$app->post('/deleteCancellationLetterFromMbp', 'CancelController@deleteCancellationLetterFromMbp'); 
+
+// sendDelayLetterToRtpo
+$app->post('/sendDelayLetterToRtpo', 'CancelController@sendDelayLetterToRtpo'); 

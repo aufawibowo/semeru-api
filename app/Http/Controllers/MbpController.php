@@ -50,18 +50,81 @@ class MbpController extends Controller
         ->join('users', 'supplying_power.user_id', '=', 'users.id')                // get name
         ->join('site', 'supplying_power.site_id', '=', 'site.site_id')           // get site name, lat, lon
         ->join('class', 'site.class_id', '=', 'class.class_id')                   // get class name
+        // ->join('cancel_details', 'users.id', '=', 'cancel_details.user_id_mbp') //  get status cancel
+        //  get pesan cancelnya
+        ->select('mbp.status','users.name as rtpo_username','site.site_name','site.latitude','site.longitude','class.class_name','mbp.latitude as mbp_latitude' ,'mbp.longitude as mbp_longitude','users.id as user_id', 'mbp.mbp_id')
 
-        ->select('mbp.status','users.name as rtpo_username','site.site_name','site.latitude','site.longitude','class.class_name','mbp.latitude as mbp_latitude' ,'mbp.longitude as mbp_longitude')
-
-        ->where('done_status','=','0') 
-        ->where('cancellation_status','=','0')
+        ->where('supplying_power.finish', NULL)
         ->first();
 
         if ($data_mbp_task) {
 
-          $res['success'] = true;
-          $res['message'] = 'SUCCESS';
-          $res['data'] = $data_mbp_task;
+          $result['status'] = $data_mbp_task->status;
+          $result['rtpo_username'] = $data_mbp_task->rtpo_username;
+          $result['site_name'] = $data_mbp_task->site_name;
+          $result['latitude'] = $data_mbp_task->latitude;
+          $result['longitude'] = $data_mbp_task->longitude;
+          $result['class_name'] = $data_mbp_task->class_name;
+          $result['mbp_latitude'] = $data_mbp_task->mbp_latitude;
+          $result['mbp_longitude'] = $data_mbp_task->mbp_longitude;
+
+          $CancellationLetter_data = DB::table('cancel_details')
+          ->join('users', 'cancel_details.user_id_mbp', '=', 'users.id')
+          ->join('user_mbp', 'users.id', '=', 'user_mbp.user_id')        //get name_mbp
+          ->join('mbp', 'user_mbp.mbp_id', '=', 'mbp.mbp_id')            //get name
+          ->join('message', 'cancel_details.message_id', '=', 'message.id')// get subject
+          ->select('cancel_details.id','mbp.mbp_name','users.name','message.id as message_id','message.text_message','message.subject','cancel_details.date','cancel_details.available_status','cancel_details.response_status')
+      // ->select('*')
+          // ->where('cancel_details.user_id_rtpo','=',null)
+          ->where('cancel_details.response_status','=','0')
+          ->where('mbp.mbp_id','=',$data_mbp_task->mbp_id)
+          ->first();
+
+
+            $res['data'] = $CancellationLetter_data;
+
+            return response($res);
+          // $data['submission_status'] = $CancellationLetter_data;
+            // return response($data);
+            // return response($data);
+
+          if ($CancellationLetter_data!=null) {
+
+            $result['submission_status'] = 'FOUND';
+            $result['cancel_id'] = $CancellationLetter_data->id;
+            $result['message_id'] = $CancellationLetter_data->message_id;
+            $result['subject'] = $CancellationLetter_data->subject;
+            $result['text_message'] = $CancellationLetter_data->text_message;
+            $result['cancel_date'] = $CancellationLetter_data->date;
+            $result['available_status'] = $CancellationLetter_data->available_status;
+
+            // available_status
+
+            $res['success'] = true;
+            $res['message'] = 'SUCCESS';
+            $res['data'] = $result;
+
+            return response($res);
+          }else{
+
+            $result['submission_status'] = 'NOT_FOUND';
+            $result['cancel_id'] = '';
+            $result['message_id'] = '';
+            $result['subject'] = '';
+            $result['text_message'] = '';
+            $result['cancel_date'] = '';
+            $result['available_status'] = '';
+
+            $res['success'] = true;
+            $res['message'] = 'SUCCESS';
+            $res['data'] = $result;
+
+            return response($res);
+          }
+
+          // $res['success'] = true;
+          // $res['message'] = 'SUCCESS';
+          // $res['data'] = $data_mbp_task;
 
           return response($res);
         }else{
@@ -78,8 +141,6 @@ class MbpController extends Controller
 
         return response($res);
       }
-
-      
     }else{
       $res['success'] = false;
       $res['message'] = 'CANNOT_FIND_DATA';
@@ -102,7 +163,7 @@ class MbpController extends Controller
 
     if ($editMbp) {
 
-      
+
       $mbp_data = DB::table('mbp')
       ->join('user_mbp', 'mbp.mbp_id', '=', 'user_mbp.mbp_id')
       ->select('mbp.status')
@@ -112,8 +173,7 @@ class MbpController extends Controller
       // fungsi create new suppliyinf power
       $insertSP = DB::table('supplying_power')
       ->where('mbp_id', $mbp_id)
-      ->where('done_status', '0')
-      ->where('cancellation_status', '0')
+      ->where('finish', NULL)
       ->update(
         [
           'date_onprogress' => date('Y-m-d H:i:s'),
@@ -132,8 +192,7 @@ class MbpController extends Controller
 
         ->select('mbp.status','users.name as rtpo_username','site.site_name','site.latitude','site.longitude','class.class_name')
         
-        ->where('done_status','=','0') 
-        ->where('cancellation_status','=','0')
+        ->where('finish', NULL)
         ->where('supplying_power.mbp_id', $mbp_id)
         ->first();
 
@@ -177,61 +236,58 @@ class MbpController extends Controller
 public function updateStatusMbp(Request $request){
     // $data_site = DB::table('mbp')->select('*')->get();
 
-    date_default_timezone_set("Asia/Jakarta");
-    $mbp_id = $request->input('mbp_id');
-    $status = $request->input('status');
-    
-    $editMbp = DB::table('mbp')
+  date_default_timezone_set("Asia/Jakarta");
+  $mbp_id = $request->input('mbp_id');
+  $status = $request->input('status');
+
+  $editMbp = DB::table('mbp')
+  ->join('user_mbp', 'mbp.mbp_id', '=', 'user_mbp.mbp_id')
+  ->where('mbp.mbp_id', $mbp_id)
+  ->update(['status' => $status]);
+
+  if ($editMbp) {
+
+
+    $mbp_data = DB::table('mbp')
     ->join('user_mbp', 'mbp.mbp_id', '=', 'user_mbp.mbp_id')
-    ->where('mbp.mbp_id', $mbp_id)
-    ->update(['status' => $status]);
+    ->select('mbp.status')
+    ->where('mbp.mbp_id','=',$mbp_id)
+    ->first();
 
-    if ($editMbp) {
-
-      
-      $mbp_data = DB::table('mbp')
-      ->join('user_mbp', 'mbp.mbp_id', '=', 'user_mbp.mbp_id')
-      ->select('mbp.status')
-      ->where('mbp.mbp_id','=',$mbp_id)
-      ->first();
-
-      if ($status=='ON_PROGRESS') {
+    if ($status=='ON_PROGRESS') {
 
         // isi date on proggressnya
-        $insertSP = DB::table('supplying_power')
-        ->where('mbp_id', $mbp_id)
-        ->where('done_status', '0')
-        ->where('cancellation_status', '0')
-        ->update(
-          [
-            'date_onprogress' => date('Y-m-d H:i:s'),
-          ]
-        );
+      $insertSP = DB::table('supplying_power')
+      ->where('mbp_id', $mbp_id)
+      ->where('finish', NULL)
+      ->update(
+        [
+          'date_onprogress' => date('Y-m-d H:i:s'),
+        ]
+      );
 
-      }else if ($status=='CHECK_IN') {
+    }else if ($status=='CHECK_IN') {
 
         // isi date checkinnya
-        $insertSP = DB::table('supplying_power')
-        ->where('mbp_id', $mbp_id)
-        ->where('done_status', '0')
-        ->where('cancellation_status', '0')
-        ->update(
-          [
-            'date_checkin' => date('Y-m-d H:i:s'),
-          ]
-        );
+      $insertSP = DB::table('supplying_power')
+      ->where('mbp_id', $mbp_id)
+      ->where('finish', NULL)
+      ->update(
+        [
+          'date_checkin' => date('Y-m-d H:i:s'),
+        ]
+      );
 
-      }else if($status=='AVAILABLE'){
+    }else if($status=='AVAILABLE'){
         // isi date donenya + status done = 1
         $insertSP = DB::table('supplying_power')            // get name
         ->join('site', 'supplying_power.site_id', '=', 'site.site_id') 
         ->where('supplying_power.mbp_id', $mbp_id)
-        ->where('supplying_power.done_status', '0')
-        ->where('supplying_power.cancellation_status', '0')
+        ->where('supplying_power.finish', NULL)
         ->update(
           [
-            'supplying_power.date_done' => date('Y-m-d H:i:s'),
-            'supplying_power.done_status' =>'1',
+            'supplying_power.date_finish' => date('Y-m-d H:i:s'),
+            'supplying_power.finish' =>'DONE',
             'site.is_allocated' =>'0',
           ]
         );
@@ -243,17 +299,6 @@ public function updateStatusMbp(Request $request){
         return response($res);
       }
 
-      // fungsi create new suppliyinf power ============================= ini menyesuaikan statusnya
-      // $insertSP = DB::table('supplying_power')
-      // ->where('mbp_id', $mbp_id)
-      // ->where('done_status', '0')
-      // ->where('cancellation_status', '0')
-      // ->update(
-      //   [
-      //     'date_onprogress' => date('Y-m-d H:i:s'),
-      //   ]
-      // );
-
       if ($mbp_data && $insertSP) {
 
         if ($mbp_data->status!='AVAILABLE') {
@@ -264,20 +309,68 @@ public function updateStatusMbp(Request $request){
         ->join('site', 'supplying_power.site_id', '=', 'site.site_id')           // get site name, lat, lon
         ->join('class', 'site.class_id', '=', 'class.class_id')                   // get class name
 
-        ->select('mbp.status','users.name as rtpo_username','site.site_name','site.latitude','site.longitude','class.class_name','mbp.latitude as mbp_latitude' ,'mbp.longitude as mbp_longitude')
+        ->select('mbp.status','users.name as rtpo_username','site.site_name','site.latitude','site.longitude','class.class_name','mbp.latitude as mbp_latitude' ,'mbp.longitude as mbp_longitude','users.id as user_id', 'mbp.mbp_id')
         
-        ->where('done_status','=','0') 
-        ->where('cancellation_status','=','0')
+        ->where('supplying_power.finish', NULL)
         ->where('supplying_power.mbp_id', $mbp_id)
         ->first();
 
         if ($data_mbp_task) {
 
-          $res['success'] = true;
-          $res['message'] = 'SUCCESS';
-          $res['data'] = $data_mbp_task;
+          
+          $result['status'] = $data_mbp_task->status;
+          $result['rtpo_username'] = $data_mbp_task->rtpo_username;
+          $result['site_name'] = $data_mbp_task->site_name;
+          $result['latitude'] = $data_mbp_task->latitude;
+          $result['longitude'] = $data_mbp_task->longitude;
+          $result['class_name'] = $data_mbp_task->class_name;
+          $result['mbp_latitude'] = $data_mbp_task->mbp_latitude;
+          $result['mbp_longitude'] = $data_mbp_task->mbp_longitude;
 
-          return response($res);
+          $CancellationLetter_data = DB::table('cancel_details')
+          ->join('users', 'cancel_details.user_id_mbp', '=', 'users.id')
+          ->join('user_mbp', 'users.id', '=', 'user_mbp.user_id')        //get name_mbp
+          ->join('mbp', 'user_mbp.mbp_id', '=', 'mbp.mbp_id')            //get name
+          ->join('message', 'cancel_details.message_id', '=', 'message.id')// get subject
+          ->select('cancel_details.id','mbp.mbp_name','users.name','message.id as message_id','message.text_message','message.subject','cancel_details.date','cancel_details.available_status')
+      // ->select('*')
+          ->where('cancel_details.response_status','=','0')
+          ->where('mbp.mbp_id','=',$data_mbp_task->mbp_id)
+          ->first();
+
+          if ($CancellationLetter_data!=null) {
+
+            $result['submission_status'] = 'FOUND';
+            $result['cancel_id'] = $CancellationLetter_data->id;
+            $result['message_id'] = $CancellationLetter_data->message_id;
+            $result['subject'] = $CancellationLetter_data->subject;
+            $result['text_message'] = $CancellationLetter_data->text_message;
+            $result['cancel_date'] = $CancellationLetter_data->date;
+            $result['available_status'] = $CancellationLetter_data->available_status;
+
+            // available_status
+
+            $res['success'] = true;
+            $res['message'] = 'SUCCESS';
+            $res['data'] = $result;
+
+            return response($res);
+          }else{
+
+            $result['submission_status'] = 'NOT_FOUND';
+            $result['cancel_id'] = '';
+            $result['message_id'] = '';
+            $result['subject'] = '';
+            $result['text_message'] = '';
+            $result['cancel_date'] = '';
+            $result['available_status'] = '';
+
+            $res['success'] = true;
+            $res['message'] = 'SUCCESS';
+            $res['data'] = $result;
+
+            return response($res);
+          }
         }else{
           $res['success'] = false;
           $res['message'] = 'CANNOT_FIND_DATA';
@@ -331,8 +424,7 @@ public function updateStatusMbptoCheckin(Request $request){
       // fungsi create new suppliyinf power
     $insertSP = DB::table('supplying_power')
     ->where('mbp_id', $mbp_id)
-    ->where('done_status', '0')
-    ->where('cancellation_status', '0')
+    ->where('finish', NULL)
     ->update(
       [
         'date_checkin' => date('Y-m-d H:i:s'),
@@ -352,8 +444,7 @@ public function updateStatusMbptoCheckin(Request $request){
 
         ->select('mbp.status','users.name as rtpo_username','site.site_name','site.latitude','site.longitude','class.class_name')
         
-        ->where('done_status','=','0') 
-        ->where('cancellation_status','=','0')
+        ->where('supplying_power.finish', NULL)
         ->where('supplying_power.mbp_id', $mbp_id)
         ->first();
 
@@ -416,12 +507,11 @@ public function updateStatusMbptoDone(Request $request){
   // fungsi create new suppliyinf power
     $insertSP = DB::table('supplying_power')
     ->where('mbp_id', $mbp_id)
-    ->where('done_status', '0')
-    ->where('cancellation_status', '0')
+    ->where('finish', NULL)
     ->update(
       [
-        'date_done' => date('Y-m-d H:i:s'),
-        'done_status' =>'1',
+        'date_finish' => date('Y-m-d H:i:s'),
+        'finish' =>'DONE',
       ]
     );
 
