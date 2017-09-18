@@ -29,21 +29,128 @@ class MessageController extends Controller
 
     public function getMessageDetil(Request $request){
 
-      // $user_id = $request->input('user_id');
       $message_id = $request->input('message_id');
 
       $message_data = DB::table('message')
       ->select('*')
       ->where('id','=',$message_id)
-      ->get();
+      ->first();
 
-      $res['success'] = true;
-      $res['message'] = 'SUCCESS_GET_MESSAGE';
-      $res['data'] = $message_data;
-
-      return response($res);
+      switch ($message_data->subject) {
+        case "MBP_INFORMATION_UNAVAILABLE":
+        // echo "Your favorite color is red!";
+        $tmp = $this->getMessageDetilUnavailable($message_id);
+        return response($tmp);
+        break;
+        case "CANCEL":
+        // echo "Your favorite color is blue!";
+        $tmp = $this->getMessageDetilCancelDelay($message_id);
+        return response($tmp);
+        break;
+        case "DELAY":
+        // echo "Your favorite color is green!";
+        $tmp = $this->getMessageDetilCancelDelay($message_id);
+        return response($tmp);
+        break;
+        default:
+        // echo "Your favorite color is neither red, blue, nor green!";
+      }
     }
 
+    public function getMessageDetilCancelDelay($message_id){
+
+      // $message_id = $request->input('message_id');
+
+      $CancellationLetter_data = DB::table('cancel_details')
+      ->join('users', 'cancel_details.user_id_mbp', '=', 'users.id')
+      ->join('user_mbp', 'users.id', '=', 'user_mbp.user_id')
+      ->join('mbp', 'user_mbp.mbp_id', '=', 'mbp.mbp_id') 
+      ->join('message', 'cancel_details.message_id', '=', 'message.id')
+      ->join('supplying_power', 'cancel_details.sp_id', '=', 'supplying_power.sp_id')
+      ->join('site', 'supplying_power.site_id', '=', 'site.site_id')
+      ->join('class', 'site.class_id', '=', 'class.class_id')
+      
+      ->select('mbp.mbp_name','site.site_name','users.name as operator_name','message.subject','message.text_message','cancel_details.available_status')
+      ->where('cancel_details.response_status','=',NULL)
+      ->where('supplying_power.finish', NULL)
+      ->where('message.id','=',$message_id)
+      ->first();
+
+      if ($CancellationLetter_data!=null) {
+
+
+        $res['success'] = true;
+        $res['message'] = 'SUCCESS';
+        $res['data'] = $CancellationLetter_data;
+
+        return $res;
+      }else{
+
+
+        $res['success'] = true;
+        $res['message'] = 'SUCCESS';
+        $res['data'] = $CancellationLetter_data;
+
+        return $res;
+      }
+
+      $res['success'] = true;
+      $res['message'] = 'SUCCESS';
+      // $res['data'] = $message_data;
+
+      return $res;
+    }
+
+    public function getMessageDetilUnavailable($message_id){
+
+      // $message_id = $request->input('message_id');
+
+      $CancellationLetter_data = DB::table('cancel_details')
+      ->join('users', 'cancel_details.user_id_mbp', '=', 'users.id')
+      ->join('user_mbp', 'users.id', '=', 'user_mbp.user_id')
+      ->join('mbp', 'user_mbp.mbp_id', '=', 'mbp.mbp_id') 
+      ->join('message', 'cancel_details.message_id', '=', 'message.id')
+      // ->join('supplying_power', 'cancel_details.sp_id', '=', 'supplying_power.sp_id')
+      // ->join('site', 'supplying_power.site_id', '=', 'site.site_id')
+      // ->join('class', 'site.class_id', '=', 'class.class_id')
+      
+      ->select('mbp.mbp_name'/*,'site.site_name'*/,'users.name as operator_name','message.subject','message.text_message','cancel_details.available_status')
+      ->where('cancel_details.response_status','=',NULL)
+      // ->where('supplying_power.finish', NULL)
+      ->where('message.id','=',$message_id)
+      ->first();
+
+      if ($CancellationLetter_data!=null) {
+
+        $data['mbp_name'] = $CancellationLetter_data->mbp_name;
+        $data['site_name'] = '';
+        $data['operator_name'] = $CancellationLetter_data->operator_name;
+        $data['subject'] = $CancellationLetter_data->subject;
+        $data['text_message'] = $CancellationLetter_data->text_message;
+        $data['available_status'] = $CancellationLetter_data->available_status;
+
+
+        $res['success'] = true;
+        $res['message'] = 'SUCCESS';
+        $res['data'] = $data;
+
+        return $res;
+      }else{
+
+
+        $res['success'] = true;
+        $res['message'] = 'SUCCESS';
+        $res['data'] = $data;
+
+        return $res;
+      }
+
+      $res['success'] = true;
+      $res['message'] = 'SUCCESS';
+      // $res['data'] = $message_data;
+
+      return $res;
+    }
 
     public function sendMessage(Request $request)
     {
@@ -204,4 +311,4 @@ class MessageController extends Controller
         }
       }
     }
-  
+

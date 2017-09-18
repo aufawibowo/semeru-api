@@ -97,6 +97,7 @@ class UserController extends Controller
       $hasher = app()->make('hash');
       $username = $request->input('username');
       $password = $request->input('password');
+      $firebase_token = $request->input('firebase_token');
 
       $login = DB::table('users')->select('*')->where('username','=',$username)->first();
 
@@ -128,9 +129,17 @@ class UserController extends Controller
               $data['user_type_name']=$check_rtpo->rtpo_name;
               $data['user_type_id']=$check_rtpo->rtpo_id;
               $data['rtpo_id']=$check_rtpo->rtpo_id;
-
               $api_token = sha1(time());
-              $create_token = DB::table('users')->where('id','=',$login->id)->update(['api_token' => $api_token]);
+              
+              $create_token = DB::table('users')
+              ->where('id','=',$login->id)
+              ->update(
+                [
+                  'api_token' => $api_token,
+                  'firebase_token' => $firebase_token
+                ]
+              );
+
               if ($create_token) {
                 $res['success'] = true;
                 $res['api_token'] = $api_token;

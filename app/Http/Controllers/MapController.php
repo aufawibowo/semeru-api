@@ -13,7 +13,7 @@ class MapController extends Controller
     // $data_mbp = DB::table('mbp')->select('*')->where('rtpo_id','=',$rtpo_id)->get();
     $data_mbp = DB::table('mbp')
     ->join('user_mbp', 'mbp.mbp_id', '=', 'user_mbp.mbp_id')
-    ->select('mbp.*','user_mbp.user_id')
+    ->select('mbp.mbp_id','mbp.rtpo_id','mbp.cluster_id','mbp.mbp_name',DB::raw('(case when (submission = "DELAY") then "DELAY" else mbp.status end) as status')/*,'mbp.status'*/,'mbp.latitude','mbp.longitude','user_mbp.user_id')
     ->where('rtpo_id','=',$rtpo_id)
     ->get();
 

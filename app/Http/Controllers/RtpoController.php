@@ -9,6 +9,7 @@ class RtpoController extends Controller
     $mbp_id = $request->input('mbp_id');
     $site_id = $request->input('site_id');
     $user_id = $request->input('user_id');
+    $fireBaseControlle = new FireBaseController;
 
 
       // fungsi cek apakah mbp atau site masih memungkinkan untuk di order
@@ -68,9 +69,15 @@ class RtpoController extends Controller
                   );
 
                   if ($insertSP) {
+                    // $datax = $this->$fireBaseController->sendNotification();
+
+                    $body = 'Anda ditugaskan menuju '.$site_result[0]['site_name'].'';
+                    $tittle = 'Anda ditugaskan menuju '.$site_result[0]['site_name'].'';
+                    $datax =$fireBaseControlle->sendNotification($tittle, $body);
+
                     $res['success'] = true;
                     $res['message'] = 'SUCCESS_INSERT_TO_DATABASE';
-          // $res['data'] = $data_site;
+                    $res['data'] =  $datax;
                     return response($res);
                   }else{
 
@@ -137,4 +144,67 @@ class RtpoController extends Controller
       return response($res);
     }
   }
+  public function cancelRequestMbpToSiteDown(Request $request){
+    /*
+    ketika rtpo membatalkan penugasan mbp terhadap site tertentu, maka :
+    > mbp status dirubah jadi available
+    > site allocation dirubah jadi '0'
+    > tabel sp di set cancel..:D*/
+
+    $mbp_id = $request->input('mbp_id');
+
+    $mbp_data = DB::table('mbp')
+    ->select('*')
+    ->where('mbp_id','=',$mbp_id)
+    ->first();
+
+    switch ($mbp_data->status) {
+      case "UNAVAILABLE":
+      // POPUP ANDA TIDAK SEDANG DITUGASKAN KARENA STATUS ANDA UNAVAILABLE
+      $res['success'] = false;
+      $res['message'] = 'YOUR_STATUS_UNAVAILABLE';
+      // $res['data'] =  $datax;
+      return response($res);
+      break;
+      case "AVAILABLE":
+      // POPUP ANDA TIDAK SEDANG DITUGASKAN KARENA STATUS ANDA AVAILABLE
+      $res['success'] = false;
+      $res['message'] = 'YOUR_STATUS_AVAILABLE';
+      // $res['data'] =  $datax;
+      return response($res);
+      break;
+      default:
+      // SET STATUS MBP KEMBALI KE AVAILABLE
+      // SET TABEL SP JADI CANCEL DAN DONE
+      // SET TABEL SITE MENJADI TIDAK DI ALOKASIKAN..:d
+      $tmp = $this->CancelRequestMbp($mbp_id);
+      return response($tmp);
+    }
+  }
+  public function CancelRequestMbp($mbp_id){
+
+    $mbp_data = DB::table('supplying_power')                        // jadikan finish = cancel
+    ->join('mbp', 'supplying_power.mbp_id', '=', 'mbp.mbp_id')      // jadikan mbp kembali available #sesuaikan status"nya
+    ->join('site', 'supplying_power.site_id', '=', 'site.site_id')  // jadikan status alokasinya jadi '0' kembali
+    ->where('supplying_power.mbp_id','=',$mbp_id)
+    ->where('supplying_power.finish','=',null)
+    ->update(
+      [
+        'supplying_power.finish' =>'CANCEL',
+        'supplying_power.date_finish' =>date('Y-m-d H:i:s'),
+        'mbp.status' =>'AVAILABLE',
+        'mbp.submission' =>null,
+        'mbp.submission_id' =>null,
+        'site.is_allocated' =>'0',
+      ]
+    );
+
+    if ($mbp_data) {
+      $res['success'] = true;
+      $res['message'] = 'SUCCESS';
+      // $res['data'] =  $datax;
+      return $res;
+    }
+  }
+
 }
