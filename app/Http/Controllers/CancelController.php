@@ -135,6 +135,9 @@ class CancelController extends Controller
       $mbp_id = $request->input('mbp_id');       //7
       $text_message = $request->input('text_message');
       $available_status = $request->input('available_status');
+      $active_at = $request->input('time');
+
+      // return response($tmp_active_at = date('Y-m-d H:i:s', strtotime($date_now.' + '.$active_at.' hours')));
 
       $CancellationLetter_data = DB::table('cancel_details')
       ->join('users', 'cancel_details.user_id_mbp', '=', 'users.id')
@@ -155,7 +158,7 @@ class CancelController extends Controller
             'from' => $user_id_mbp,
               // 'to' => $user_rtpo_data[$param]->id,
             'text_message' => $text_message,
-            'date_message' => $date_now,
+            'date_message' => $date_now.'',
           ]
         );
 
@@ -202,13 +205,17 @@ class CancelController extends Controller
                 ->where('user_id_mbp','=',$user_id_mbp)
                 ->first();
 
+                // $tmp_active_at = date( "Y-m-d H:i:s", strtotime( $timestamp_from_array ) + $active_at * 3600 );
+                $tmp_active_at = date('Y-m-d H:i:s', strtotime($date_now.' + '.$active_at.' hours'));
+
 
                 $editMbp = DB::table('mbp')
                 ->where('mbp_id', $mbp_id)
                 ->update(
                   [
                     'submission' => 'CANCEL',
-                    'submission_id' => $cd->id
+                    'submission_id' => $cd->id,
+                    'active_at' =>$tmp_active_at.'',
                   ]
                 );
 
@@ -258,7 +265,7 @@ class CancelController extends Controller
           }else{
             $res['success'] = false;
             $res['message'] = 'MESSAGE_DATA_NOT_FOUND';
-            DB::table('message')->where('id','=',$message_data->id)->delete();
+            // DB::table('message')->where('id','=',$message_data->id)->delete();
 
             return response($res);  
           }
@@ -285,6 +292,7 @@ class CancelController extends Controller
       $user_id_mbp = $request->input('user_id');       //7
       $mbp_id = $request->input('mbp_id');       //7
       $text_message = $request->input('text_message');
+      $active_at = $request->input('time');
       // $available_status = $request->input('available_status');
 
       $CancellationLetter_data = DB::table('cancel_details')
@@ -354,12 +362,15 @@ class CancelController extends Controller
                 ->first();
 
 
+                $tmp_active_at = date('Y-m-d H:i:s', strtotime($date_now.' + '.$active_at.' hours'));
+                
                 $editMbp = DB::table('mbp')
                 ->where('mbp_id', $mbp_id)
                 ->update(
                   [
                     'submission' => 'DELAY',
-                    'submission_id' => $cd->id
+                    'submission_id' => $cd->id,
+                    'active_at' =>$tmp_active_at,
                   ]
                 );
 
@@ -987,7 +998,7 @@ class CancelController extends Controller
     }
     public function sendUnavailableLetterToRtpo(Request $request){
       date_default_timezone_set("Asia/Jakarta");
-      $date_now = date('Y-m-d H:i:s');
+      $date_now =date('Y-m-d H:i:s');
 
 
       $rtpo_id = $request->input('rtpo_id');

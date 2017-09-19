@@ -10,8 +10,7 @@ class BtsController extends Controller
      *
      * URL /user/{id}
      */
-    public function get_bts_off(Request $request)
-    {
+    public function get_bts_off(Request $request){
 
       $btss = DB::table('bts')->select('*')->where('status','=','0')->get();
 

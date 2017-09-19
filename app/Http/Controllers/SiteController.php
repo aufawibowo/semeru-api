@@ -27,11 +27,9 @@ class SiteController extends Controller
       
       return response($btss);
     }
-
   }
-  
   public function getAllSiteDown(Request $request){
-      // $data_site = DB::table('site')->select('*')->where('status','=','0')->get();
+    // $data_site = DB::table('site')->select('*')->where('status','=','0')->get();
 
 
     $data_site = DB::table('site')
@@ -52,9 +50,7 @@ class SiteController extends Controller
       
       return response($btss);
     }
-
   }
-
   public function getMySite(Request $request){
 
 
@@ -82,9 +78,7 @@ class SiteController extends Controller
       
       return response($btss);
     }
-
   }
-
   public function getMySiteDown(Request $request){
 
 
@@ -111,6 +105,5 @@ class SiteController extends Controller
       
       return response($btss);
     }
-
   }
 }

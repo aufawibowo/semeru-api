@@ -33,7 +33,7 @@ class MbpController extends Controller
     // cek status mbp
     $mbp_data = DB::table('mbp')
     ->join('user_mbp', 'mbp.mbp_id', '=', 'user_mbp.mbp_id')
-    ->select('mbp.status','user_mbp.user_id','mbp.status','mbp.submission_id','mbp.submission')
+    ->select('mbp.status','user_mbp.user_id','mbp.status','mbp.active_at as time','mbp.submission_id','mbp.submission','mbp.active_at')
     ->where('mbp.mbp_id','=',$mbp_id)
     ->first();
 
@@ -62,6 +62,7 @@ class MbpController extends Controller
         // echo "Your favorite color is blue!";
         $data['status'] = $mbp_data->status;
         $data['user_id'] = $mbp_data->user_id;
+        $data['time'] = $mbp_data->active_at;
         $res['success'] = true;
         $res['message'] = 'SUCCESS';
         $res['data'] = $data;
@@ -128,7 +129,7 @@ class MbpController extends Controller
         ->join('user_mbp', 'users.id', '=', 'user_mbp.user_id')
         ->join('mbp', 'user_mbp.mbp_id', '=', 'mbp.mbp_id')
         ->join('message', 'cancel_details.message_id', '=', 'message.id')
-        ->select('cancel_details.id','mbp.mbp_name','users.name','message.id as message_id','message.text_message','message.subject','cancel_details.date','cancel_details.available_status','cancel_details.response_status')
+        ->select('cancel_details.id','mbp.mbp_name','mbp.active_at','users.name','message.id as message_id','message.text_message','message.subject','cancel_details.date','cancel_details.available_status','cancel_details.response_status','mbp.active_at')
         ->where('cancel_details.id','=',$cancel_id)
         ->where('mbp.submission','!=',null)
         ->first();   
@@ -142,6 +143,7 @@ class MbpController extends Controller
           $result['text_message'] = $CancellationLetter_data->text_message;
           $result['cancel_date'] = $CancellationLetter_data->date;
           $result['available_status'] = $CancellationLetter_data->available_status;
+          $result['time'] = $this->setDatedMYHis($CancellationLetter_data->active_at);
 
           $res['success'] = true;
           $res['message'] = 'SUCCESS';
@@ -157,6 +159,7 @@ class MbpController extends Controller
           $result['text_message'] = '';
           $result['cancel_date'] = '';
           $result['available_status'] = '';
+          $result['time'] = '';
 
           $res['success'] = true;
           $res['message'] = 'SUCCESS';
@@ -172,7 +175,7 @@ class MbpController extends Controller
       ->join('users', 'supplying_power.user_id', '=', 'users.id')
       ->join('site', 'supplying_power.site_id', '=', 'site.site_id')
       ->join('class', 'site.class_id', '=', 'class.class_id')
-      ->select('mbp.status','users.name as rtpo_username','site.site_name','site.latitude','site.longitude','class.class_name','mbp.latitude as mbp_latitude' ,'mbp.longitude as mbp_longitude','users.id as user_id', 'mbp.mbp_id')
+      ->select('mbp.status','users.name as rtpo_username','site.site_name','site.latitude','site.longitude','class.class_name','mbp.latitude as mbp_latitude' ,'mbp.longitude as mbp_longitude','users.id as user_id', 'mbp.mbp_id','mbp.active_at')
 
       ->where('supplying_power.finish','=', NULL)
       ->where('mbp.mbp_id','=',$mbp_id)
@@ -194,7 +197,7 @@ class MbpController extends Controller
         ->join('user_mbp', 'users.id', '=', 'user_mbp.user_id')
         ->join('mbp', 'user_mbp.mbp_id', '=', 'mbp.mbp_id')
         ->join('message', 'cancel_details.message_id', '=', 'message.id')
-        ->select('cancel_details.id','mbp.mbp_name','users.name','message.id as message_id','message.text_message','message.subject','cancel_details.date','cancel_details.available_status','cancel_details.response_status')
+        ->select('cancel_details.id','mbp.mbp_name','mbp.active_at','users.name','message.id as message_id','message.text_message','message.subject','cancel_details.date','cancel_details.available_status','cancel_details.response_status')
         ->where('cancel_details.id','=',$cancel_id)
         ->where('cancel_details.response_status','=',null)
         ->first();   
@@ -208,6 +211,7 @@ class MbpController extends Controller
           $result['text_message'] = $CancellationLetter_data->text_message;
           $result['cancel_date'] = $CancellationLetter_data->date;
           $result['available_status'] = $CancellationLetter_data->available_status;
+          $result['time'] = $this->setDatedMYHis($CancellationLetter_data->active_at);
 
           $res['success'] = true;
           $res['message'] = 'SUCCESS';
@@ -223,6 +227,7 @@ class MbpController extends Controller
           $result['text_message'] = '';
           $result['cancel_date'] = '';
           $result['available_status'] = '';
+          $result['time'] = '';
 
           $res['success'] = true;
           $res['message'] = 'SUCCESS';
@@ -260,6 +265,7 @@ class MbpController extends Controller
         $result['text_message'] = '';
         $result['cancel_date'] = '';
         $result['available_status'] = '';
+        $result['time'] = '';
 
         $res['success'] = true;
         $res['message'] = 'SUCCESS';
@@ -365,9 +371,12 @@ class MbpController extends Controller
 
       $mbp_data = DB::table('mbp')
       ->join('user_mbp', 'mbp.mbp_id', '=', 'user_mbp.mbp_id')
-      ->select('mbp.status','user_mbp.user_id')
+      ->select('mbp.status','mbp.mbp_name','mbp.rtpo_id','user_mbp.user_id')
       ->where('mbp.mbp_id','=',$mbp_id)
       ->first();
+
+      // $mbp_name = $mbp_data->mbp_name;
+      // $mbp_name = $mbp_data->mbp_name;
 
       if ($status=='ON_PROGRESS') {
 
@@ -445,16 +454,17 @@ class MbpController extends Controller
             ->join('user_mbp', 'users.id', '=', 'user_mbp.user_id')
             ->join('mbp', 'user_mbp.mbp_id', '=', 'mbp.mbp_id')
             ->join('message', 'cancel_details.message_id', '=', 'message.id')
-            ->select('cancel_details.id','mbp.mbp_name','users.name','message.id as message_id','message.text_message','message.subject','cancel_details.date','cancel_details.available_status')
-
+            ->select('cancel_details.id','mbp.mbp_name','mbp.active_at','users.name','message.id as message_id','message.text_message','message.subject','cancel_details.date','cancel_details.available_status')
             ->where('cancel_details.id','=',$data_mbp_task->submission_id)
             ->where('cancel_details.response_status','=',null)
+            // ->where('cancel_details.id','=',$cancel_id)
+            // ->where('mbp.submission','!=',null)
             ->first();
 
-            $fireBaseControlle = new FireBaseController;
-            $body = 'Status '.$data_mbp_task->mbp_name.' menuju site '.$data_mbp_task->site_name.' adalah '.$data_mbp_task->status.'';
-            $tittle = 'Status Penugasan terbaru '.$data_mbp_task->mbp_name.'';
-            $datax =$fireBaseControlle->sendNotification($tittle, $body);
+            // $fireBaseControlle = new FireBaseController;
+            // $body = 'Status '.$data_mbp_task->mbp_name.' menuju site '.$data_mbp_task->site_name.' adalah '.$data_mbp_task->status.'';
+            // $tittle = 'Status Penugasan terbaru '.$data_mbp_task->mbp_name.'';
+            // $datax =$fireBaseControlle->sendNotification($tittle, $body);
 
 
 
@@ -467,14 +477,23 @@ class MbpController extends Controller
               $result['text_message'] = $CancellationLetter_data->text_message;
               $result['cancel_date'] = $CancellationLetter_data->date;
               $result['available_status'] = $CancellationLetter_data->available_status;
+              $result['time'] = $CancellationLetter_data->active_at;
 
             // available_status
 
-              $res['success'] = true;
-              $res['message'] = 'SUCCESS';
-              $res['data'] = $result;
+              $notificationController = new NotificationController;
+              $tmp = $notificationController->setNotification0('MBP_STATUS_TO_SITE',$data_mbp_task->mbp_name,$data_mbp_task->site_name,$mbp_id,$status,$mbp_data->rtpo_id);
 
-              return response($res);
+              if ($tmp['message']=='SUCCESS') { 
+                $res['success'] = true;
+                $res['message'] = 'SUCCESS';
+                $res['data'] = $result;
+                return response($res);
+              }else{
+                // return response($tmp);
+                return response('1');
+              }
+
             }else{
 
               $result['submission_status'] = 'NOT_FOUND';
@@ -484,27 +503,42 @@ class MbpController extends Controller
               $result['text_message'] = '';
               $result['cancel_date'] = '';
               $result['available_status'] = '';
+              $result['time'] = '';
 
-              $res['success'] = true;
-              $res['message'] = 'SUCCESS';
-              $res['data'] = $result;
+              $notificationController = new NotificationController;
+              $tmp = $notificationController->setNotification0('MBP_STATUS_TO_SITE',$data_mbp_task->mbp_name,$data_mbp_task->site_name,$mbp_id,$status,$mbp_data->rtpo_id);
 
-              return response($res);
+              if ($tmp['message']=='SUCCESS') { 
+                $res['success'] = true;
+                $res['message'] = 'SUCCESS';
+                $res['data'] = $result;
+                return response($res);
+              }else{
+                return response('2');
+              }
             }
           }else{
             $res['success'] = false;
             $res['message'] = 'CANNOT_FIND_DATA';
-          // $res['data'] = $data_mbp_task;
+            // $res['data'] = $data_mbp_task;
 
             return response($res);
           }  
 
         }else{
-          $res['success'] = true;
-          $res['message'] = 'SUCCESS';
-          $res['data'] = $mbp_data;
 
-          return response($res);
+          $notificationController = new NotificationController;
+          $tmp = $notificationController->setNotification0('MBP_STATUS_TO_SITE',$mbp_data->mbp_name,'',$mbp_id,$status,$mbp_data->rtpo_id);
+
+          if ($tmp['message']=='SUCCESS') { 
+            $res['success'] = true;
+            $res['message'] = 'SUCCESS';
+            $res['data'] = $mbp_data;
+            return response($res);
+          }else{
+            return response('3');
+          }
+
         }
 
 
@@ -618,7 +652,7 @@ class MbpController extends Controller
       ->select('mbp.status','user_mbp.user_id')
       ->where('mbp.mbp_id','=',$mbp_id)
       ->first();
-  // fungsi create new suppliyinf power
+      // fungsi create new suppliyinf power
       $insertSP = DB::table('supplying_power')
       ->where('mbp_id', $mbp_id)
       ->where('finish', NULL)
@@ -867,6 +901,7 @@ class MbpController extends Controller
     $set_tatus = $request->input('set_status');
     $mbp_id = $request->input('mbp_id');
     $text_message = $request->input('text_message');
+    $active_at = $request->input('active_at');
 
     switch ($set_tatus) {
       case "ACTIVE":
@@ -880,6 +915,7 @@ class MbpController extends Controller
           'status' =>'AVAILABLE',
           'submission' =>null,
           'submission_id' =>null,
+          'active_at' =>null,
         ]
       );
 
@@ -900,7 +936,7 @@ class MbpController extends Controller
     // . membuat pesan dulu sebagai alasan kenapa dia jadi unavailable
     // . lalu membuat pemeberitahuan di tabel cancel,
     // . setelah semua terbuat, maka status dia di set unavailable
-      $act = $this->setStatustoUnavailable($mbp_id,$text_message);
+      $act = $this->setStatustoUnavailable($mbp_id, $text_message, $active_at);
       return response($act);
 
 
@@ -914,7 +950,7 @@ class MbpController extends Controller
         // echo "Your favorite color is neither red, blue, nor green!";
     }
   }
-  public function setStatustoUnavailable($mbp_id,$text_message){
+  public function setStatustoUnavailable($mbp_id, $text_message, $active_at){
 
     date_default_timezone_set("Asia/Jakarta");
     $date_now = date('Y-m-d H:i:s');
@@ -985,6 +1021,8 @@ class MbpController extends Controller
                   'status' =>'UNAVAILABLE',
                   'submission' =>'UNAVAILABLE',
                   'submission_id' =>$InformationUnavailable->id,
+                  'active_at' =>$active_at,
+
                 ]
               );
 
@@ -1040,7 +1078,7 @@ class MbpController extends Controller
     switch ($mbp_data->status) {
       case "UNAVAILABLE":
       $data['status'] = 'NOT_ACTIVE';
-      $data['time'] = '05.59';
+      $data['time'] = $this->setDatedMYHis($mbp_data->active_at);
 
       $res['success'] = true;
       $res['message'] = 'SUCCESS';
@@ -1080,11 +1118,91 @@ class MbpController extends Controller
 
     if ($mbp_data) {
 
+      switch ($mbp_data->status) {
+        case "AVAILABLE":
+        // echo "Your favorite color is red!";
+        $res['success'] = true;
+        $res['message'] = 'SUCCESS';
+        $res['data'] = $mbp_data;
+        return response($res);
+
+        break;
+        case "UNAVAILABLE":
+        // echo "Your favorite color is blue!";
+        // + alasan (V)
+        // - site tujuan
+        // + waktu dia akan aktif
+        $tmp = DB::table('mbp')
+        ->join('user_mbp', 'mbp.mbp_id', '=', 'user_mbp.mbp_id')
+        ->join('users', 'user_mbp.user_id', '=', 'users.id')
+        ->join('cancel_details', 'mbp.submission_id', '=', 'cancel_details.id')
+        ->join('message', 'cancel_details.message_id', '=', 'message.id')
+        // ->select(DB::raw('(case when (delay > "0") then "DELAY" else mbp.status end) as status'),'mbp.mbp_name','users.name','users.phone','mbp.latitude','mbp.longitude'/*,'mbp.mbp_name','mbp.mbp_name','mbp.mbp_name',*/)
+        ->select(DB::raw('(case when (submission = "DELAY") then "DELAY" else mbp.status end) as status'),'mbp.mbp_name','users.name','users.phone','mbp.latitude','mbp.longitude','message.subject','message.text_message','mbp.active_at')
+        ->where('mbp.mbp_id','=',$mbp_id)
+        ->first();
+
+        $data['status'] = $tmp->status;
+        $data['mbp_name'] = $tmp->mbp_name;
+        $data['name'] = $tmp->name;
+        $data['phone'] = $tmp->phone;
+        $data['latitude'] = $tmp->latitude;
+        $data['longitude'] = $tmp->longitude;
+        $data['subject'] = $tmp->subject;
+        $data['text_message'] = $tmp->text_message;
+        $data['time'] = $this->setDatedMYHis($tmp->active_at);
+
+        $res['success'] = true;
+        $res['message'] = 'SUCCESS';
+        $res['data'] = $data;
+        return response($res);
+        
+        break;
+        case "DELAY":
+        // echo "Your favorite color is green!";
+        // + alasan 
+        // + waktu delay
+        $tmp = DB::table('mbp')
+        ->join('user_mbp', 'mbp.mbp_id', '=', 'user_mbp.mbp_id')
+        ->join('users', 'user_mbp.user_id', '=', 'users.id')
+        ->join('cancel_details', 'mbp.submission_id', '=', 'cancel_details.id')
+        ->join('message', 'cancel_details.message_id', '=', 'message.id')
+        // ->select(DB::raw('(case when (delay > "0") then "DELAY" else mbp.status end) as status'),'mbp.mbp_name','users.name','users.phone','mbp.latitude','mbp.longitude'/*,'mbp.mbp_name','mbp.mbp_name','mbp.mbp_name',*/)
+        ->select(DB::raw('(case when (submission = "DELAY") then "DELAY" else mbp.status end) as status'),'mbp.mbp_name','users.name','users.phone','mbp.latitude','mbp.longitude','message.subject','message.text_message','mbp.active_at')
+        ->where('mbp.mbp_id','=',$mbp_id)
+        ->first();
+
+        $data['status'] = $tmp->status;
+        $data['mbp_name'] = $tmp->mbp_name;
+        $data['name'] = $tmp->name;
+        $data['phone'] = $tmp->phone;
+        $data['latitude'] = $tmp->latitude;
+        $data['longitude'] = $tmp->longitude;
+        $data['subject'] = $tmp->subject;
+        $data['text_message'] = $tmp->text_message;
+        $data['time'] = $this->setDatedMYHis($tmp->active_at);
+
+        $res['success'] = true;
+        $res['message'] = 'SUCCESS';
+        $res['data'] = $data;
+        return response($res);
+
+        break;
+        default:
+        // bekerja
+        // echo "Your favorite color is neither red, blue, nor green!";
+        $res['success'] = true;
+        $res['message'] = 'SUCCESS';
+        $res['data'] = $mbp_data;
+        return response($res);
+
+      }
+
       $res['success'] = true;
       $res['message'] = 'SUCCESS';
       $res['data'] = $mbp_data;
-
       return response($res);
+
     }else{
       $res['success'] = false;
       $res['message'] = 'CANNOT_FIND_DATA';
@@ -1092,5 +1210,14 @@ class MbpController extends Controller
       return response($res);
     }  
   }
-
+  public function setDatedMYHis($date){
+    if ($date==null) {
+      return "";
+    }else if ($date=='0000-00-00 00:00:00') {
+      return "";
+    }else{
+      return date("d-M-Y H:i:s", strtotime($date.''));
+        // return strtotime($date.'');
+    }
+  }
 }

@@ -10,8 +10,7 @@ class SupplyingPowerController extends Controller
      *
      * URL /user/{id}
      */
-    public function getListHistorySupplyingPower(Request $request)
-    {
+    public function getListHistorySupplyingPower(Request $request){
 
       // $type_approval = $request->input('type_approval');
       // $type_id = $request->input('type_id');
@@ -130,8 +129,6 @@ class SupplyingPowerController extends Controller
         return response($res);
       }
     }
-
-
     public function getDetailHistorySupplyingPower(Request $request){
 
       date_default_timezone_set("Asia/Jakarta");
@@ -144,7 +141,8 @@ class SupplyingPowerController extends Controller
       ->join('mbp', 'supplying_power.mbp_id', '=', 'mbp.mbp_id')
       ->join('site', 'supplying_power.site_id', '=', 'site.site_id')
       ->join('user_mbp', 'mbp.mbp_id', '=', 'user_mbp.mbp_id')
-      // // ->join('users', 'user_mbp.user_id', '=', 'users.id')
+      // // ->join('users', 'user_mbp.user_id', '=', 'users.id') DATE_FORMAT(NAME_COLUMN, "%d/%l/%Y %H:%i:%s") AS 'NAME'
+      // 'DATE_FORMAT(supplying_power.date_checkin, %d/%M/%Y %H:%i:%s) AS date_checkin'
         ->select('supplying_power.sp_id','users.name as rtpo_name','mbp.mbp_name', 'site.site_name'/*,'supplying_power.date_mainsfail'*/,'supplying_power.date_waiting','supplying_power.date_onprogress','supplying_power.date_checkin','supplying_power.date_finish','supplying_power.finish')
       // ->select('supplying_power.sp_id','users.name as person_in_charge','mbp.mbp_name', 'site.site_name','supplying_power.date_waiting','supplying_power.finish')
       ->where('supplying_power.sp_id','=',$sp_id)
@@ -160,19 +158,12 @@ class SupplyingPowerController extends Controller
         $data['rtpo_name'] = $btss->rtpo_name.'';
         $data['mbp_name'] = $btss->mbp_name.'';
         $data['site_name'] = $btss->site_name.'';
-        $data['date_waiting'] = date("d-M-Y H:i:s", strtotime($btss->date_waiting.''));
-        $data['date_onprogress'] = date("d-M-Y H:i:s", strtotime($btss->date_waiting.''));
-        $data['date_checkin'] = date("d-M-Y H:i:s", strtotime($btss->date_waiting.''));
-        $data['date_finish'] = date("d-M-Y H:i:s", strtotime($btss->date_waiting.''));
+        $data['date_waiting'] = $this->setDatedMYHis($btss->date_waiting.'');
+        $data['date_onprogress'] = $this->setDatedMYHis($btss->date_onprogress.'');
+        $data['date_checkin'] = $this->setDatedMYHis($btss->date_checkin.'')/*date("d-M-Y H:i:s", strtotime($btss->date_checkin.''))*/;
+        $data['date_finish'] = $this->setDatedMYHis($btss->date_finish.'');
         $data['finish'] = $btss->finish.'';
 
-        // $data[$param]['sp_id']        = $row['sp_id'];
-        // $data[$param]['sp_name']      = 'SP-'.$row['sp_id'];
-        // $data[$param]['rtpo_name']    = $row['person_in_charge'].'';
-        // $data[$param]['mbp_name']     = $row['mbp_name'].'';
-        // $data[$param]['site_name']    = $row['site_name'].'';
-        // $data[$param]['date_request'] = $newDate;
-        // $data[$param]['finish']       = $row['finish'].'';
 
         $res['success'] = true;
         $res['message'] = 'SUCCESS';
@@ -185,6 +176,16 @@ class SupplyingPowerController extends Controller
         $polys['message'] = 'CANNOT_FIND_DATA';
 
         return response($btss);
+      }
+    }
+    public function setDatedMYHis($date){
+      if ($date==null) {
+        return "";
+      }else if ($date=='0000-00-00 00:00:00') {
+        return "";
+      }else{
+        return date("d-M-Y H:i:s", strtotime($date.''));
+        // return strtotime($date.'');
       }
     }
   }

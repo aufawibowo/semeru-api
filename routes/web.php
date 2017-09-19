@@ -79,6 +79,39 @@ $app->post('/getStatusActiveNotActive', 'MbpController@getStatusActiveNotActive'
 $app->post('/changeStatusActiveNotActive', 'MbpController@changeStatusActiveNotActive');
 
 
+// FUNGSI UNTUK MENGAMBIL LIST NOTIFICASIONG
+// getListNotification
+$app->post('/getListNotification', 'NotificationController@getListNotification');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// setNotification
+$app->post('/setNotification', 'NotificationController@setNotification');
+
+
+
+
+
+
+
+
+
 
 
 

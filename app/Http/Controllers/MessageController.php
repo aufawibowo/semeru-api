@@ -27,37 +27,67 @@ class MessageController extends Controller
       return response($res);
     }
 
+    // public function getMessageDetil(Request $request){
+
+    //   $message_id = $request->input('message_id');
+
+    //   $message_data = DB::table('message')
+    //   ->select('*')
+    //   ->where('id','=',$message_id)
+    //   ->first();
+
+    //   switch ($message_data->subject) {
+    //     case "MBP_INFORMATION_UNAVAILABLE":
+    //     // echo "Your favorite color is red!";
+    //     $tmp = $this->getMessageDetilUnavailable($message_id);
+    //     return response($tmp);
+    //     break;
+    //     case "CANCEL":
+    //     // echo "Your favorite color is blue!";
+    //     $tmp = $this->getMessageDetilCancelDelay($message_id);
+    //     return response($tmp);
+    //     break;
+    //     case "DELAY":
+    //     // echo "Your favorite color is green!";
+    //     $tmp = $this->getMessageDetilCancelDelay($message_id);
+    //     return response($tmp);
+    //     break;
+    //     default:
+    //     // echo "Your favorite color is neither red, blue, nor green!";
+    //   }
+    // }
+
     public function getMessageDetil(Request $request){
 
-      $message_id = $request->input('message_id');
+      $cancel_id = $request->input('cancel_id');
 
       $message_data = DB::table('message')
+      ->join('cancel_details', 'message.id', '=', 'cancel_details.message_id')
       ->select('*')
-      ->where('id','=',$message_id)
+      ->where('cancel_details.id','=',$cancel_id)
       ->first();
 
       switch ($message_data->subject) {
         case "MBP_INFORMATION_UNAVAILABLE":
         // echo "Your favorite color is red!";
-        $tmp = $this->getMessageDetilUnavailable($message_id);
+        $tmp = $this->getMessageDetilUnavailable($cancel_id);
         return response($tmp);
         break;
         case "CANCEL":
         // echo "Your favorite color is blue!";
-        $tmp = $this->getMessageDetilCancelDelay($message_id);
+        $tmp = $this->getMessageDetilCancelDelay($cancel_id);
         return response($tmp);
         break;
         case "DELAY":
         // echo "Your favorite color is green!";
-        $tmp = $this->getMessageDetilCancelDelay($message_id);
+        $tmp = $this->getMessageDetilCancelDelay($cancel_id);
         return response($tmp);
         break;
         default:
         // echo "Your favorite color is neither red, blue, nor green!";
       }
     }
-
-    public function getMessageDetilCancelDelay($message_id){
+    public function getMessageDetilCancelDelay($cancel_id){
 
       // $message_id = $request->input('message_id');
 
@@ -73,7 +103,7 @@ class MessageController extends Controller
       ->select('mbp.mbp_name','site.site_name','users.name as operator_name','message.subject','message.text_message','cancel_details.available_status')
       ->where('cancel_details.response_status','=',NULL)
       ->where('supplying_power.finish', NULL)
-      ->where('message.id','=',$message_id)
+      ->where('cancel_details.id','=',$cancel_id)
       ->first();
 
       if ($CancellationLetter_data!=null) {
@@ -100,8 +130,7 @@ class MessageController extends Controller
 
       return $res;
     }
-
-    public function getMessageDetilUnavailable($message_id){
+    public function getMessageDetilUnavailable($cancel_id){
 
       // $message_id = $request->input('message_id');
 
@@ -117,7 +146,7 @@ class MessageController extends Controller
       ->select('mbp.mbp_name'/*,'site.site_name'*/,'users.name as operator_name','message.subject','message.text_message','cancel_details.available_status')
       ->where('cancel_details.response_status','=',NULL)
       // ->where('supplying_power.finish', NULL)
-      ->where('message.id','=',$message_id)
+      ->where('cancel_details.id','=',$cancel_id)
       ->first();
 
       if ($CancellationLetter_data!=null) {
@@ -151,9 +180,7 @@ class MessageController extends Controller
 
       return $res;
     }
-
-    public function sendMessage(Request $request)
-    {
+    public function sendMessage(Request $request){
 
       date_default_timezone_set("Asia/Jakarta");
       $subject = $request->input('subject');

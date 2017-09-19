@@ -71,14 +71,43 @@ class RtpoController extends Controller
                   if ($insertSP) {
                     // $datax = $this->$fireBaseController->sendNotification();
 
-                    $body = 'Anda ditugaskan menuju '.$site_result[0]['site_name'].'';
-                    $tittle = 'Anda ditugaskan menuju '.$site_result[0]['site_name'].'';
-                    $datax =$fireBaseControlle->sendNotification($tittle, $body);
+                    // $body = 'Anda ditugaskan menuju '.$site_result[0]['site_name'].'';
+                    // $tittle = 'Anda ditugaskan menuju '.$site_result[0]['site_name'].'';
+                    // $datax =$fireBaseControlle->sendNotification($tittle, $body);
 
-                    $res['success'] = true;
-                    $res['message'] = 'SUCCESS_INSERT_TO_DATABASE';
-                    $res['data'] =  $datax;
-                    return response($res);
+                    $notificationController = new NotificationController;
+                    $tmp = $notificationController->setNotification0('MBP_ASSIGNMENT_TO_SITE',$mbp_result[0]['mbp_name'].'',$site_result[0]['site_name'].'',$mbp_id,'','');
+
+                    if ($tmp['message']=='SUCCESS') { 
+                      $res['success'] = true;
+                      $res['message'] = 'SUCCESS_INSERT_TO_DATABASE';
+                      // $res['data'] =  $datax;
+                      return response($res);
+
+                    }else{
+
+
+                      $editMbp = DB::table('mbp')
+                      ->join('user_mbp', 'mbp.mbp_id', '=', 'user_mbp.mbp_id')
+                      ->where('mbp.mbp_id', $mbp_id)
+                      ->update(['status' => 'AVAILABLE']);
+
+
+                      $editSite = DB::table('site')
+                      ->where('site_id', $site_id)
+                      ->update(['is_allocated' => '0']);
+
+                      $editSite = DB::table('supplying_power')
+                      ->where('mbp_id', $mbp_id)
+                      ->where('site_id', $site_id)
+                      ->where('user_id', $user_id)
+                      ->where('finish', null)
+                      ->delete();
+
+                      return response($tmp);
+
+                    }
+
                   }else{
 
                     $editMbp = DB::table('mbp')
@@ -191,7 +220,7 @@ class RtpoController extends Controller
     ->update(
       [
         'supplying_power.finish' =>'CANCEL',
-        'supplying_power.date_finish' =>date('Y-m-d H:i:s'),
+        'supplying_power.date_finish' =>date('d-M-Y H:i:s'),
         'mbp.status' =>'AVAILABLE',
         'mbp.submission' =>null,
         'mbp.submission_id' =>null,
