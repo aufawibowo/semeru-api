@@ -12,6 +12,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 {
     use Authenticatable, Authorizable;
 
+    public $incrementing = false;//WAJIB atur false jika key bukan auto increment
     /**
      * The attributes that are mass assignable.
      *

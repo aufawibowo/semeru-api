@@ -11,6 +11,19 @@ class MessageController extends Controller
      * URL /user/{id}
      */
 
+
+    public function setDatedMYHis($date){
+      if ($date==null) {
+        return "-";
+      }else if ($date=='0000-00-00 00:00:00') {
+        return "-";
+      }else{
+        // return date("d-M-Y H:i:s", strtotime($date.''));
+        return date("d M Y, H:i", strtotime($date.''));
+        // return strtotime($date.'');
+      }
+    }
+
     public function getMessage(Request $request){
 
       $user_id = $request->input('user_id');
@@ -61,11 +74,14 @@ class MessageController extends Controller
 
       $cancel_id = $request->input('cancel_id');
 
-      $message_data = DB::table('message')
-      ->join('cancel_details', 'message.id', '=', 'cancel_details.message_id')
+      $message_data = DB::table('message as msg')
+      ->join('mbp_trouble as mtr', 'msg.date_message', 'mtr.send_date')
       ->select('*')
-      ->where('cancel_details.id','=',$cancel_id)
+      ->where('mtr.id','=',$cancel_id)
       ->first();
+
+      // $res['data'] = $message_data;
+      // return $res;
 
       switch ($message_data->subject) {
         case "MBP_INFORMATION_UNAVAILABLE":
@@ -89,29 +105,46 @@ class MessageController extends Controller
     }
     public function getMessageDetilCancelDelay($cancel_id){
 
-      // $message_id = $request->input('message_id');
-
-      $CancellationLetter_data = DB::table('cancel_details')
-      ->join('users', 'cancel_details.user_id_mbp', '=', 'users.id')
-      ->join('user_mbp', 'users.id', '=', 'user_mbp.user_id')
-      ->join('mbp', 'user_mbp.mbp_id', '=', 'mbp.mbp_id') 
-      ->join('message', 'cancel_details.message_id', '=', 'message.id')
-      ->join('supplying_power', 'cancel_details.sp_id', '=', 'supplying_power.sp_id')
-      ->join('site', 'supplying_power.site_id', '=', 'site.site_id')
-      ->join('class', 'site.class_id', '=', 'class.class_id')
-      
-      ->select('mbp.mbp_name','site.site_name','users.name as operator_name','message.subject','message.text_message','cancel_details.available_status')
-      ->where('cancel_details.response_status','=',NULL)
-      ->where('supplying_power.finish', NULL)
-      ->where('cancel_details.id','=',$cancel_id)
+      $CancellationLetter_data = DB::table('mbp_trouble as mtr')
+      ->join('mbp as m', 'mtr.mbp_id', 'm.mbp_id')
+      ->join('user_mbp as um', 'm.mbp_id', 'um.mbp_id')
+      ->join('users as u', 'um.username', 'u.username')
+      ->join('supplying_power as sp', 'mtr.sp_id', 'sp.sp_id')
+      ->join('site as s', 'sp.site_id', 's.site_id')
+      ->select('m.mbp_name','m.active_at as time','s.site_name','s.site_id','u.name as operator_name','mtr.request_to_unavailable as available_status', 'sp.user_rtpo_cn as ticket_by', 'mtr.cancel_image', 'mtr.desc', 'mtr.cancel_category','mtr.type')
+      ->where('mtr.id','=',$cancel_id)
       ->first();
+
+
+      if ($CancellationLetter_data->available_status==1) {
+        $available_status = 'UNAVAILABLE';
+      }else{
+        $available_status = 'AVAILABLE';
+      }
 
       if ($CancellationLetter_data!=null) {
 
+        $data['mbp_name'] = $CancellationLetter_data->mbp_name;
+        $data['time'] = $this->setDatedMYHis($CancellationLetter_data->time);
+        $data['ticket_by'] = $CancellationLetter_data->ticket_by;
+        $data['telegram_username'] = '';
+
+        // $data['time'] = $CancellationLetter_data->time;
+        $data['site_name'] = $CancellationLetter_data->site_name;
+        $data['code_name'] = $CancellationLetter_data->site_id;
+        $data['operator_name'] = $CancellationLetter_data->operator_name;
+        $data['subject'] = $CancellationLetter_data->type;
+        $data['text_message'] = $CancellationLetter_data->desc;
+        $data['available_status'] = $available_status;
+        // $data['image'] = @$image.'http://ichef.bbci.co.uk/wwfeatures/wm/live/1280_640/images/live/p0/14/pz/p014pzq8.jpg';
+        $data['image'] = @$CancellationLetter_data->cancel_image;
+        $data['desc'] = @$CancellationLetter_data->desc;
+        $data['cancel_category'] = @$CancellationLetter_data->cancel_category;
 
         $res['success'] = true;
         $res['message'] = 'SUCCESS';
-        $res['data'] = $CancellationLetter_data;
+        // $res['data'] = $CancellationLetter_data;
+        $res['data'] = $data;
 
         return $res;
       }else{
@@ -132,32 +165,38 @@ class MessageController extends Controller
     }
     public function getMessageDetilUnavailable($cancel_id){
 
-      // $message_id = $request->input('message_id');
 
-      $CancellationLetter_data = DB::table('cancel_details')
-      ->join('users', 'cancel_details.user_id_mbp', '=', 'users.id')
-      ->join('user_mbp', 'users.id', '=', 'user_mbp.user_id')
-      ->join('mbp', 'user_mbp.mbp_id', '=', 'mbp.mbp_id') 
-      ->join('message', 'cancel_details.message_id', '=', 'message.id')
-      // ->join('supplying_power', 'cancel_details.sp_id', '=', 'supplying_power.sp_id')
-      // ->join('site', 'supplying_power.site_id', '=', 'site.site_id')
-      // ->join('class', 'site.class_id', '=', 'class.class_id')
-      
-      ->select('mbp.mbp_name'/*,'site.site_name'*/,'users.name as operator_name','message.subject','message.text_message','cancel_details.available_status')
-      ->where('cancel_details.response_status','=',NULL)
-      // ->where('supplying_power.finish', NULL)
-      ->where('cancel_details.id','=',$cancel_id)
+      $CancellationLetter_data = DB::table('mbp_trouble as mtr')
+      ->join('mbp as m', 'mtr.mbp_id', 'm.mbp_id')
+      ->join('user_mbp as um', 'm.mbp_id', 'um.mbp_id')
+      ->join('users as u', 'um.username', 'u.username')
+
+      ->select('m.mbp_name'/*,'site.site_name'*/,'m.active_at','u.name as operator_name','mtr.available_status','mtr.cancel_image', 'mtr.desc', 'mtr.cancel_category')
+
+      ->where('mtr.id','=',$cancel_id)
       ->first();
+
+
+      if ($CancellationLetter_data->available_status==1) {
+        $available_status = 'UNAVAILABLE';
+      }else{
+        $available_status = 'AVAILABLE';
+      }
 
       if ($CancellationLetter_data!=null) {
 
         $data['mbp_name'] = $CancellationLetter_data->mbp_name;
         $data['site_name'] = '';
+        $data['code_name'] = '';
         $data['operator_name'] = $CancellationLetter_data->operator_name;
-        $data['subject'] = $CancellationLetter_data->subject;
-        $data['text_message'] = $CancellationLetter_data->text_message;
-        $data['available_status'] = $CancellationLetter_data->available_status;
-
+        $data['subject'] = $CancellationLetter_data->type;
+        $data['text_message'] = $CancellationLetter_data->desc;
+        $data['available_status'] = $available_status;
+        $data['time'] = $CancellationLetter_data->active_at;
+        // $data['image'] = @$image.'http://ichef.bbci.co.uk/wwfeatures/wm/live/1280_640/images/live/p0/14/pz/p014pzq8.jpg';
+        $data['image'] = @$CancellationLetter_data->cancel_image;
+        $data['desc'] = @$CancellationLetter_data->desc;
+        $data['cancel_category'] = @$CancellationLetter_data->cancel_category;
 
         $res['success'] = true;
         $res['message'] = 'SUCCESS';
@@ -232,7 +271,7 @@ class MessageController extends Controller
 
         // get data seluruh user yang rtpo_inya 'ini',. hehee
         $user_rtpo_data = DB::table('user_rtpo')
-        ->join('users', 'user_rtpo.user_id', '=', 'users.id')
+        ->join('users', 'user_rtpo.username', '=', 'users.username')
         ->join('rtpo', 'user_rtpo.rtpo_id', '=', 'rtpo.rtpo_id')
           ->select('users.id','rtpo.rtpo_name'/*,'users.token_firebase'*/) // asumsi nnti ada token firebase juga.. hehee..
           ->where('user_rtpo.rtpo_id','=',$to)
@@ -282,7 +321,7 @@ class MessageController extends Controller
 
         // get data seluruh user yang rtpo_inya 'ini',. hehee
           $user_rtpo_data = DB::table('user_rtpo')
-          ->join('users', 'user_rtpo.user_id', '=', 'users.id')
+          ->join('users', 'user_rtpo.username', '=', 'users.username')
           ->join('rtpo', 'user_rtpo.rtpo_id', '=', 'rtpo.rtpo_id')
           ->select('users.id','rtpo.rtpo_name'/*,'users.token_firebase'*/) // asumsi nnti ada token firebase juga.. hehee..
           ->where('users.user_type','=','RTPO')

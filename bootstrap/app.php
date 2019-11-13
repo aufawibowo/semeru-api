@@ -65,6 +65,7 @@ $app->singleton(
 
 $app->routeMiddleware([
     'auth' => App\Http\Middleware\Authenticate::class,
+    'api_token' => App\Http\Middleware\ApiTokenMiddleware::class,
 ]);
 
 /*
