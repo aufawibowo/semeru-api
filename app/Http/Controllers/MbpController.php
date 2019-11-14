@@ -902,16 +902,38 @@ class MbpController extends Controller
   public function getMbpArea (Request $request){
 
     $mbp_name = app('request')->input('keyword');
+    $page = $request->input('page');
+    $limit = 20;
+    $offset = ($page-1)*$limit;
+
     //id, name, name rtpo, fmc name, status mbp sekarang, latlong
     $MbpData = DB::table('mbp as mbp')
     ->select('mbp.mbp_id', 'user_mbp.username', 'mbp.mbp_name', 'mbp.status','mbp.latitude','mbp.longitude')
     ->join('user_mbp as user_mbp', 'mbp.mbp_id','=', 'user_mbp.mbp_id')
     ->where('mbp.mbp_name','like','%'.$mbp_name.'%')
+    ->offset($offset)
+    ->limit($limit)
     ->get();
+
+    //@aufawibowo: ini apa efektif?
+    $MbpDataTotal = DB::table('mbp as mbp')
+    ->select('mbp.mbp_id', 'user_mbp.username', 'mbp.mbp_name', 'mbp.status','mbp.latitude','mbp.longitude')
+    ->join('user_mbp as user_mbp', 'mbp.mbp_id','=', 'user_mbp.mbp_id')
+    ->where('mbp.mbp_name','like','%'.$mbp_name.'%')
+    ->count();
+
+    $totalPage = $MbpDataTotal / $limit;
+    if(is_float($totalPage)){
+      $totalPage = ceil($totalPage);
+    }
+    else{
+      $totalPage = floor($totalPage);
+    }
 
 		$res = [
 			'success' => 'OK',
-			'message' => 'Success',
+      'message' => 'Success',
+      'total_page' => $totalPage,
       'data' => $MbpData
     ];
 
@@ -922,17 +944,39 @@ class MbpController extends Controller
     //regional
     $regional = app('request')->input('regional');
     $mbp_name = app('request')->input('keyword');
+    $page = $request->input('page');
+    $limit = 20;
+    $offset = ($page-1)*$limit;
     if(empty($regional)) return $this->response_fail();
     //id, name, name rtpo, fmc name, status mbp sekarang, latlong
     $MbpData = DB::table('mbp as mbp')
-    ->select('mbp.mbp_id', 'mbp.mbp_name', 'mbp.fmc', 'mbp.status','mbp.latitude','mbp.longitude')
+    ->select('mbp.mbp_id', 'user_mbp.username', 'mbp.mbp_name', 'mbp.status','mbp.latitude','mbp.longitude')
+    ->join('user_mbp as user_mbp', 'mbp.mbp_id','=', 'user_mbp.mbp_id')
     ->where('mbp.regional','like','%'.$regional.'%')
     ->where('mbp.mbp_name','like','%'.$mbp_name.'%')
+    ->offset($offset)
+    ->limit($limit)
     ->get();
+
+    $MbpDataTotal = DB::table('mbp as mbp')
+    ->select('mbp.mbp_id', 'user_mbp.username', 'mbp.mbp_name', 'mbp.status','mbp.latitude','mbp.longitude')
+    ->join('user_mbp as user_mbp', 'mbp.mbp_id','=', 'user_mbp.mbp_id')
+    ->where('mbp.regional','like','%'.$regional.'%')
+    ->where('mbp.mbp_name','like','%'.$mbp_name.'%')
+    ->count();
+
+    $totalPage = $MbpDataTotal / $limit;
+    if(is_float($totalPage)){
+      $totalPage = ceil($totalPage);
+    }
+    else{
+      $totalPage = floor($totalPage);
+    }
 
 		$res = [
 			'success' => 'OK',
-			'message' => 'Success',
+      'message' => 'Success',
+      'total_page' => $totalPage,
       'data' => $MbpData
     ];
 
@@ -943,17 +987,39 @@ class MbpController extends Controller
 
     $ns_id = app('request')->input('ns_id');
     $mbp_name = app('request')->input('keyword');
-    if(empty($regional)) return $this->response_fail();
+    $page = $request->input('page');
+    $limit = 20;
+    $offset = ($page-1)*$limit;
+    if(empty($ns_id)) return $this->response_fail();
     //id, name, name rtpo, fmc name, status mbp sekarang, latlong
     $MbpData = DB::table('mbp as mbp')
-    ->select('mbp.mbp_id', 'mbp.ns_id','mbp.mbp_name', 'mbp.fmc', 'mbp.status','mbp.latitude','mbp.longitude')
+    ->select('mbp.mbp_id', 'user_mbp.username', 'mbp.mbp_name', 'mbp.status','mbp.latitude','mbp.longitude')
+    ->join('user_mbp as user_mbp', 'mbp.mbp_id','=', 'user_mbp.mbp_id')
     ->where('mbp.ns_id','=', $ns_id)
     ->where('mbp.mbp_name','like','%'.$mbp_name.'%')
+    ->offset($offset)
+    ->limit($limit)
     ->get();
+
+    $MbpDataTotal = DB::table('mbp as mbp')
+    ->select('mbp.mbp_id', 'user_mbp.username', 'mbp.mbp_name', 'mbp.status','mbp.latitude','mbp.longitude')
+    ->join('user_mbp as user_mbp', 'mbp.mbp_id','=', 'user_mbp.mbp_id')
+    ->where('mbp.ns_id','=', $ns_id)
+    ->where('mbp.mbp_name','like','%'.$mbp_name.'%')
+    ->count();
+
+    $totalPage = $MbpDataTotal / $limit;
+    if(is_float($totalPage)){
+      $totalPage = ceil($totalPage);
+    }
+    else{
+      $totalPage = floor($totalPage);
+    }
 
 		$res = [
 			'success' => 'OK',
-			'message' => 'Success',
+      'message' => 'Success',
+      'total_page' => $totalPage,
       'data' => $MbpData
     ];
 
@@ -964,18 +1030,41 @@ class MbpController extends Controller
 
     $rtpo_id = app('request')->input('rtpo_id');
     $mbp_name = app('request')->input('keyword');
-    if(empty($regional)) return $this->response_fail();
+    $page = $request->input('page');
+    $limit = 20;
+    $offset = ($page-1)*$limit;
+    if(empty($rtpo_id)) return $this->response_fail();
     //id, name, name rtpo, fmc name, status mbp sekarang, latlong
     $MbpData = DB::table('mbp as mbp')
-    ->select('mbp.mbp_id', 'mbp.mbp_name', 'rtpo.rtpo_name', 'mbp.fmc', 'mbp.status','mbp.latitude','mbp.longitude')
+    ->select('mbp.mbp_id', 'user_mbp.username', 'mbp.mbp_name', 'rtpo.rtpo_name','mbp.status','mbp.latitude','mbp.longitude')
+    ->join('user_mbp as user_mbp', 'mbp.mbp_id','=', 'user_mbp.mbp_id')
     ->join('rtpo as rtpo', 'rtpo.rtpo_id', '=', 'mbp.rtpo_id')
     ->where('mbp.rtpo_id','=', $rtpo_id)
     ->where('mbp.mbp_name','like','%'.$mbp_name.'%')
+    ->offset($offset)
+    ->limit($limit)
     ->get();
+
+    $MbpDataTotal = DB::table('mbp as mbp')
+    ->select('mbp.mbp_id', 'user_mbp.username', 'mbp.mbp_name', 'rtpo.rtpo_name','mbp.status','mbp.latitude','mbp.longitude')
+    ->join('user_mbp as user_mbp', 'mbp.mbp_id','=', 'user_mbp.mbp_id')
+    ->join('rtpo as rtpo', 'rtpo.rtpo_id', '=', 'mbp.rtpo_id')
+    ->where('mbp.rtpo_id','=', $rtpo_id)
+    ->where('mbp.mbp_name','like','%'.$mbp_name.'%')
+    ->count();
+
+    $totalPage = $MbpDataTotal / $limit;
+    if(is_float($totalPage)){
+      $totalPage = ceil($totalPage);
+    }
+    else{
+      $totalPage = floor($totalPage);
+    }
 
 		$res = [
 			'success' => 'OK',
-			'message' => 'Success',
+      'message' => 'Success',
+      'total_page' => $totalPage,
       'data' => $MbpData
     ];
 
@@ -2629,10 +2718,10 @@ class MbpController extends Controller
     // $delete_date = date('Y-m-d H:i:s',$delete_date_strtotime);
 
     $rtpo_id = $request->input('rtpo_id');
-    $page = $request->input('page');
     $search = $request->input('search');
     $filter = $request->input('filter');
-
+    
+    $page = $request->input('page');
     $limit = 20;
     $offset = ($page-1)*$limit;
 
