@@ -898,12 +898,14 @@ class MbpController extends Controller
     return response($MbpData);
   }
 
+  //start@aufawibowo
   public function getMbpArea (Request $request){
 
     $mbp_name = app('request')->input('keyword');
     //id, name, name rtpo, fmc name, status mbp sekarang, latlong
     $MbpData = DB::table('mbp as mbp')
-    ->select('mbp.mbp_id', 'mbp.mbp_name', 'mbp.fmc', 'mbp.status','mbp.latitude','mbp.longitude')
+    ->select('mbp.mbp_id', 'user_mbp.username', 'mbp.mbp_name', 'mbp.status','mbp.latitude','mbp.longitude')
+    ->join('user_mbp as user_mbp', 'mbp.mbp_id','=', 'user_mbp.mbp_id')
     ->where('mbp.mbp_name','like','%'.$mbp_name.'%')
     ->get();
 
@@ -979,6 +981,8 @@ class MbpController extends Controller
 
     return response($res);
   }
+  //end@aufawibowo
+
 
   public function updateLatLongMbp(Request $request){
 
