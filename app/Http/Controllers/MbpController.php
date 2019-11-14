@@ -903,8 +903,7 @@ class MbpController extends Controller
     $mbp_name = app('request')->input('keyword');
     //id, name, name rtpo, fmc name, status mbp sekarang, latlong
     $MbpData = DB::table('mbp as mbp')
-    ->select('mbp.mbp_id', 'mbp.mbp_name', 'rtpo.rtpo_name', 'mbp.fmc', 'mbp.status','mbp.latitude','mbp.longitude')
-    ->join('rtpo as rtpo', 'rtpo.rtpo_id', '=', 'mbp.rtpo_id')
+    ->select('mbp.mbp_id', 'mbp.mbp_name', 'mbp.fmc', 'mbp.status','mbp.latitude','mbp.longitude')
     ->where('mbp.mbp_name','like','%'.$mbp_name.'%')
     ->get();
 
@@ -924,8 +923,7 @@ class MbpController extends Controller
     if(empty($regional)) return $this->response_fail();
     //id, name, name rtpo, fmc name, status mbp sekarang, latlong
     $MbpData = DB::table('mbp as mbp')
-    ->select('mbp.mbp_id', 'mbp.mbp_name', 'rtpo.rtpo_name', 'mbp.fmc', 'mbp.status','mbp.latitude','mbp.longitude')
-    ->join('rtpo as rtpo', 'rtpo.rtpo_id', '=', 'mbp.rtpo_id')
+    ->select('mbp.mbp_id', 'mbp.mbp_name', 'mbp.fmc', 'mbp.status','mbp.latitude','mbp.longitude')
     ->where('mbp.regional','like','%'.$regional.'%')
     ->where('mbp.mbp_name','like','%'.$mbp_name.'%')
     ->get();
@@ -946,8 +944,7 @@ class MbpController extends Controller
     if(empty($regional)) return $this->response_fail();
     //id, name, name rtpo, fmc name, status mbp sekarang, latlong
     $MbpData = DB::table('mbp as mbp')
-    ->select('mbp.mbp_id', 'mbp.ns_id','mbp.mbp_name', 'rtpo.rtpo_name', 'mbp.fmc', 'mbp.status','mbp.latitude','mbp.longitude')
-    ->join('rtpo as rtpo', 'rtpo.rtpo_id', '=', 'mbp.rtpo_id')
+    ->select('mbp.mbp_id', 'mbp.ns_id','mbp.mbp_name', 'mbp.fmc', 'mbp.status','mbp.latitude','mbp.longitude')
     ->where('mbp.ns_id','=', $ns_id)
     ->where('mbp.mbp_name','like','%'.$mbp_name.'%')
     ->get();
