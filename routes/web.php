@@ -282,15 +282,6 @@ $app->post('/testCurl', 'FireBaseController@testCurl');/*(v)*/
 $app->post('/sendNotificationQueueTelegram', 'FireBaseController@sendNotificationQueueTelegram');/*(v)*/
 $app->post('/sendQueueNotificationFirebase', 'FireBaseController@sendQueueNotificationFirebase');/*(v)*/
 
-
-
-
-
-
-
-
-
-
 // getHistorySupplyingPower
 $app->post('/getListHistorySupplyingPower', 'SupplyingPowerController@getListHistorySupplyingPower');/*(v)*/
 $app->post('/getListHistorySupplyingPowerPaginate', 'SupplyingPowerController@getListHistorySupplyingPowerPaginate');
@@ -308,11 +299,8 @@ $app->post('/setEvidenceNumber', 'SupplyingPowerController@setEvidenceNumber');/
 $app->post('/getDetailHistorySupplyingPower', 'SupplyingPowerController@getDetailHistorySupplyingPower');/*(v)*/
 $app->post('/closeSPTicketAfter3Day', 'SupplyingPowerController@closeSPTicketAfter3Day');/*(v)*/
 
-
-
 // getDetailMbp
 $app->post('/getDetailMbp', 'MbpController@getDetailMbp');/*(v)*/
-
 
 // getAllSite
 $app->get('/getAllSite', 'SiteController@getAllSite'); 
@@ -329,8 +317,6 @@ $app->post('/getMySiteAll', 'SiteController@getMySiteAll');
 
 $app->post('/get_site_name', 'SiteController@get_site_name'); 
 
-
-
 // getMyMbp
 $app->get('/getAllMbp', 'MbpController@getAllMbp'); 
 $app->get('/getAllMbpOnProggress', 'MbpController@getAllMbpOnProggress'); 
@@ -340,12 +326,8 @@ $app->post('/getMyMbpPaginate', 'MbpController@getMyMbpPaginate');
 $app->post('/getMyMbpCPOPaginate', 'MbpController@getMyMbpCPOPaginate'); 
 $app->post('/getMyMbpNSPaginate', 'MbpController@getMyMbpNSPaginate'); 
 $app->post('/getMyMbpFMCPaginate', 'MbpController@getMyMbpFMCPaginate'); 
-
 $app->post('/getMyMbpCPO', 'MbpController@getMyMbpCPO'); 
 $app->post('/getMyMbpNS', 'MbpController@getMyMbpNS'); 
-
-
-
 $app->post('/getMyMbpOnProgress', 'MbpController@getMyMbpOnProgress'); 
 $app->post('/getMyMbpAvailable', 'MbpController@getMyMbpAvailable'); 
 $app->post('/getMyMbpWaiting', 'MbpController@getMyMbpWaiting'); 
@@ -386,28 +368,16 @@ $app->post('/getSiteRecomendationDistancePaginate', 'RecommendationController@ge
 // getETAandDistanceMbpToSite
 $app->post('/getETAandDistanceMbpToSite', 'RecommendationController@getETAandDistanceMbpToSite');
 
-
-
-// fungsi rekomendasi lvl 1
-
-
-// fungsi rekomendasi lvl 2
-
-
-
 // getMyMbpCategory
 $app->post('/getMyMbpCategory', 'MbpController@getMyMbpCategory'); 
-
 
 // sendMessage
 $app->post('/sendMessage', 'MessageController@sendMessage'); 
 // getMessage
 $app->post('/getMessage', 'MessageController@getMessage'); 
 
-
 // acceptCancellationLetterfromMbp
 $app->post('/acceptCancellationLetterfromMbp', 'CancelController@acceptCancellationLetterfromMbp'); 
-
 
 // acceptCancel
 $app->post('/approvedTheCancellationLetter', 'CancelController@approvedTheCancellationLetter'); 
@@ -447,9 +417,6 @@ $app->post('/updateSiteDownJatim', 'SiteController@updateSiteDownJatim');
 $app->post('/updateSiteDownJateng', 'SiteController@updateSiteDownJateng');
 $app->post('/updateSiteDownBali', 'SiteController@updateSiteDownBali');
 $app->get('/getSiteDownJateng', 'SiteController@getSiteDownJateng');
-
-
-
 
 // listCategoryCorrective
 $app->post('/listCategoryCorrective', 'CorrectiveController@listCategoryCorrective');
@@ -535,11 +502,6 @@ $app->get('/cek_om', 'ConfigAppController@cek_om');
 $app->post('/get_xml_ready_GS', 'ConfigAppController@get_xml_sparepart');
 $app->post('/get_return_xml_GS', 'ConfigAppController@get_return_xml_GS');
 
-
-
-
-
-
 // set_topic
 $app->post('/set_topic', 'ConfigAppController@set_topic');
 
@@ -616,8 +578,6 @@ $app->post('/upgradeTicketCorrectiveByFmc', 'CorrectiveController@upgradeTicketC
 
 $app->post('/responUpgradeCorrective', 'CorrectiveController@responUpgradeCorrective');
 
-
-
 // getLastVersion
 $app->post('/getLastVersion', 'ConfigAppController@getLastVersion');
 // getHistoryVersion
@@ -634,8 +594,6 @@ $app->post('/UpdateSyncSP', 'SupplyingPowerController@UpdateSyncSP');
 
 // updateDataSpAdn
 $app->post('/updateDataSpAdn', 'SupplyingPowerController@updateDataSpAdn');
-
-
 
 // setMbpTrouble
 $app->post('/setMbpTrouble', 'CancelController@setMbpTrouble');
@@ -687,7 +645,6 @@ $app->post('/getMbpSiteDownCPO', 'MapController@getMbpSiteDownCPO');
 $app->post('/getMbpSiteDownNS', 'MapController@getMbpSiteDownNS');
 
 $app->post('/misiPenyelamatanDataMbp', 'MbpController@misiPenyelamatanDataMbp');
-
 
 // AGUS 2019
 
@@ -745,15 +702,11 @@ $app->post('/submitValueSP', 'SupplyingPowerController@submitValueSP');
 $app->post('/autocloseSP', 'SupplyingPowerController@autocloseSP');
 $app->post('/submitTiketTidakDikerjakan', 'SupplyingPowerController@submitTiketTidakDikerjakan');
 $app->post('/loggingSPAutoClose', 'SupplyingPowerController@loggingSPAutoClose');
-
 $app->post('/getListNS', 'DashboardController@getListNS');
-
 $app->post('/updateRescheduleSIK', 'RtpoController@updateRescheduleSIK');
 $app->post('/getProposeRescheduleSIK', 'RtpoController@getProposeRescheduleSIK');
-
 $app->post('/changePIN', 'UserController@changePIN');
 $app->post('/resetPIN', 'UserController@resetPIN');
-
 $app->post('/tesHitungSLA', 'SupplyingPowerController@tesHitungSLA');
 $app->post('/storeImage', 'SupplyingPowerController@storeImage');
 $app->post('/getImageSP', 'SupplyingPowerController@getImageSP');
@@ -773,17 +726,11 @@ $app->get('api/test', ['middleware' => 'api_token', function () {
 }]);
 
 $app->group(['prefix' => 'api'], function () use ($app) {
-    
     $app->post('/auth/get_otp', 'Api\AuthController@get_otp');
     $app->post('/auth/login', 'Api\AuthController@login');
-
     $app->get('/supplying_power/fix_meet_sla', 'Api\QueryController@sp_fix_meet_sla');
-    $app->post('/supplying_power/fix_meet_sla', 'Api\QueryController@sp_fix_meet_sla');
-
-    
-
+    $app->post('/supplying_power/fix_meet_sla', 'Api\QueryController@sp_fix_meet_sla');  
     $app->group(['middleware'=>'api_token'], function () use ($app) {
-
     	//ambil data untuk dashboard
 	    $app->post('/get_home_content', 'Api\DashboardController@get_data');
 	    $app->post('/get_dashboard_data', 'Api\DashboardController@get_data_filter');
@@ -799,9 +746,7 @@ $app->group(['prefix' => 'api'], function () use ($app) {
         $app->post('/get_mbp_rtpo', 'MbpController@getMbpRtpo');
         $app->post('/get_detail_mbp', 'MbpController@getDetailMbp');
     });
-
     $app->post('/sp/create_ticket', 'Api\SupplyingPowerController@create_ticket');
-    
 });
 
 
