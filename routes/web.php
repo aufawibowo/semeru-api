@@ -107,9 +107,9 @@ $app->post('/misiPenyelamatanDataMbp', 'MbpController@misiPenyelamatanDataMbp');
 /*cek pengiriman notif*/$app->post('/sendCancellationLetterToRtpoNew', 'CancelController@sendCancellationLetterToRtpoNew'); 
 //. dan bila mbp ingin membatalkan pengajuannya, maka tinggal di delete aja dan tidak muncul di halaman rtpo
 /*cek pengiriman notif*/$app->post('/deleteCancellationLetterFromMbp1', 'CancelController@deleteCancellationLetterFromMbp1');
-/*cek pengiriman notif*/$app->post('/deleteCancellationLetterFromMbp', 'CancelController@deleteCancellationLetterFromMbp');/*(v)*/
+/*cek pengiriman notif*/$app->post('/deleteCancellationLetterFromMbp', 'CancelController@deleteCancellationLetterFromMbp');
 // rtpo bisa melihat list pengajuan pembatalan dari mbp-mbpnya (bila sudah di lakukan aksi pada pesan tersebut maka tinggal di beri flag)
-$app->post('/deleteCancellationLetterFromMbpTest', 'CancelController@deleteCancellationLetterFromMbpTest');/*(v)*/
+$app->post('/deleteCancellationLetterFromMbpTest', 'CancelController@deleteCancellationLetterFromMbpTest');
 
 
 $app->post('/getCancellationLetter1', 'CancelController@getCancellationLetter1');
@@ -119,8 +119,8 @@ $app->post('/getCancellationLetterPaginate', 'CancelController@getCancellationLe
 $app->post('/getMessageDetil1', 'MessageController@getMessageDetil1'); 
 $app->post('/getMessageDetil', 'MessageController@getMessageDetil'); 
 // disini merupakan aksi untuk melakukan persetujuan atau tidak menyetujui dengan yang di ajukan mbp 
-/*cek pengiriman notif*/$app->post('/cancellationStatementRtpo1', 'CancelController@cancellationStatementRtpo1'); /*(v)*/
-/*cek pengiriman notif*/$app->post('/cancellationStatementRtpo', 'CancelController@cancellationStatementRtpo'); /*(v)*/
+/*cek pengiriman notif*/$app->post('/cancellationStatementRtpo1', 'CancelController@cancellationStatementRtpo1'); 
+/*cek pengiriman notif*/$app->post('/cancellationStatementRtpo', 'CancelController@cancellationStatementRtpo'); 
 
 
 //-> fungsi untuk mbp melakukan pemberitahuan delay -> rtpo memberikan aksi terhadap pengajuan tersebut (di genti dan dibatalkan / di)
@@ -130,10 +130,10 @@ $app->post('/getMessageDetil', 'MessageController@getMessageDetil');
 // rtpo bisa melihat list pengajuan pembatalan dari mbp-mbpnya (bila sudah di lakukan aksi pada pesan tersebut maka tinggal di beri flag)
 $app->post('/getCancellationLetter', 'CancelController@getCancellationLetter');  
 // fungsi ini digunakan mbp bila delay yang mereka rasakan telah usai
-/*cek pengiriman notif*/$app->post('/finishDelayFromMbp', 'CancelController@finishDelayFromMbp');/*(v)*/ //belim mencantumkan nama mbp
+/*cek pengiriman notif*/$app->post('/finishDelayFromMbp', 'CancelController@finishDelayFromMbp'); //belim mencantumkan nama mbp
 // delayStatementRtpo
-/*cek pengiriman notif*/$app->post('/delayStatementRtpo1', 'CancelController@delayStatementRtpo1');/*(v)*/
-/*cek pengiriman notif*/$app->post('/delayStatementRtpo', 'CancelController@delayStatementRtpo');/*(v)*/
+/*cek pengiriman notif*/$app->post('/delayStatementRtpo1', 'CancelController@delayStatementRtpo1');
+/*cek pengiriman notif*/$app->post('/delayStatementRtpo', 'CancelController@delayStatementRtpo');
 
 
 //-> MELIHAT STATUS AKTIF DAN  TIDAK AKTIF DARI MBP -> DIA MERUBAH STATUSNYA SENDIRI
@@ -261,46 +261,46 @@ $app->post('/CheckExpiredSos', 'CheckingController@CheckExpiredSos');
 
 
 // sendNotification
-$app->post('/sendNotification', 'FireBaseController@sendNotification');/*(v)*/
-$app->get('/sendNotificationTelegram', 'FireBaseController@sendNotificationTelegram');/*(v)*/
-$app->get('/move_zip', 'FireBaseController@move_zip');/*(v)*/
+$app->post('/sendNotification', 'FireBaseController@sendNotification');
+$app->get('/sendNotificationTelegram', 'FireBaseController@sendNotificationTelegram');
+$app->get('/move_zip', 'FireBaseController@move_zip');
 // delete_zip
-$app->get('/delete_zip', 'FireBaseController@delete_zip');/*(v)*/
-$app->get('/delete_xml', 'FireBaseController@delete_xml');/*(v)*/
-$app->get('/proccess_zip_img', 'FireBaseController@proccess_zip_img');/*(v)*/
-$app->get('/proccess_zip_img_GS', 'FireBaseController@proccess_zip_img_GS');/*(v)*/
+$app->get('/delete_zip', 'FireBaseController@delete_zip');
+$app->get('/delete_xml', 'FireBaseController@delete_xml');
+$app->get('/proccess_zip_img', 'FireBaseController@proccess_zip_img');
+$app->get('/proccess_zip_img_GS', 'FireBaseController@proccess_zip_img_GS');
 
-$app->get('/delete_zip_image', 'FireBaseController@delete_zip_image');/*(v)*/
+$app->get('/delete_zip_image', 'FireBaseController@delete_zip_image');
 // download_img
 
 
 // sendNotificationTelegram
 // sendNotificationTest
-$app->post('/sendNotificationTest', 'FireBaseController@sendNotificationTest');/*(v)*/
+$app->post('/sendNotificationTest', 'FireBaseController@sendNotificationTest');
 // testCurl
-$app->post('/testCurl', 'FireBaseController@testCurl');/*(v)*/
-$app->post('/sendNotificationQueueTelegram', 'FireBaseController@sendNotificationQueueTelegram');/*(v)*/
-$app->post('/sendQueueNotificationFirebase', 'FireBaseController@sendQueueNotificationFirebase');/*(v)*/
+$app->post('/testCurl', 'FireBaseController@testCurl');
+$app->post('/sendNotificationQueueTelegram', 'FireBaseController@sendNotificationQueueTelegram');
+$app->post('/sendQueueNotificationFirebase', 'FireBaseController@sendQueueNotificationFirebase');
 
 // getHistorySupplyingPower
-$app->post('/getListHistorySupplyingPower', 'SupplyingPowerController@getListHistorySupplyingPower');/*(v)*/
+$app->post('/getListHistorySupplyingPower', 'SupplyingPowerController@getListHistorySupplyingPower');
 $app->post('/getListHistorySupplyingPowerPaginate', 'SupplyingPowerController@getListHistorySupplyingPowerPaginate');
 
-$app->post('/getListHistorySupplyingPowerNS', 'SupplyingPowerController@getListHistorySupplyingPowerNS');/*(v)*/
+$app->post('/getListHistorySupplyingPowerNS', 'SupplyingPowerController@getListHistorySupplyingPowerNS');
 $app->post('/getListHistorySupplyingPowerNSPaginate', 'SupplyingPowerController@getListHistorySupplyingPowerNSPaginate');
-$app->post('/getListHistorySupplyingPowerCPO', 'SupplyingPowerController@getListHistorySupplyingPowerCPO');/*(v)*/
+$app->post('/getListHistorySupplyingPowerCPO', 'SupplyingPowerController@getListHistorySupplyingPowerCPO');
 $app->post('/getListHistorySupplyingPowerCPOPaginate', 'SupplyingPowerController@getListHistorySupplyingPowerCPOPaginate');
 
 // getListHistorySupplyingPowerRtpo
-$app->post('/getListHistorySupplyingPowerRtpo', 'SupplyingPowerController@getListHistorySupplyingPowerRtpo');/*(v)*/
+$app->post('/getListHistorySupplyingPowerRtpo', 'SupplyingPowerController@getListHistorySupplyingPowerRtpo');
 // setEvidenceNumber
-$app->post('/setEvidenceNumber', 'SupplyingPowerController@setEvidenceNumber');/*(v)*/
+$app->post('/setEvidenceNumber', 'SupplyingPowerController@setEvidenceNumber');
 // getDetailHistorySupplyingPower
-$app->post('/getDetailHistorySupplyingPower', 'SupplyingPowerController@getDetailHistorySupplyingPower');/*(v)*/
-$app->post('/closeSPTicketAfter3Day', 'SupplyingPowerController@closeSPTicketAfter3Day');/*(v)*/
+$app->post('/getDetailHistorySupplyingPower', 'SupplyingPowerController@getDetailHistorySupplyingPower');
+$app->post('/closeSPTicketAfter3Day', 'SupplyingPowerController@closeSPTicketAfter3Day');
 
 // getDetailMbp
-$app->post('/getDetailMbp', 'MbpController@getDetailMbp');/*(v)*/
+$app->post('/getDetailMbp', 'MbpController@getDetailMbp');
 
 // getAllSite
 $app->get('/getAllSite', 'SiteController@getAllSite'); 
@@ -745,6 +745,18 @@ $app->group(['prefix' => 'api'], function () use ($app) {
         $app->post('/get_mbp_ns', 'MbpController@getMbpNS');
         $app->post('/get_mbp_rtpo', 'MbpController@getMbpRtpo');
         $app->post('/get_detail_mbp', 'MbpController@getDetailMbp');
+
+        //
+        //$app->post('/get_list_history_supplying_power', 'SupplyingPowerController@getListHistorySupplyingPower');
+        $app->post('/get_list_history_supplying_power', 'SupplyingPowerController@get_list_history_supplying_power');
+        $app->post('/get_list_history_supplying_power_paginate', 'SupplyingPowerController@get_list_history_supplying_power_paginate');
+        $app->post('/get_list_history_supplying_power_ns', 'SupplyingPowerController@getListHistorySupplyingPowerNS');
+        $app->post('/get_list_history_supplying_power_ns_paginate', 'SupplyingPowerController@getListHistorySupplyingPowerNSPaginate');
+        $app->post('/get_list_history_supplying_power_cpo', 'SupplyingPowerController@getListHistorySupplyingPowerCPO');
+        $app->post('/get_list_history_supplying_power_cpo_paginate', 'SupplyingPowerController@getListHistorySupplyingPowerCPOPaginate');
+
+        // getListHistorySupplyingPowerRtpo
+        $app->post('/get_list_history_supplying_power_rtpo', 'SupplyingPowerController@getListHistorySupplyingPowerRtpo');
     });
     $app->post('/sp/create_ticket', 'Api\SupplyingPowerController@create_ticket');
 });
