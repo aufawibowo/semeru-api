@@ -772,8 +772,6 @@ $app->get('api/test', ['middleware' => 'api_token', function () {
     echo "work";
 }]);
 
-
-
 $app->group(['prefix' => 'api'], function () use ($app) {
     
     $app->post('/auth/get_otp', 'Api\AuthController@get_otp');
@@ -799,6 +797,7 @@ $app->group(['prefix' => 'api'], function () use ($app) {
         $app->post('/get_mbp_regional', 'MbpController@getMbpRegional');
         $app->post('/get_mbp_ns', 'MbpController@getMbpNS');
         $app->post('/get_mbp_rtpo', 'MbpController@getMbpRtpo');
+        $app->post('/get_detail_mbp', 'MbpController@getDetailMbp');
     });
 
     $app->post('/sp/create_ticket', 'Api\SupplyingPowerController@create_ticket');
