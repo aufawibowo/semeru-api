@@ -749,7 +749,6 @@ $app->group(['prefix' => 'api'], function () use ($app) {
         //
         //$app->post('/get_list_history_supplying_power', 'SupplyingPowerController@getListHistorySupplyingPower');
         $app->post('/get_list_history_supplying_power', 'SupplyingPowerControllerNew@get_list_history_supplying_power');
-        $app->post('/get_list_history_supplying_power_paginate', 'SupplyingPowerControllerNew@get_list_history_supplying_power_paginate');
         $app->post('/get_list_history_supplying_power_area', 'SupplyingPowerControllerNew@get_list_history_supplying_power_area');
         $app->post('/get_list_history_supplying_power_area_paginate', 'SupplyingPowerControllerNew@get_list_history_supplying_power_area_paginate');
         $app->post('/get_list_history_supplying_power_ns', 'SupplyingPowerControllerNew@get_list_history_supplying_power_ns');
