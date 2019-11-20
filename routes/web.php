@@ -735,7 +735,6 @@ $app->group(['prefix' => 'api'], function () use ($app) {
 	    $app->post('/get_home_content', 'Api\DashboardController@get_data');
 	    $app->post('/get_dashboard_data', 'Api\DashboardController@get_data_filter');
 	    $app->post('/get_dashboard_filter', 'Api\DashboardController@get_filter');
-
 	    //concern
 	    $app->post('/concern/submit','Api\ConcernController@submit_concern');
 
