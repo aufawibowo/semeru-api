@@ -753,8 +753,8 @@ $app->group(['prefix' => 'api'], function () use ($app) {
         $app->post('/get_list_history_supplying_power_area_paginate', 'SupplyingPowerControllerNew@get_list_history_supplying_power_area_paginate');
         $app->post('/get_list_history_supplying_power_ns', 'SupplyingPowerControllerNew@get_list_history_supplying_power_ns');
         $app->post('/get_list_history_supplying_power_ns_paginate', 'SupplyingPowerControllerNew@get_list_history_supplying_power_ns_paginate');
-        $app->post('/get_list_history_supplying_power_cpo', 'SupplyingPowerControllerNew@getListHistorySupplyingPowerCPO');
-        $app->post('/get_list_history_supplying_power_cpo_paginate', 'SupplyingPowerControllerNew@getListHistorySupplyingPowerCPOPaginate');
+        $app->post('/get_list_history_supplying_power_cpo', 'SupplyingPowerControllerNew@get_list_history_supplying_power_cpo');
+        $app->post('/get_list_history_supplying_power_cpo_paginate', 'SupplyingPowerControllerNew@get_list_history_supplying_power_cpo_paginate');
 
         // getListHistorySupplyingPowerRtpo
         $app->post('/get_list_history_supplying_power_rtpo', 'SupplyingPowerController@getListHistorySupplyingPowerRtpo');
