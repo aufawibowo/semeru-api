@@ -360,13 +360,284 @@ class SupplyingPowerControllerNew extends Controller{
 		}
   }
 
+  public function get_list_history_supplying_power_area(Request $request){
+
+    date_default_timezone_set("Asia/Jakarta");
+
+    $btss = DB::table('supplying_power as sp')
+          ->join('users as u', 'sp.user_id', '=', 'u.id')
+          ->join('mbp as m', 'sp.mbp_id', '=', 'm.mbp_id')
+          ->join('site as s', 'sp.site_id', '=', 's.site_id')
+          ->join('supplying_power_log as spl', 'spl.sp_id', '=', 'sp.sp_id')
+          ->select('sp.sp_id', 'sp.unique_id', 's.site_name', 's.site_id', 'spl.status')
+          ->where('sp.finish','!=',NULL)
+          ->orderBy('sp.sp_id', 'desc')
+          ->limit(50)
+          ->get();
+
+    $result = json_decode($btss, true);
+    if ($result==NULL) {
+      $res['success'] = true;
+      $res['message'] = 'SUCCESS';
+      $res['data'] = $btss;
+      return response($res);
+    }
+
+    foreach ($result as $param => $row) {
+      $data[$param]['sp_id']        = $row['sp_id'];
+      $data[$param]['unique_id']    = $row['unique_id'];
+      $data[$param]['site_name']    = $row['site_name'];
+      $data[$param]['site_id']      = $row['site_id'];
+      $data[$param]['status']       = $row['status'];
+    }
+
+    if ($btss) {
+      $res['success'] = true;
+      $res['message'] = 'SUCCESS';
+      $res['data'] = $data;
+
+      return response($res);
+    }
+
+  }
+
+  public function get_list_history_supplying_power_area_paginate(Request $request){
+
+    date_default_timezone_set("Asia/Jakarta");
+
+    $page = $request->input('page');
+    $search = $request->input('search');
+
+    $limit = 20;
+    $offset = ($page-1)*$limit;
+
+    $btss = DB::table('supplying_power as sp')
+    ->join('users as u', 'sp.user_id', '=', 'u.id')
+    ->join('mbp as m', 'sp.mbp_id', '=', 'm.mbp_id')
+    ->join('site as s', 'sp.site_id', '=', 's.site_id')
+    ->join('supplying_power_log as spl', 'spl.sp_id', '=', 'sp.sp_id')
+    ->select('sp.sp_id', 'sp.unique_id', 's.site_name', 's.site_id', 'spl.status')
+    ->where('sp.finish','!=',NULL)
+    ->whereraw('(sp.site_id like "%'.$search.'%" or s.site_name like "%'.$search.'%")')
+    ->offset($offset)
+    ->limit($limit)
+    ->orderBy('sp.sp_id', 'desc')
+    ->get();
+
+    $result = json_decode($btss, true);
+    if ($result==NULL) {
+      $res['success'] = true;
+      $res['message'] = 'SUCCESS';
+      $res['data'] = $btss;
+      return response($res);
+    }
+
+    foreach ($result as $param => $row) {
+      $data[$param]['sp_id']        = $row['sp_id'];
+      $data[$param]['unique_id']    = $row['unique_id'];
+      $data[$param]['site_name']    = $row['site_name'];
+      $data[$param]['site_id']      = $row['site_id'];
+      $data[$param]['status']       = $row['status'];
+    }
+
+    if ($btss) {
+      $res['success'] = true;
+      $res['message'] = 'SUCCESS';
+      $res['data'] = $data;
+
+      return response($res);
+    }
+
+  }
 
 
+  public function get_list_history_supplying_power_ns(Request $request){
 
+    $ns_id = $request->input('ns_id');
+    date_default_timezone_set("Asia/Jakarta");
 
+    $btss = DB::table('supplying_power as sp')
+          ->join('users as u', 'sp.user_id', '=', 'u.id')
+          ->join('mbp as m', 'sp.mbp_id', '=', 'm.mbp_id')
+          ->join('site as s', 'sp.site_id', '=', 's.site_id')
+          ->join('supplying_power_log as spl', 'spl.sp_id', '=', 'sp.sp_id')
+          ->select('sp.sp_id', 'sp.unique_id', 's.site_name', 's.site_id', 'spl.status')
+          ->where('sp.ns_id','=',$ns_id)
+          ->where('sp.finish','!=',NULL)
+          ->orderBy('sp.sp_id', 'desc')
+          ->limit(50)
+          ->get();
 
+    $result = json_decode($btss, true);
+    if ($result==NULL) {
+      $res['success'] = true;
+      $res['message'] = 'SUCCESS';
+      $res['data'] = $btss;
+      return response($res);
+    }
 
+    foreach ($result as $param => $row) {
+      $data[$param]['sp_id']        = $row['sp_id'];
+      $data[$param]['unique_id']    = $row['unique_id'];
+      $data[$param]['site_name']    = $row['site_name'];
+      $data[$param]['site_id']      = $row['site_id'];
+      $data[$param]['status']       = $row['status'];
+    }
 
+    if ($btss) {
+      $res['success'] = true;
+      $res['message'] = 'SUCCESS';
+      $res['data'] = $data;
+
+      return response($res);
+    }
+
+  }
+
+  public function get_list_history_supplying_power_ns_paginate(Request $request){
+
+    $ns_id = $request->input('ns_id');
+    date_default_timezone_set("Asia/Jakarta");
+
+    $page = $request->input('page');
+    $search = $request->input('search');
+
+    $limit = 20;
+    $offset = ($page-1)*$limit;
+
+    $btss = DB::table('supplying_power as sp')
+    ->join('users as u', 'sp.user_id', '=', 'u.id')
+    ->join('mbp as m', 'sp.mbp_id', '=', 'm.mbp_id')
+    ->join('site as s', 'sp.site_id', '=', 's.site_id')
+    ->join('supplying_power_log as spl', 'spl.sp_id', '=', 'sp.sp_id')
+    ->select('sp.sp_id', 'sp.unique_id', 's.site_name', 's.site_id', 'spl.status')
+    ->where('sp.ns_id','=',$ns_id)
+    ->where('sp.finish','!=',NULL)
+    ->whereraw('(sp.site_id like "%'.$search.'%" or s.site_name like "%'.$search.'%")')
+    ->offset($offset)
+    ->limit($limit)
+    ->orderBy('sp.sp_id', 'desc')
+    ->get();
+
+    $result = json_decode($btss, true);
+    if ($result==NULL) {
+      $res['success'] = true;
+      $res['message'] = 'SUCCESS';
+      $res['data'] = $btss;
+      return response($res);
+    }
+
+    foreach ($result as $param => $row) {
+      $data[$param]['sp_id']        = $row['sp_id'];
+      $data[$param]['unique_id']    = $row['unique_id'];
+      $data[$param]['site_name']    = $row['site_name'];
+      $data[$param]['site_id']      = $row['site_id'];
+      $data[$param]['status']       = $row['status'];
+    }
+
+    if ($btss) {
+      $res['success'] = true;
+      $res['message'] = 'SUCCESS';
+      $res['data'] = $data;
+
+      return response($res);
+    }
+
+  }
+
+  public function getListHistorySupplyingPowerCPO(Request $request){
+
+    $regional = $request->input('regional');
+    date_default_timezone_set("Asia/Jakarta");
+
+    $btss = DB::table('supplying_power as sp')
+    ->join('users as u', 'sp.user_id', '=', 'u.id')
+    ->join('mbp as m', 'sp.mbp_id', '=', 'm.mbp_id')
+    ->join('site as s', 'sp.site_id', '=', 's.site_id')
+    ->join('supplying_power_log as spl', 'spl.sp_id', '=', 'sp.sp_id')
+    ->select('sp.sp_id', 'sp.unique_id', 's.site_name', 's.site_id', 'spl.status')
+    ->where('sp.ns_id','=',$ns_id)
+    ->where('sp.finish','!=',NULL)
+    ->orderBy('sp.sp_id', 'desc')
+    ->limit(50)
+    ->get();
+
+    $result = json_decode($btss, true);
+    if ($result==NULL) {
+      $res['success'] = true;
+      $res['message'] = 'SUCCESS';
+      $res['data'] = $btss;
+      return response($res);
+    }
+
+    foreach ($result as $param => $row) {
+      $data[$param]['sp_id']        = $row['sp_id'];
+      $data[$param]['unique_id']    = $row['unique_id'];
+      $data[$param]['site_name']    = $row['site_name'];
+      $data[$param]['site_id']      = $row['site_id'];
+      $data[$param]['status']       = $row['status'];
+    }
+
+    if ($btss) {
+      $res['success'] = true;
+      $res['message'] = 'SUCCESS';
+      $res['data'] = $data;
+
+      return response($res);
+    }
+
+  }
+
+  public function getListHistorySupplyingPowerCPOPaginate(Request $request){
+
+    $regional = $request->input('regional');
+    date_default_timezone_set("Asia/Jakarta");
+
+    $page = $request->input('page');
+    $search = $request->input('search');
+
+    $limit = 20;
+    $offset = ($page-1)*$limit;
+
+    $btss = DB::table('supplying_power as sp')
+    ->join('users as u', 'sp.user_id', '=', 'u.id')
+    ->join('mbp as m', 'sp.mbp_id', '=', 'm.mbp_id')
+    ->join('site as s', 'sp.site_id', '=', 's.site_id')
+    ->join('supplying_power_log as spl', 'spl.sp_id', '=', 'sp.sp_id')
+    ->select('sp.sp_id', 'sp.unique_id', 's.site_name', 's.site_id', 'spl.status')
+    ->where('sp.ns_id','=',$ns_id)
+    ->where('sp.finish','!=',NULL)
+    ->whereraw('(sp.site_id like "%'.$search.'%" or s.site_name like "%'.$search.'%")')
+    ->offset($offset)
+    ->limit($limit)
+    ->orderBy('sp.sp_id', 'desc')
+    ->get();
+
+    $result = json_decode($btss, true);
+    if ($result==NULL) {
+      $res['success'] = true;
+      $res['message'] = 'SUCCESS';
+      $res['data'] = $btss;
+      return response($res);
+    }
+
+    foreach ($result as $param => $row) {
+      $data[$param]['sp_id']        = $row['sp_id'];
+      $data[$param]['unique_id']    = $row['unique_id'];
+      $data[$param]['site_name']    = $row['site_name'];
+      $data[$param]['site_id']      = $row['site_id'];
+      $data[$param]['status']       = $row['status'];
+    }
+
+    if ($btss) {
+      $res['success'] = true;
+      $res['message'] = 'SUCCESS';
+      $res['data'] = $data;
+
+      return response($res);
+    }
+
+  }
 
 
 }
