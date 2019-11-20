@@ -748,12 +748,14 @@ $app->group(['prefix' => 'api'], function () use ($app) {
 
         //
         //$app->post('/get_list_history_supplying_power', 'SupplyingPowerController@getListHistorySupplyingPower');
-        $app->post('/get_list_history_supplying_power', 'SupplyingPowerController@get_list_history_supplying_power');
-        $app->post('/get_list_history_supplying_power_paginate', 'SupplyingPowerController@get_list_history_supplying_power_paginate');
-        $app->post('/get_list_history_supplying_power_ns', 'SupplyingPowerController@getListHistorySupplyingPowerNS');
-        $app->post('/get_list_history_supplying_power_ns_paginate', 'SupplyingPowerController@getListHistorySupplyingPowerNSPaginate');
-        $app->post('/get_list_history_supplying_power_cpo', 'SupplyingPowerController@getListHistorySupplyingPowerCPO');
-        $app->post('/get_list_history_supplying_power_cpo_paginate', 'SupplyingPowerController@getListHistorySupplyingPowerCPOPaginate');
+        $app->post('/get_list_history_supplying_power', 'SupplyingPowerControllerNew@get_list_history_supplying_power');
+        $app->post('/get_list_history_supplying_power_paginate', 'SupplyingPowerControllerNew@get_list_history_supplying_power_paginate');
+        
+        //hardcoded
+        $app->post('/get_list_history_supplying_power_ns', 'SupplyingPowerControllerNew@getListHistorySupplyingPowerNS');
+        $app->post('/get_list_history_supplying_power_ns_paginate', 'SupplyingPowerControllerNew@getListHistorySupplyingPowerNSPaginate');
+        $app->post('/get_list_history_supplying_power_cpo', 'SupplyingPowerControllerNew@getListHistorySupplyingPowerCPO');
+        $app->post('/get_list_history_supplying_power_cpo_paginate', 'SupplyingPowerControllerNew@getListHistorySupplyingPowerCPOPaginate');
 
         // getListHistorySupplyingPowerRtpo
         $app->post('/get_list_history_supplying_power_rtpo', 'SupplyingPowerController@getListHistorySupplyingPowerRtpo');
