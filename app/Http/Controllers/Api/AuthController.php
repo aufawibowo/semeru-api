@@ -42,7 +42,8 @@ class AuthController extends Controller {
 	        	'name'  => ucwords(str_replace('_', ' ', $user_data->name)),
 	        	'phone' => $user_data->phone,
 	        	'user_type' => $user_data->user_type,
-	        	'api_token' => $api_token,
+				'api_token' => $api_token,
+				//nambah user_type_id tergantung role
 	        ];
 
 	        $result = [

@@ -1498,8 +1498,9 @@ class MbpController extends Controller
         $data['time'] = @$this->setDatedMYHis($user_mbp_data->active_at);
 
 
-        $res['success'] = true;
-        $res['message'] = 'SUCCESS';
+
+        $res['success'] = "OK";
+        $res['message'] = 'Success';
         $res['data'] = $data;
         return response($res);
       }
@@ -1532,8 +1533,8 @@ class MbpController extends Controller
         $data['rtpo_name_home'] = $user_mbp_data->rtpo_name_home;
         $data['rtpo_name_now'] = $user_mbp_data->rtpo_name_now;
 
-        $res['success'] = true;
-        $res['message'] = 'SUCCESS';
+        $res['success'] = "OK";
+        $res['message'] = 'Success';
         $res['data'] = $data;
 
         return response($res);
@@ -1588,8 +1589,8 @@ class MbpController extends Controller
 
 
 
-        $res['success'] = true;
-        $res['message'] = 'SUCCESS';
+        $res['success'] = "OK";
+        $res['message'] = 'Success';
         $res['data'] = $data;
         return response($res);
         
@@ -1634,8 +1635,8 @@ class MbpController extends Controller
         $data['rtpo_name_home'] = $user_mbp_data->rtpo_name_home;
         $data['rtpo_name_now'] = $user_mbp_data->rtpo_name_now;
 
-        $res['success'] = true;
-        $res['message'] = 'SUCCESS';
+        $res['success'] = "OK";
+        $res['message'] = 'Success';
         $res['data'] = $data;
         return response($res);
         break;
