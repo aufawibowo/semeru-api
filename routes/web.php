@@ -735,7 +735,6 @@ $app->group(['prefix' => 'api'], function () use ($app) {
 	    $app->post('/get_home_content', 'Api\DashboardController@get_data');
 	    $app->post('/get_dashboard_data', 'Api\DashboardController@get_data_filter');
 	    $app->post('/get_dashboard_filter', 'Api\DashboardController@get_filter');
-
 	    //concern
 	    $app->post('/concern/submit','Api\ConcernController@submit_concern');
 
@@ -744,16 +743,17 @@ $app->group(['prefix' => 'api'], function () use ($app) {
         $app->post('/get_mbp_regional', 'MbpController@getMbpRegional');
         $app->post('/get_mbp_ns', 'MbpController@getMbpNS');
         $app->post('/get_mbp_rtpo', 'MbpController@getMbpRtpo');
-        $app->post('/get_detail_mbp', 'MbpController@getDetailMbp');
+        $app->post('/get_detail_mbp', 'MbpControllerNew@getDetailMbp');
 
         //
         //$app->post('/get_list_history_supplying_power', 'SupplyingPowerController@getListHistorySupplyingPower');
-        $app->post('/get_list_history_supplying_power', 'SupplyingPowerController@get_list_history_supplying_power');
-        $app->post('/get_list_history_supplying_power_paginate', 'SupplyingPowerController@get_list_history_supplying_power_paginate');
-        $app->post('/get_list_history_supplying_power_ns', 'SupplyingPowerController@getListHistorySupplyingPowerNS');
-        $app->post('/get_list_history_supplying_power_ns_paginate', 'SupplyingPowerController@getListHistorySupplyingPowerNSPaginate');
-        $app->post('/get_list_history_supplying_power_cpo', 'SupplyingPowerController@getListHistorySupplyingPowerCPO');
-        $app->post('/get_list_history_supplying_power_cpo_paginate', 'SupplyingPowerController@getListHistorySupplyingPowerCPOPaginate');
+        $app->post('/get_list_history_supplying_power', 'SupplyingPowerControllerNew@get_list_history_supplying_power');
+        $app->post('/get_list_history_supplying_power_area', 'SupplyingPowerControllerNew@get_list_history_supplying_power_area');
+        $app->post('/get_list_history_supplying_power_area_paginate', 'SupplyingPowerControllerNew@get_list_history_supplying_power_area_paginate');
+        $app->post('/get_list_history_supplying_power_ns', 'SupplyingPowerControllerNew@get_list_history_supplying_power_ns');
+        $app->post('/get_list_history_supplying_power_ns_paginate', 'SupplyingPowerControllerNew@get_list_history_supplying_power_ns_paginate');
+        $app->post('/get_list_history_supplying_power_regional', 'SupplyingPowerControllerNew@get_list_history_supplying_power_regional');
+        $app->post('/get_list_history_supplying_power_regional_paginate', 'SupplyingPowerControllerNew@get_list_history_supplying_power_regional_paginate');
 
         // getListHistorySupplyingPowerRtpo
         $app->post('/get_list_history_supplying_power_rtpo', 'SupplyingPowerController@getListHistorySupplyingPowerRtpo');
