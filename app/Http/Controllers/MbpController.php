@@ -1456,13 +1456,13 @@ class MbpController extends Controller
 
 
         $user_mbp_data = DB::table('mbp as m')
-        ->join('rtpo as rh', 'm.rtpo_id_home', 'rh.rtpo_id')
-        ->join('rtpo as rn', 'm.rtpo_id', 'rn.rtpo_id')
-        ->join('user_mbp as um', 'm.mbp_id', 'um.mbp_id')
-        ->join('users as u', 'um.username', 'u.username')
-        ->join('supplying_power as sp', 'm.mbp_id', 'sp.mbp_id')
-        ->join('site as s', 'sp.site_id', 's.site_id')
-        ->join('message as msg', 'm.message_id', 'msg.id')
+        ->join('rtpo as rh', 'm.rtpo_id_home', '=', 'rh.rtpo_id')
+        ->join('rtpo as rn', 'm.rtpo_id', '=', 'rn.rtpo_id')
+        ->join('user_mbp as um', 'm.mbp_id', '=', 'um.mbp_id')
+        ->join('users as u', 'um.username', '=', 'u.username')
+        ->join('supplying_power as sp', 'm.mbp_id', '=', 'sp.mbp_id')
+        ->join('site as s', 'sp.site_id', '=', 's.site_id')
+        ->join('message as msg', 'm.message_id', '=', 'msg.id')
         ->select('*', 'm.status as mbp_status', 's.latitude as site_latitude', 's.longitude as site_longitude', 'm.rtpo_id as mbp_rtpo_id', 'm.rtpo_id_home as mbp_rtpo_id_home', 'rh.rtpo_name as rtpo_name_home', 'rn.rtpo_name as rtpo_name_now','sp.user_rtpo_cn as ticket_by')
         ->where('m.mbp_id','=',$mbp_id)
         ->where('sp.finish','=',null)
@@ -1507,10 +1507,10 @@ class MbpController extends Controller
       switch ($mbp_data->status) {
         case "AVAILABLE":
         $user_mbp_data = DB::table('mbp as m')
-        ->join('rtpo as rh', 'm.rtpo_id_home', 'rh.rtpo_id')
-        ->join('rtpo as rn', 'm.rtpo_id', 'rn.rtpo_id')
-        ->join('user_mbp as um', 'm.mbp_id', 'um.mbp_id')
-        ->join('users as u', 'um.username', 'u.username')
+        ->join('rtpo as rh', 'm.rtpo_id_home', '=', 'rh.rtpo_id')
+        ->join('rtpo as rn', 'm.rtpo_id', '=', 'rn.rtpo_id')
+        ->join('user_mbp as um', 'm.mbp_id', '=', 'um.mbp_id')
+        ->join('users as u', 'um.username', '=', 'u.username')
         ->select('*', 'm.status as mbp_status', 'm.rtpo_id as mbp_rtpo_id', 'm.rtpo_id_home as mbp_rtpo_id_home', 'rh.rtpo_name as rtpo_name_home', 'rn.rtpo_name as rtpo_name_now')
         ->where('m.mbp_id','=',$mbp_id)
         ->first();
@@ -1543,11 +1543,11 @@ class MbpController extends Controller
         case "UNAVAILABLE":
 
         $user_mbp_data = DB::table('mbp as m')
-        ->join('rtpo as rh', 'm.rtpo_id_home', 'rh.rtpo_id')
-        ->join('rtpo as rn', 'm.rtpo_id', 'rn.rtpo_id')
-        ->join('user_mbp as um', 'm.mbp_id', 'um.mbp_id')
-        ->join('users as u', 'um.username', 'u.username')
-        ->join('message as msg', 'm.message_id', 'msg.id')   
+        ->join('rtpo as rh', 'm.rtpo_id_home', '=', 'rh.rtpo_id')
+        ->join('rtpo as rn', 'm.rtpo_id', '=', 'rn.rtpo_id')
+        ->join('user_mbp as um', 'm.mbp_id', '=', 'um.mbp_id')
+        ->join('users as u', 'um.username', '=', 'u.username')
+        ->join('message as msg', 'm.message_id', '=', 'msg.id')   
         ->select('*', 'm.status as mbp_status', 'm.rtpo_id as mbp_rtpo_id', 'm.rtpo_id_home as mbp_rtpo_id_home','m.last_update as lu', 'rh.rtpo_name as rtpo_name_home', 'rn.rtpo_name as rtpo_name_now')
         ->where('m.mbp_id','=',$mbp_id)
         ->first();
@@ -1597,12 +1597,12 @@ class MbpController extends Controller
         break;
         default:
         $user_mbp_data = DB::table('mbp as m')
-        ->join('rtpo as rh', 'm.rtpo_id_home', 'rh.rtpo_id')
-        ->join('rtpo as rn', 'm.rtpo_id', 'rn.rtpo_id')
-        ->join('user_mbp as um', 'm.mbp_id', 'um.mbp_id')
-        ->join('users as u', 'um.username', 'u.username')
-        ->join('supplying_power as sp', 'm.mbp_id', 'sp.mbp_id')
-        ->join('site as s', 'sp.site_id', 's.site_id')
+        ->join('rtpo as rh', 'm.rtpo_id_home', '=', 'rh.rtpo_id')
+        ->join('rtpo as rn', 'm.rtpo_id', '=', 'rn.rtpo_id')
+        ->join('user_mbp as um', 'm.mbp_id', '=', 'um.mbp_id')
+        ->join('users as u', 'um.username', '=', 'u.username')
+        ->join('supplying_power as sp', 'm.mbp_id', '=', 'sp.mbp_id')
+        ->join('site as s', 'sp.site_id', '=', 's.site_id')
         ->select('*', 'm.status as mbp_status', 's.latitude as site_latitude', 's.longitude as site_longitude', 'm.rtpo_id as mbp_rtpo_id', 'm.rtpo_id_home as mbp_rtpo_id_home', 'rh.rtpo_name as rtpo_name_home', 'rn.rtpo_name as rtpo_name_now','sp.user_rtpo_cn as ticket_by')
         ->where('m.mbp_id','=',$mbp_id)
         ->where('sp.finish','=',null)
