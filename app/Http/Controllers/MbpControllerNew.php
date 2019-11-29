@@ -230,6 +230,28 @@ public function get_detail_mbp(Request $request){
 public function get_detail_mbp_tiket(Request $request){
 	$sp_id = $request->input('sp_id');
 
+	/*
+	select sp.sp_id, 
+	mbp.mbp_name, 
+	sp.site_name, 
+	sp.finish as `status`, 
+	sp.date_finish as date_complete,
+	user_rtpo.username,
+	sp.cancel_reason,
+	sp.reason_by,
+	sp.cancel_approved_by,
+	sp.date_onprogress, 
+	sp.date_waiting, 
+	sp.date_checkin, 
+	sp.date_onprogress,
+	sp.date_finish, 
+	sp.running_hour_before,
+	sp.running_hour_after
+	from supplying_power as sp
+	join mbp on sp.mbp_id = mbp.mbp_id
+	join user_rtpo on sp.rtpo_id = user_rtpo.rtpo_id
+	*/
+
 	$btss = DB::table('supplying_power as sp')
 	->join('mbp as mbp', 'sp.mbp_id', '=', 'mbp.mbp_id')
 	->join('user_rtpo as user_rtpo', 'sp.rtpo_id', '=', 'user_rtpo.rtpo_id')
