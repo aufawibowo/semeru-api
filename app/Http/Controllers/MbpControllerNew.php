@@ -230,7 +230,7 @@ public function get_detail_mbp(Request $request){
 public function get_detail_mbp_tiket(Request $request){
 	$sp_id = $request->input('sp_id');
 
-	$result = DB::table('supplying_power as sp')
+	$btss = DB::table('supplying_power as sp')
 	->join('mbp as mbp', 'sp.mbp_id', '=', 'mbp.mbp_id')
 	->join('user_rtpo as user_rtpo', 'sp.rtpo_id', '=', 'user_rtpo.rtpo_id')
 	->select(
@@ -242,7 +242,7 @@ public function get_detail_mbp_tiket(Request $request){
 	'user_rtpo.username as pembuat_tiket',
 	'sp.cancel_reason as alasan_pembatalan',
 	'sp.reason_by as yang_mengajukan',
-	'sp.cancel_approved_by',
+	'sp.cancel_approved_by as yang_menyetujui',
 	'sp.date_onprogress', 
 	'sp.date_waiting', 
 	'sp.date_checkin', 
@@ -254,10 +254,11 @@ public function get_detail_mbp_tiket(Request $request){
 	->where('sp.sp_id','=',$sp_id)
 	->get();
 
+	$result = json_decode($btss, "OK");
+
 	$res['success'] = "OK";
 	$res['message'] = 'Success';
-	$res['data'] = $result;
-	
+	$res['data'] = $btss;
 
 	foreach ($result as $param => $row) {
 		$data[$param]['id_ticket']                 = $row['id_ticket'];
