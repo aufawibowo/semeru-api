@@ -728,6 +728,7 @@ $app->get('api/test', ['middleware' => 'api_token', function () {
 $app->group(['prefix' => 'api'], function () use ($app) {
     $app->post('/auth/get_otp', 'Api\AuthController@get_otp');
     $app->post('/auth/login', 'Api\AuthController@login');
+    $app->post('/auth/login_new', 'Api\AuthControllerNew@login');
     $app->get('/supplying_power/fix_meet_sla', 'Api\QueryController@sp_fix_meet_sla');
     $app->post('/supplying_power/fix_meet_sla', 'Api\QueryController@sp_fix_meet_sla');  
     $app->post('/supplying_power/active_ticket', 'Api\SupplyingPowerController@active_ticket');  
