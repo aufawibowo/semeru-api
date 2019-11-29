@@ -1499,8 +1499,8 @@ class MbpController extends Controller
 
 
 
-        $res['success'] = "OK";
-        $res['message'] = 'Success';
+        $res['success'] = true;
+        $res['message'] = 'SUCCESS';
         $res['data'] = $data;
         return response($res);
       }
@@ -1533,8 +1533,8 @@ class MbpController extends Controller
         $data['rtpo_name_home'] = $user_mbp_data->rtpo_name_home;
         $data['rtpo_name_now'] = $user_mbp_data->rtpo_name_now;
 
-        $res['success'] = "OK";
-        $res['message'] = 'Success';
+        $res['success'] = true;
+        $res['message'] = 'SUCCESS';
         $res['data'] = $data;
 
         return response($res);
@@ -1589,8 +1589,8 @@ class MbpController extends Controller
 
 
 
-        $res['success'] = "OK";
-        $res['message'] = 'Success';
+        $res['success'] = true;
+        $res['message'] = 'SUCCESS';
         $res['data'] = $data;
         return response($res);
         
@@ -1635,8 +1635,8 @@ class MbpController extends Controller
         $data['rtpo_name_home'] = $user_mbp_data->rtpo_name_home;
         $data['rtpo_name_now'] = $user_mbp_data->rtpo_name_now;
 
-        $res['success'] = "OK";
-        $res['message'] = 'Success';
+        $res['success'] = true;
+        $res['message'] = 'SUCCESS';
         $res['data'] = $data;
         return response($res);
         break;
