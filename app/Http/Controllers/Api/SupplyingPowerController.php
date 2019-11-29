@@ -143,8 +143,8 @@ class SupplyingPowerController extends Controller
     $editMbp = DB::table('mbp')
 			->where('mbp_id', $mbp_id)
 			->update([
-			'status' => 'WAITING',
-			'last_update' => $date_now,
+				'status' => 'WAITING',
+				'last_update' => $date_now,
 			]);
 
     if (!$editMbp) {
@@ -155,8 +155,8 @@ class SupplyingPowerController extends Controller
 		$editMbp = DB::table('mbp')
 					->where('mbp_id', $mbp_id)
 					->update([
-					'status' => 'AVAILABLE',
-					'last_update' => $date_now,
+						'status' => 'AVAILABLE',
+						'last_update' => $date_now,
 					]);
 
 		$res['success'] = false;
