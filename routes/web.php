@@ -730,6 +730,9 @@ $app->group(['prefix' => 'api'], function () use ($app) {
     $app->post('/auth/login', 'Api\AuthController@login');
     $app->get('/supplying_power/fix_meet_sla', 'Api\QueryController@sp_fix_meet_sla');
     $app->post('/supplying_power/fix_meet_sla', 'Api\QueryController@sp_fix_meet_sla');  
+    $app->post('/supplying_power/active_ticket', 'Api\SupplyingPowerController@active_ticket');  
+
+
     $app->group(['middleware'=>'api_token'], function () use ($app) {
     	//ambil data untuk dashboard
 	    $app->post('/get_home_content', 'Api\DashboardController@get_data');
@@ -743,8 +746,8 @@ $app->group(['prefix' => 'api'], function () use ($app) {
         $app->post('/get_mbp_regional', 'MbpController@getMbpRegional');
         $app->post('/get_mbp_ns', 'MbpController@getMbpNS');
         $app->post('/get_mbp_rtpo', 'MbpController@getMbpRtpo');
-        $app->post('/get_detail_mbp', 'MbpControllerNew@getDetailMbp');
-
+        $app->post('/get_detail_mbp', 'MbpController@get_detail_mbp');
+        $app->post('/get_detail_mbp_tiket', 'MbpControllerNew@get_detail_mbp_tiket');
         //
         //$app->post('/get_list_history_supplying_power', 'SupplyingPowerController@getListHistorySupplyingPower');
         $app->post('/get_list_history_supplying_power', 'SupplyingPowerControllerNew@get_list_history_supplying_power');
