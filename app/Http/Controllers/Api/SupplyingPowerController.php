@@ -37,36 +37,54 @@ class SupplyingPowerController extends Controller
 
 	    //get data mbp
 	    $mbp_data = Mbp::where('mbp_id',$mbp_id)->first();
-	    if(empty($mbp_data)) return $this->response_fail();
+	    if(empty($mbp_data)){
+			return $this->response_fail();
+		}
+
 	    //validasi jika mbp sedang ditugaskan
-	    if($mbp_data->status!='AVAILABLE') return $this->response_fail('Mbp Tidak Dapat Ditugaskan');
+	    if($mbp_data->status!='AVAILABLE'){
+			return $this->response_fail('Mbp Tidak Dapat Ditugaskan');
+		}
 
 	    //get data rtpo asal mbp
 		$rtpo_home_data = LookupFmcCluster::where(['rtpo_id'=>$mbp_data->rtpo_id_home,'status'=>1])
-			->groupBy('rtpo_id')
-			->first();
-		if(empty($rtpo_home_data)) return $this->response_fail();
+						->groupBy('rtpo_id')
+						->first();
+		if(empty($rtpo_home_data)){
+			return $this->response_fail();
+		}
 
 	    //get data user mbp yang ditugaskan
 	    $user_mbp_data = UserMbp::where('mbp_id',$mbp_data->mbp_id)->first();
-	    if(empty($user_mbp_data)) return $this->response_fail();
+	    if(empty($user_mbp_data)){
+			return $this->response_fail();
+		}
 
 	    //get data user mbp yang ditugaskan secara detail
 		$users_data = User::where('username',$user_mbp_data->username)->first();
-		if(empty($user_mbp_data)) return $this->response_fail();
+		if(empty($user_mbp_data)){
+			return $this->response_fail();
+		}
 
 		//ambil data rtpo saat ini
 		$rtpo_data = LookupFmcCluster::where(['rtpo_id'=>$mbp_data->rtpo_id,'status'=>1])
-			->groupBy('rtpo_id')
-			->first();
-		if(empty($rtpo_data)) return $this->response_fail();
+					->groupBy('rtpo_id')
+					->first();
+		if(empty($rtpo_data)){
+			return $this->response_fail();
+		}
 
 		//ambil data user rtpo
 		$rtpo_users_data = User::where('id',$user_id)->first();
-		if(empty($rtpo_users_data)) return $this->response_fail();
+		if(empty($rtpo_users_data)){
+			return $this->response_fail();
+		}
+
 		//ambil data site
 	    $site_data = Site::where('site_id', $site_id)->first();
-	    if(empty($site_data)) return $this->response_fail('Data site tidak ditemukan');
+	    if(empty($site_data)){
+			return $this->response_fail('Data site tidak ditemukan');
+		}
 
 	    //siapkan data sp yg akan diinsert
 		$data_insert_sp=[
@@ -74,15 +92,12 @@ class SupplyingPowerController extends Controller
 	        'site_id' => $site_data->site_id.'_',
 	        'site_name' => $site_data->site_name,
 	        'lokasi_site' => @$site_data->lokasi_site,
-
 	        'date_mainsfail' => $site_data->date_mainsfail,
-
 	        'user_id' => $rtpo_users_data->id,
 	        'rtpo_id' => $rtpo_data->rtpo_id,
 	        'user_rtpo' => $rtpo_users_data->id,
 	        'user_rtpo_cn' => $rtpo_users_data->username,
 	        'rtpo_name' => $rtpo_data->rtpo,//gnti
-
 	        'cluster_id' => $site_data->cluster_id,
 	        'cluster_fmc_id' => $site_data->cluster_fmc_id,
 	        'cluster_fmc' => $site_data->cluster_fmc,
@@ -91,15 +106,11 @@ class SupplyingPowerController extends Controller
 	        'branch_id' => $site_data->branch_id,
 	        'branch' => $site_data->branch,
 	        'regional' => $site_data->regional,
-
 	        'cluster_site' => $site_data->cluster, 
 	        'cluster_id_site' => $site_data->cluster_id, 
-
         	'mbp_id' => $mbp_data->mbp_id, 
-
 	        'cluster_mbp' => $mbp_data->cluster, 
 	        'cluster_id_mbp' => $mbp_data->cluster_id, 
-	        
 	        'rtpo_id_home' => $rtpo_home_data->rtpo_id,
 	        'rtpo_name_home' => $rtpo_home_data->rtpo,//gnti
 	        'cluster' => $site_data->cluster,
@@ -107,11 +118,9 @@ class SupplyingPowerController extends Controller
 	        'fmc' => $mbp_data->fmc,
 	        'user_mbp' => $users_data->id,
 	        'user_mbp_cn' => $users_data->username,
-
 	        'date_waiting' => $date_now,
 	        'last_update' => $date_now,
 	        'is_sync' =>'0',
-
 	        'finish' => 'AUTO CLOSE',
 	        'date_finish' => $date2,
       	];
@@ -132,66 +141,66 @@ class SupplyingPowerController extends Controller
 
     //update status mbp
     $editMbp = DB::table('mbp')
-    ->where('mbp_id', $mbp_id)
-    ->update([
-      'status' => 'WAITING',
-      'last_update' => $date_now,
-    ]);
+			->where('mbp_id', $mbp_id)
+			->update([
+			'status' => 'WAITING',
+			'last_update' => $date_now,
+			]);
 
     if (!$editMbp) {
-      $deletesp = DB::table('supplying_power')
-      ->where('date_waiting', '=', $date_now)
-      ->delete();
+		$deletesp = DB::table('supplying_power')
+					->where('date_waiting', '=', $date_now)
+					->delete();
 
-      $editMbp = DB::table('mbp')
-      ->where('mbp_id', $mbp_id)
-      ->update([
-        'status' => 'AVAILABLE',
-        'last_update' => $date_now,
-      ]);
+		$editMbp = DB::table('mbp')
+					->where('mbp_id', $mbp_id)
+					->update([
+					'status' => 'AVAILABLE',
+					'last_update' => $date_now,
+					]);
 
-      $res['success'] = false;
-      $res['message'] = 'FAILED_UPDATE_STATUS_MBP';
-      return response($res);
+		$res['success'] = false;
+		$res['message'] = 'FAILED_UPDATE_STATUS_MBP';
+		return response($res);
     }
 
     //update site
     $editSite = DB::table('site')
-    ->where('site_id', $site_id)
-    ->update(['is_allocated' => '1']);
+				->where('site_id', $site_id)
+				->update(['is_allocated' => '1']);
 
     if (!$editSite) {
-      $deletesp = DB::table('supplying_power')
-      ->where('date_waiting', '=', $date_now)
-      ->delete();
+		$deletesp = DB::table('supplying_power')
+				->where('date_waiting', '=', $date_now)
+				->delete();
 
-      $editMbp = DB::table('mbp')
-      ->where('mbp_id', $mbp_id)
-      ->update(['status' => 'AVAILABLE',
-      'last_update' => $date_now,]);
+		$editMbp = DB::table('mbp')
+				->where('mbp_id', $mbp_id)
+				->update(['status' => 'AVAILABLE',
+				'last_update' => $date_now,]);
 
 
-      $editSite = DB::table('site')
-      ->where('site_id', $site_id)
-      ->update([
-        'is_allocated' => '0',
-        'last_update' => $date_now,
-      ]);
+		$editSite = DB::table('site')
+				->where('site_id', $site_id)
+				->update([
+					'is_allocated' => '0',
+					'last_update' => $date_now,
+				]);
 
-      $res['success'] = false;
-      $res['message'] = 'FAILED_UPDATE_STATUS_SITE';
-      return response($res);
+		$res['success'] = false;
+		$res['message'] = 'FAILED_UPDATE_STATUS_SITE';
+		return response($res);
     }
 
     
     $sp_data = DB::table('supplying_power as sp')
-    ->select('*')
-    ->where('sp.date_waiting','=',$date_now)
-    ->first();
+				->select('*')
+				->where('sp.date_waiting','=',$date_now)
+				->first();
 
     if ($sp_data!=null) {
-      $supplyingPowerController = new SupplyingPowerController;
-      $value_sp_log = $supplyingPowerController->saveLogSP1($sp_data->sp_id, $rtpo_users_data->id, $rtpo_users_data->username, 'WAITING', $rtpo_users_data->name.' menugaskan anda bersama '.$mbp_data->mbp_name.' menuju site '.$site_data->site_name,'', '', $date_now);
+		$supplyingPowerController = new SupplyingPowerController;
+		$value_sp_log = $supplyingPowerController->saveLogSP1($sp_data->sp_id, $rtpo_users_data->id, $rtpo_users_data->username, 'WAITING', $rtpo_users_data->name.' menugaskan anda bersama '.$mbp_data->mbp_name.' menuju site '.$site_data->site_name,'', '', $date_now);
     }
 
     //push token firebase ke array
@@ -205,40 +214,35 @@ class SupplyingPowerController extends Controller
     $tmp = $notificationController->setNotificationV1($rtpo_users_data->username, $users_data->username, 'MBP_ASSIGNMENT_TO_SITE', 'mbp_id', $mbp_id, 'Penugasan MBP', 'MBP_ASSIGNMENT_TO_SITE', @$rtpo_users_data->username.' dari '.@$rtpo_data->rtpo_name.' menugaskan anda menuju site '.$site_id,1,'MBP');
     //ingat data admin ada di table user_admin_fmc bukan users by agus 19-10-04
     $admin_fmc_data = DB::table('user_admin_fmc')
-    ->select('*')
-    ->where('fmc_id','=',$sp_data->fmc_id)
-    ->where('cluster','=',$sp_data->cluster)
-    ->where('chat_id','!=',null)
-    ->where('chat_id','!=',"")
-    ->get();
+					->select('*')
+					->where('fmc_id','=',$sp_data->fmc_id)
+					->where('cluster','=',$sp_data->cluster)
+					->where('chat_id','!=',null)
+					->where('chat_id','!=',"")
+					->get();
 
     foreach ($admin_fmc_data as $param) {
+		if (@$param->username!=null) {
+			$subject_telegram = 'sendTicketMBP';
+			$text_telegram = "[ <b>TIKET MBP</b> ] \nHalo,\nada Tiket MBP untuk ".@$site_users_data->site_name." cluster ".@$sp_data->cluster.", dibuat oleh ".$sp_data->user_rtpo_cn." dari ".$sp_data->rtpo_name." pada tanggal ".@$sp_data->date_waiting.".\n \nJangan lupa untuk mengingatkan User ".@$sp_data->user_mbp_cn." mengenai hal ini.\nTerima Kasih.\n\n-NGSemeru Team-";
+			// $text_telegram = urlencode($text_telegram);
+			@$inserQueueTelegram = DB::table('queue_telegram')   
+									->insert(
+										[
+										'subject' => @$subject_telegram,
+										'message' => @$text_telegram,
+										'chat_id' => @$param->chat_id,
 
+										'send_to' => @$param->username,
+										'fmc_id' => @$param->fmc_id,
+										'cluster_id' => @$param->cluster_id,
+										'rtpo_id' => @$param->rtpo_id,
 
-      if (@$param->username!=null) {
+										'create_at' => @$date_now,
 
-        $subject_telegram = 'sendTicketMBP';
-
-        $text_telegram = "[ <b>TIKET MBP</b> ] \nHalo,\nada Tiket MBP untuk ".@$site_users_data->site_name." cluster ".@$sp_data->cluster.", dibuat oleh ".$sp_data->user_rtpo_cn." dari ".$sp_data->rtpo_name." pada tanggal ".@$sp_data->date_waiting.".\n \nJangan lupa untuk mengingatkan User ".@$sp_data->user_mbp_cn." mengenai hal ini.\nTerima Kasih.\n\n-NGSemeru Team-";
-        // $text_telegram = urlencode($text_telegram);
-
-        @$inserQueueTelegram = DB::table('queue_telegram')   
-        ->insert(
-          [
-            'subject' => @$subject_telegram,
-            'message' => @$text_telegram,
-            'chat_id' => @$param->chat_id,
-
-            'send_to' => @$param->username,
-            'fmc_id' => @$param->fmc_id,
-            'cluster_id' => @$param->cluster_id,
-            'rtpo_id' => @$param->rtpo_id,
-
-            'create_at' => @$date_now,
-
-          ]
-        );
-      }
+										]
+									);
+		}
     }
     $res['success'] = true;
     $res['message'] = 'SUCCESS_INSERT_TO_DATABASE';
