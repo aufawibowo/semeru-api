@@ -37,7 +37,7 @@ class AuthControllerNew extends Controller {
 
 			if($user_data->user_type == 'RTPO'){
 				$query = DB::table('users as users')
-				->join('user_rtpo as user_rtpo', 'user_rtpo.username', '=', 'users.username.id')
+				->join('user_rtpo as user_rtpo', 'user_rtpo.username', '=', 'users.username')
 				->select('user_rtpo.rtpo_id as user_type_id')
 				->where('users.username','=',$username)
 				->get();
@@ -45,7 +45,7 @@ class AuthControllerNew extends Controller {
 			}
 			else if($user_data->user_type == 'MBP'){
 				$query = DB::table('users as users')
-				->join('user_mbp', 'user_mbp.username', '=', 'users.username.id')
+				->join('user_mbp', 'user_mbp.username', '=', 'users.username')
 				->select('user_mbp.id as user_type_id')
 				->where('users.username','=',$username)
 				->get();
@@ -53,7 +53,7 @@ class AuthControllerNew extends Controller {
 			}
 			else if($user_data->user_type == 'CPO'){
 				$query = DB::table('users')
-				->join('user_cpo', 'user_cpo.username', '=', 'users.username.id')
+				->join('user_cpo', 'user_cpo.username', '=', 'users.username')
 				->select('user_cpo.regional as user_type_id')
 				->where('users.username','=',$username)
 				->get();
@@ -61,7 +61,7 @@ class AuthControllerNew extends Controller {
 			}
 			else if($user_data->user_type == 'TSRA'){
 				$query = DB::table('users as users')
-				->join('user_tsra', 'user_tsra.username', '=', 'users.username.id')
+				->join('user_tsra', 'user_tsra.username', '=', 'users.username')
 				->select('user_tsra.id as user_type_id')
 				->where('users.username','=',$username)
 				->get();
@@ -71,19 +71,22 @@ class AuthControllerNew extends Controller {
 				$query = DB::table('users')
 				->select('GM as user_type_id')
 				->where('users.username','=',$username)
-				->get();
+                ->get();
+                $user_type_id = json_decode($query, "OK");
 			}
 			else if($user_data->user_type == 'AREA'){	//hardcode
 				$query = DB::table('users')
 				->select('AREA as user_type_id')
 				->where('users.username','=',$username)
-				->get();
+                ->get();
+                $user_type_id = json_decode($query, "OK");
 			}
 			else{										//hardcode
 				$query = DB::table('users')
 				->select('users.user_type as user_type_id')
 				->where('users.username','=',$username)
-				->get();
+                ->get();
+                $user_type_id = json_decode($query, "OK");
 			}
 
 	    	$data = [
@@ -94,7 +97,7 @@ class AuthControllerNew extends Controller {
 	        	'phone' => $user_data->phone,
 	        	'user_type' => $user_data->user_type,
 				'api_token' => $api_token,
-				'user_type_id' => $user_type_id->user_type_id
+				'user_type_id' => $user_type_id
 	        ];
 
 	        $result = [
