@@ -127,7 +127,7 @@ class SupplyingPowerController extends Controller
     //query insert tiket mbp
     // $insertSP = SupplyingPower::insert($data_insert_sp);
       	// return response($insertSP);
-      	return response($data_insert_sp);
+	return response($data_insert_sp);
       	// DB::table('supplying_power')   
 	    // ->insert(
 	    //   $data_insert_sp

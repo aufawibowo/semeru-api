@@ -1846,6 +1846,13 @@ Dihimbau untuk mengingatkan tim MBP dengan nama '.@$value->user_mbp_cn.', terima
     $rh_before = @$request->input('rh_before');
     $rh_after = @$request->input('rh_after');
 
+    if($rh_before > $rh_after){
+      $res['success'] = false;
+      $res['message'] = 'Running Hour Sesudah Tidak Boleh Lebih Kecil Dari Sebelum';
+  
+      return response($res);
+    }
+
     $data_sp = DB::table('supplying_power')
     ->select('mbp_id','site_id')
     ->where('sp_id',$sp_id)
