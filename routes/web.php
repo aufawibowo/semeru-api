@@ -14,7 +14,7 @@
 $app->get('/', function () use ($app) {
 	return $app->version();
 });
-
+$app->post('/playground', 'PlaygroundController@playground');
 
 $app->get('/bts_off', 'BtsController@get_bts_off'); 
 // fixingSiteToRTPO
