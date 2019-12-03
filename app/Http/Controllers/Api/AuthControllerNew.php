@@ -11,7 +11,7 @@ use DateTime;
 use App\User;
 use App\Libraries\SendNotifLib;
 use App\Helpers\AppHelper;
-
+//nyoba git issue
 class AuthControllerNew extends Controller {
 
 	public function login(Request $request)
