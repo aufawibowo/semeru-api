@@ -43,7 +43,7 @@ class SupplyingPowerControllerNew extends Controller{
 							'site.site_name',
 							'site.site_id',
 							'supplying_power_log.status',
-							'supplying_power.date_waiting as ticker_creation_time')
+							'supplying_power.date_waiting as ticket_creation_time')
 					->where('supplying_power.rtpo_id','=',$check_rtpo->rtpo_id)
 					->where('supplying_power.date_finish','<',$date_now)
 					->whereraw('(site.site_id like "%'.$search.'%" or site.site_name like "%'.$search.'%")')
@@ -62,7 +62,7 @@ class SupplyingPowerControllerNew extends Controller{
 					'site.site_name',
 					'site.site_id',
 					'supplying_power_log.status',
-					'supplying_power.date_waiting as ticker_creation_time')
+					'supplying_power.date_waiting as ticket_creation_time')
 			->where('supplying_power.rtpo_id','=',$check_rtpo->rtpo_id)
 			->where('supplying_power.date_finish','<',$date_now)
 			->whereraw('(site.site_id like "%'.$search.'%" or site.site_name like "%'.$search.'%")')
@@ -88,7 +88,7 @@ class SupplyingPowerControllerNew extends Controller{
 				return response($res);
 			}
 			foreach ($result as $param => $row) {
-				$newDate = $this->setDatedMYHis($row['ticker_creation_time'].'');
+				$newDate = $this->setDatedMYHis($row['ticket_creation_time'].'');
 				$data[$param]['sp_id']        = $row['sp_id'];
 				$data[$param]['unique_id']    = $row['unique_id'];
 				$data[$param]['site_name']    = $row['site_name'];
@@ -140,7 +140,7 @@ class SupplyingPowerControllerNew extends Controller{
 							'site.site_name',
 							'site.site_id',
 							'supplying_power_log.status',
-							'supplying_power.date_waiting as ticker_creation_time')
+							'supplying_power.date_waiting as ticket_creation_time')
 					->where('supplying_power.mbp_id','=',$mbp_result[$param]['mbp_id'])
 					->where('supplying_power.date_finish','<',$date_now)
 					->whereraw('(site.site_id like "%'.$search.'%" or site.site_name like "%'.$search.'%")')
@@ -158,7 +158,7 @@ class SupplyingPowerControllerNew extends Controller{
 							'site.site_name',
 							'site.site_id',
 							'supplying_power_log.status',
-							'supplying_power.date_waiting as ticker_creation_time')
+							'supplying_power.date_waiting as ticket_creation_time')
 					->where('supplying_power.mbp_id','=',$mbp_result[$param]['mbp_id'])
 					->where('supplying_power.date_finish','<',$date_now)
 					->whereraw('(site.site_id like "%'.$search.'%" or site.site_name like "%'.$search.'%")')
@@ -181,7 +181,7 @@ class SupplyingPowerControllerNew extends Controller{
 							'site.site_name',
 							'site.site_id',
 							'supplying_power_log.status',
-							'supplying_power.date_waiting as ticker_creation_time')
+							'supplying_power.date_waiting as ticket_creation_time')
 					->where('mbp.mbp_id','=',$mbp_result[$param]['mbp_id'])
 					->where('supplying_power.finish','!=',NULL)
 					->whereraw('(site.site_id like "%'.$search.'%" or site.site_name like "%'.$search.'%")')
@@ -199,7 +199,7 @@ class SupplyingPowerControllerNew extends Controller{
 							'site.site_name',
 							'site.site_id',
 							'supplying_power_log.status',
-							'supplying_power.date_waiting as ticker_creation_time')
+							'supplying_power.date_waiting as ticket_creation_time')
 					->where('mbp.mbp_id','=',$mbp_result[$param]['mbp_id'])
 					->where('supplying_power.finish','!=',NULL)
 					->whereraw('(site.site_id like "%'.$search.'%" or site.site_name like "%'.$search.'%")')
@@ -231,7 +231,7 @@ class SupplyingPowerControllerNew extends Controller{
 			// $result = json_decode($btss, "OK");
 
 			foreach ($result as $param => $row) {
-				$newDate = $this->setDatedMYHis($row['ticker_creation_time'].'');
+				$newDate = $this->setDatedMYHis($row['ticket_creation_time'].'');
 				$data[$param]['sp_id']        = $row['sp_id'];
 				$data[$param]['unique_id']    = $row['unique_id'];
 				$data[$param]['site_name']    = $row['site_name'];
@@ -286,7 +286,7 @@ class SupplyingPowerControllerNew extends Controller{
 				's.site_name', 
 				's.site_id', 
 				'spl.status', 
-				'sp.date_waiting as ticker_creation_time')
+				'sp.date_waiting as ticket_creation_time')
     ->where('sp.finish','!=',NULL)
     ->whereraw('(sp.site_id like "%'.$search.'%" or s.site_name like "%'.$search.'%")')
     ->offset($offset)
@@ -304,7 +304,7 @@ class SupplyingPowerControllerNew extends Controller{
 				's.site_name', 
 				's.site_id', 
 				'spl.status', 
-				'sp.date_waiting as ticker_creation_time')
+				'sp.date_waiting as ticket_creation_time')
     ->where('sp.finish','!=',NULL)
     ->whereraw('(sp.site_id like "%'.$search.'%" or s.site_name like "%'.$search.'%")')
     ->offset($offset)
@@ -329,7 +329,7 @@ class SupplyingPowerControllerNew extends Controller{
     }
 
     foreach ($result as $param => $row) {
-		$newDate = $this->setDatedMYHis($row['ticker_creation_time'].'');
+		$newDate = $this->setDatedMYHis($row['ticket_creation_time'].'');
 		$data[$param]['sp_id']        = $row['sp_id'];
 		$data[$param]['unique_id']    = $row['unique_id'];
 		$data[$param]['site_name']    = $row['site_name'];
@@ -415,7 +415,7 @@ class SupplyingPowerControllerNew extends Controller{
     }
 
     foreach ($result as $param => $row) {
-		//$newDate = $this->setDatedMYHis($row['ticker_creation_time'].'');
+		//$newDate = $this->setDatedMYHis($row['ticket_creation_time'].'');
 		$data[$param]['sp_id']        = $row['sp_id'];
 		$data[$param]['unique_id']    = $row['unique_id'];
 		$data[$param]['site_name']    = $row['site_name'];
@@ -452,7 +452,7 @@ class SupplyingPowerControllerNew extends Controller{
     ->join('supplying_power_log as spl', 'spl.sp_id', '=', 'sp.sp_id')
 	->select(	'sp.sp_id', 
 				'sp.unique_id',
-				's.site_name', 's.site_id', 'spl.status', 'sp.date_waiting as ticker_creation_time')
+				's.site_name', 's.site_id', 'spl.status', 'sp.date_waiting as ticket_creation_time')
     ->where('sp.regional','=',$regional)
     ->where('sp.finish','!=',NULL)
     ->whereraw('(sp.site_id like "%'.$search.'%" or s.site_name like "%'.$search.'%")')
@@ -468,7 +468,7 @@ class SupplyingPowerControllerNew extends Controller{
     ->join('supplying_power_log as spl', 'spl.sp_id', '=', 'sp.sp_id')
 	->select(	'sp.sp_id', 
 				'sp.unique_id',
-				's.site_name', 's.site_id', 'spl.status', 'sp.date_waiting as ticker_creation_time')
+				's.site_name', 's.site_id', 'spl.status', 'sp.date_waiting as ticket_creation_time')
     ->where('sp.regional','=',$regional)
     ->where('sp.finish','!=',NULL)
     ->whereraw('(sp.site_id like "%'.$search.'%" or s.site_name like "%'.$search.'%")')
@@ -494,7 +494,7 @@ class SupplyingPowerControllerNew extends Controller{
     }
 
     foreach ($result as $param => $row) {
-		$newDate = $this->setDatedMYHis($row['ticker_creation_time'].'');
+		$newDate = $this->setDatedMYHis($row['ticket_creation_time'].'');
 		$data[$param]['sp_id']        = $row['sp_id'];
 		$data[$param]['unique_id']    = $row['unique_id'];
 		$data[$param]['site_name']    = $row['site_name'];
