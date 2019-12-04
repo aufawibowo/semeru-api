@@ -736,7 +736,8 @@ $app->group(['prefix' => 'api'], function () use ($app) {
 
     $app->group(['middleware'=>'api_token'], function () use ($app) {
     	//ambil data untuk dashboard
-	    $app->post('/get_home_content', 'Api\DashboardController@get_data');
+        $app->post('/get_home_content', 'Api\DashboardController@get_data');
+        $app->post('/get_home_content_test', 'Api\DashboardController@get_data_test');
 	    $app->post('/get_dashboard_data', 'Api\DashboardController@get_data_filter');
 	    $app->post('/get_dashboard_filter', 'Api\DashboardController@get_filter');
 	    //concern
