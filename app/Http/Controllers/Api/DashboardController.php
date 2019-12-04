@@ -28,6 +28,263 @@ class DashboardController extends Controller {
 		$user = User::where(['username'=>$username])->first();
 		if(empty($user)) return $this->response_fail();
 
+		//duplicate of app/Http/Controllers/DashboardController.php
+		$data_user = DB::table('users')
+					->select('*')
+					->where('username',$username)
+					->first();
+
+		$rtpo = '-';
+		$cluster = '-';
+
+		if ($data_user->user_type=='RTPO') {
+			$data_user_rtpo = DB::table('user_rtpo')
+			->select('*')
+			->where('username',$username)
+			->first();
+
+			$rtpo = ($data_user_rtpo->rtpo_name==null) ? '-' : $data_user_rtpo->rtpo_name;
+			$rtpo_id = $data_user_rtpo->rtpo_id;
+			$scope = ($data_user_rtpo->rtpo_name==null) ? '-' : $data_user_rtpo->rtpo_name;
+
+            $jumlah_MT = DB::table('sik_site')
+            ->select('*')
+            ->where('rtpo_id',$rtpo_id)
+            ->whereraw('maintenance_schedule like "%'.$month_now.'%"')
+            ->where('flag',1)
+            ->count();
+
+			$complete_MT = DB::table('sik_site')
+			->select('*')
+			->where('rtpo_id',$rtpo_id)
+			->whereraw('maintenance_schedule like "%'.$month_now.'%"')
+			->where('respond_status',7)
+			->where('flag',1)
+			->count();
+
+			$incomplete_MT = DB::table('sik_site')
+			->select('*')
+			->where('rtpo_id',$rtpo_id)
+			->whereraw('maintenance_schedule like "%'.$month_now.'%"')
+			->whereraw('(respond_status=0 or respond_status=6)')
+			->where('flag',1)
+			->count();
+
+			$on_review_MT = DB::table('sik_site')
+			->select('*')
+			->where('rtpo_id',$rtpo_id)
+			->whereraw('maintenance_schedule like "%'.$month_now.'%"')
+			->where('respond_status',8)
+			->where('flag',1)
+			->count();
+
+			$approved_MT = DB::table('sik_site')
+			->select('*')
+			->where('rtpo_id',$rtpo_id)
+			->whereraw('maintenance_schedule like "%'.$month_now.'%"')
+			->whereraw('(respond_status=2 or respond_status=4)')
+			->where('flag',1)
+			->count();
+
+			$rejected_MT = DB::table('sik_site')
+			->select('*')
+			->where('rtpo_id',$rtpo_id)
+			->whereraw('maintenance_schedule like "%'.$month_now.'%"')
+			->whereraw('(respond_status=3 or respond_status=5)')
+			->where('flag',1)
+			->count();
+
+			$reassign_MT = DB::table('sik_site')
+			->select('*')
+			->where('rtpo_id',$rtpo_id)
+			->whereraw('maintenance_schedule like "%'.$month_now.'%"')
+			->where('respond_status',1)
+			->where('flag',1)
+			->count();
+
+			$auto_approve_MT = DB::table('sik_site')
+			->select('*')
+			->where('rtpo_id',$rtpo_id)
+			->whereraw('maintenance_schedule like "%'.$month_now.'%"')
+			->where('respond_status',4)
+			->where('flag',1)
+			->count();
+
+			$auto_reject_MT = DB::table('sik_site')
+			->select('*')
+			->where('rtpo_id',$rtpo_id)
+			->whereraw('maintenance_schedule like "%'.$month_now.'%"')
+			->where('respond_status',5)
+			->where('flag',1)
+			->count();
+
+			$complete_MT = $approved_MT+$on_review_MT+$rejected_MT+$reassign_MT;
+
+			if ($jumlah_MT==0) {
+				$prosentase_pencapaian = 0;
+			}
+			else{
+				$prosentase_pencapaian = $complete_MT/$jumlah_MT;
+			}
+
+		} else {
+			$cluster = ($data_user->cluster==null) ? '-' : $data_user->cluster;
+			$cluster_id = $data_user->cluster_id;
+			$scope = ($data_user->cluster==null) ? '-' : $data_user->cluster;
+
+			$jumlah_MT = DB::table('sik_site')
+            ->select('*')
+            ->where('cluster_id',$cluster_id)
+            ->whereraw('maintenance_schedule like "%'.$month_now.'%"')
+            ->where('flag',1)
+            ->count();
+
+			$complete_MT = DB::table('sik_site')
+			->select('*')
+			->where('cluster_id',$cluster_id)
+			->whereraw('maintenance_schedule like "%'.$month_now.'%"')
+			->where('respond_status',7)
+			->where('flag',1)
+			->count();
+
+			$incomplete_MT = DB::table('sik_site')
+			->select('*')
+			->where('cluster_id',$cluster_id)
+			->whereraw('maintenance_schedule like "%'.$month_now.'%"')
+			->whereraw('(respond_status=0 or respond_status=6)')
+			->where('flag',1)
+			->count();
+
+			$on_review_MT = DB::table('sik_site')
+			->select('*')
+			->where('cluster_id',$cluster_id)
+			->whereraw('maintenance_schedule like "%'.$month_now.'%"')
+			->where('respond_status',8)
+			->where('flag',1)
+			->count();
+
+			$approved_MT = DB::table('sik_site')
+			->select('*')
+			->where('cluster_id',$cluster_id)
+			->whereraw('maintenance_schedule like "%'.$month_now.'%"')
+			->whereraw('(respond_status=2 or respond_status=4)')
+			->where('flag',1)
+			->count();
+
+			$rejected_MT = DB::table('sik_site')
+			->select('*')
+			->where('cluster_id',$cluster_id)
+			->whereraw('maintenance_schedule like "%'.$month_now.'%"')
+			->whereraw('(respond_status=3 or respond_status=5)')
+			->where('flag',1)
+			->count();
+
+			$reassign_MT = DB::table('sik_site')
+			->select('*')
+			->where('cluster_id',$cluster_id)
+			->whereraw('maintenance_schedule like "%'.$month_now.'%"')
+			->where('respond_status',1)
+			->where('flag',1)
+			->count();
+
+			$auto_approve_MT = DB::table('sik_site')
+			->select('*')
+			->where('cluster_id',$cluster_id)
+			->whereraw('maintenance_schedule like "%'.$month_now.'%"')
+			->where('respond_status',4)
+			->where('flag',1)
+			->count();
+
+			$auto_reject_MT = DB::table('sik_site')
+			->select('*')
+			->where('cluster_id',$cluster_id)
+			->whereraw('maintenance_schedule like "%'.$month_now.'%"')
+			->where('respond_status',5)
+			->where('flag',1)
+			->count();
+
+			$complete_MT = $approved_MT+$on_review_MT+$rejected_MT+$reassign_MT;
+
+			if ($jumlah_MT==0) {
+				$prosentase_pencapaian = 0;
+			}
+			else{
+				$prosentase_pencapaian = $complete_MT/$jumlah_MT;
+			}
+
+			$data_cluster = DB::table('lookup_fmc_cluster')
+			->select('*')
+			->where('cluster_id',$cluster_id)
+			->where('status','1')
+			->first();
+
+			$rtpo_id = @$data_cluster->rtpo_id;
+
+		}
+
+		$total_mbp = DB::table('mbp')
+		->select('*')
+		->where('active',1)
+		->where('rtpo_id',@$rtpo_id)
+		->orWhere('rtpo_id_home','=',@$rtpo_id)
+		->count();
+
+		$mbp_organik = DB::table('mbp')
+		->select('*')
+		->where('rtpo_id_home',@$rtpo_id)
+		->where('active',1)
+		->count();
+
+		$mbp_available = DB::table('mbp')
+		->select('*')
+		->where('rtpo_id',@$rtpo_id)
+		->where('status','AVAILABLE')
+		->where('active',1)
+		->count();
+
+		$mbp_unavailable = DB::table('mbp')
+		->select('*')
+		->where('rtpo_id',@$rtpo_id)
+		->where('status','UNAVAILABLE')
+		->where('active',1)
+		->count();
+
+		$mbp_waiting = DB::table('mbp')
+		->select('*')
+		->where('rtpo_id',@$rtpo_id)
+		->where('status','WAITING')
+		->where('active',1)
+		->count();  
+
+		$mbp_on_progress = DB::table('mbp')
+		->select('*')
+		->where('rtpo_id',@$rtpo_id)
+		->where('status','ON_PROGRESS')
+		->where('active',1)
+		->count();
+
+		$mbp_check_in = DB::table('mbp')
+		->select('*')
+		->where('rtpo_id',@$rtpo_id)
+		->where('status','CHECK_IN')
+		->where('active',1)
+		->count();
+
+		$mbp_dipinjamkan = DB::table('mbp')
+		->select('*')
+		->where('rtpo_id_home',@$rtpo_id)
+		->where('rtpo_id','!=',@$rtpo_id)
+		->where('active',1)
+		->count();
+
+		$mbp_pinjaman = DB::table('mbp')
+		->select('*')
+		->where('rtpo_id_home','!=',@$rtpo_id)
+		->where('rtpo_id',@$rtpo_id)
+		->where('active',1)
+		->count();
+		//duplicate of app/Http/Controllers/DashboardController.php
+
 		$res = [
 			'success' => 'OK',
 			'message' => 'Success',
@@ -122,15 +379,34 @@ class DashboardController extends Controller {
         // $random_int = (rand(1,1000)%$count_faq)+1;
         // $data_faq = DB::table('faq')->where('id',$random_int)->first();
 
-		$res['data']['scope'] = $scope;
-		$res['data']['maintenance'] = $maintenance;
-		$res['data']['tiket_mbp'] = $tiket_mbp;
-		$res['data']['mbp'] = $mbp;
-		$res['data']['foto_profil'] = '-';
-        $res['data']['link_support'] = $link_support;
-        $res['data']['flag_pengumuman'] = empty($data_pengumuman) ? false : true;
-        $res['data']['pengumuman'] = $data_pengumuman;
-        $res['data']['array_faq'] = $array_faq;
+		$res['data']['scope']				= $scope;
+		$res['data']['maintenance']			= $maintenance;
+		$res['data']['tiket_mbp']			= $tiket_mbp;
+		$res['data']['mbp']					= $mbp;
+		$res['data']['foto_profil']			= '-';
+        $res['data']['link_support']		= $link_support;
+        $res['data']['flag_pengumuman']		= empty($data_pengumuman) ? false : true;
+        $res['data']['pengumuman']			= $data_pengumuman;
+        $res['data']['array_faq']			= $array_faq;
+		$res['data']['incomplete_MT']		= $incomplete_MT;
+		$res['data']['complete_MT']			= $complete_MT;
+		$res['data']['on_review_MT']		= $on_review_MT;
+		$res['data']['approved_MT']			= $approved_MT;
+		$res['data']['reassign_MT']			= $reassign_MT;
+		$res['data']['rejected_MT']			= $rejected_MT;
+		$res['data']['prosentase_pencapaian']= number_format((float)$prosentase_pencapaian*100,2).'%';
+		$res['data']['total_pencapaian']	= $complete_MT.'/'.$jumlah_MT;;
+		$res['data']['site_main_fail']		= $site_main_fail;
+		$res['data']['total_mbp']			= $site_main_fail;
+		$res['data']['mbp_organik']			= $mbp_organik;
+		$res['data']['mbp_available']		= $mbp_available;
+		$res['data']['mbp_unavailable']		= $mbp_unavailable;
+		$res['data']['mbp_waiting']			= $mbp_unavailable;
+		$res['data']['mbp_on_progress']		= $mbp_on_progress;
+		$res['data']['mbp_check_in']		= $mbp_check_in;
+		$res['data']['mbp_dipinjamkan']		= $mbp_dipinjamkan;
+		$res['data']['mbp_pinjaman']		= $mbp_pinjaman;
+
 
 		return response($res);
 	}
