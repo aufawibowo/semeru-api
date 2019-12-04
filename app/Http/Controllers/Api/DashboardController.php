@@ -19,14 +19,15 @@ use App\Models\LookupFmcCluster;
 
 class DashboardController extends Controller {
 
-	public function get_data(Request $request)
-	{
+	public function get_data(Request $request){
 		$date_now = date('Y-m-d');
 		$periode = date('Y-m');
 		$username = $request->input('username');
 		$scope = '-';
 		$user = User::where(['username'=>$username])->first();
-		if(empty($user)) return $this->response_fail();
+		if(empty($user)){
+			return $this->response_fail();
+		}
 
 		//duplicate of app/Http/Controllers/DashboardController.php
 		$data_user = DB::table('users')
@@ -297,43 +298,54 @@ class DashboardController extends Controller {
 			],
 		];
 
-		$filter=[]; $filter_mbp=[];
+		$filter=[];
+		$filter_mbp=[];
 
 		switch ($user->user_type) {
-			case 'AREA': $scope='VP NOQM AREA 3'; break;
-
+			case 'AREA':
+				$scope='VP NOQM AREA 3';
+				break;
 			case 'NOS':
 			case 'GM': 
-				if(empty($user->regional)) return $this->response_fail();
+				if(empty($user->regional)){
+					return $this->response_fail();
+				}
 				$scope = 'REGIONAL '.$user->regional;
 				$filter=['regional'=>$user->regional];
 				break;
 			case 'CPO': 
-				if(empty($user->regional)) return $this->response_fail();
+				if(empty($user->regional)){
+					return $this->response_fail();
+				}
 				$scope = 'REGIONAL '.$user->regional;
 				$filter=['regional'=>$user->regional];
 				break;
 			case 'MBP': 
-				if(empty($user->cluster_id)) return $this->response_fail();
+				if(empty($user->cluster_id)){
+					return $this->response_fail();
+				}
 				$scope = 'CLUSTER '.$user->cluster;
 				$filter=['cluster_id'=>$user->cluster_id];
 				break;
-
 			case 'RTPO':
 				$rtpo = UserRtpo::where(['username'=>$username,'status'=>1])->first();
-				if(empty($rtpo)) return $this->response_fail();
+				if(empty($rtpo)){
+					return $this->response_fail();
+				}
 				$scope = $rtpo->rtpo_name;
 				$filter=['rtpo_id'=>$rtpo->rtpo_id];
 				break;
-
 			case 'MNG_NSA':
 				$ns = UserMngNsa::where(['username'=>$username,'status'=>1])->first();
-				if(empty($ns)) return $this->response_fail();
+				if(empty($ns)){
+					return $this->response_fail();
+				}
 				$scope = $ns->ns;
 				$filter=['ns_id'=>$ns->ns_id];
 				break;
-
-			default: return $this->response_fail(); break;
+			default: 
+				return $this->response_fail(); 
+				break;
 		}
 
 		//total status maintenance
@@ -342,10 +354,10 @@ class DashboardController extends Controller {
 		foreach ($arr_cetegory_status_mt as $cat) {
 			$maintenance[$cat] = $this->get_count_mr($cat, $periode, $filter);
 		}
-		$maintenance['incomplete'] = $maintenance['target'] - $maintenance['completed'];
-		$total_approve = $maintenance['approved']+$maintenance['auto_approved'];
-		$maintenance['achievement'] = $total_approve.'/'.$maintenance['target'];
-		$maintenance['percentage_achievement'] = round(($total_approve*100)/$maintenance['target'],2).'%';
+		$maintenance['incomplete']				 = $maintenance['target'] - $maintenance['completed'];
+		$total_approve							 = $maintenance['approved'] + $maintenance['auto_approved'];
+		$maintenance['achievement']				 = $total_approve.'/'.$maintenance['target'];
+		$maintenance['percentage_achievement']	 = round(($total_approve*100)/$maintenance['target'],2).'%';
 		// ($maintenance['approved']+$maintenance['auto_approved'])/$maintenance['target'];
 
 		//total status mbp
@@ -406,7 +418,6 @@ class DashboardController extends Controller {
 		$res['data']['mbp_check_in']		= $mbp_check_in;
 		$res['data']['mbp_dipinjamkan']		= $mbp_dipinjamkan;
 		$res['data']['mbp_pinjaman']		= $mbp_pinjaman;
-
 
 		return response($res);
 	}
@@ -551,6 +562,7 @@ class DashboardController extends Controller {
 		$res['data']['maintenance'] = $maintenance;
 		$res['data']['tiket_mbp'] = $tiket_mbp;
 		$res['data']['mbp'] = $mbp;
+		
 
 		return response($res);
 	}	
