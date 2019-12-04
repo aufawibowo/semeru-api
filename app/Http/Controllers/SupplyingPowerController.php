@@ -1846,7 +1846,18 @@ class SupplyingPowerController extends Controller
 		$rh_before = @$request->input('rh_before');
 		$rh_after = @$request->input('rh_after');
 
-		if($rh_before > $rh_after){
+		$query = DB::table('supplying_power as sp')
+				->select('sp.running_hour_before')
+				->where('sp.sp_id','=',$sp_id)
+				->get();
+
+		$query_results = json_decode($query, "OK");
+
+		foreach($query_results as $p){
+			$dbquery_running_hour_before = $p['running_hour_before'];
+		}
+
+		if($running_hour_before > $rh_after){
 			$res['success'] = false;
 			$res['message'] = 'Running Hour Sesudah Tidak Boleh Lebih Kecil Dari Sebelum';
 		
