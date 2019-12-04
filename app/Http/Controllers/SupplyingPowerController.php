@@ -1857,7 +1857,7 @@ class SupplyingPowerController extends Controller
 			$dbquery_running_hour_before = $p['running_hour_before'];
 		}
 
-		if($running_hour_before > $rh_after){
+		if($dbquery_running_hour_before > $rh_after){
 			$res['success'] = false;
 			$res['message'] = 'Running Hour Sesudah Tidak Boleh Lebih Kecil Dari Sebelum';
 		
