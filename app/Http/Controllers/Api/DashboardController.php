@@ -20,8 +20,12 @@ use App\Models\LookupFmcCluster;
 class DashboardController extends Controller {
 
 	public function get_data(Request $request){
-		$date_now = date('Y-m-d');
+        date_default_timezone_set("Asia/Jakarta");
+        $date_now = date('Y-m-d H:i:s');
+        $month_now = date('Y-m');
+        $min2Day = date('Y-m-d H:i:s', strtotime($date_now.' - 2 days'));
 		$periode = date('Y-m');
+
 		$username = $request->input('username');
 		$scope = '-';
 		$user = User::where(['username'=>$username])->first();
@@ -408,8 +412,8 @@ class DashboardController extends Controller {
 		$res['data']['rejected_MT']			= $rejected_MT;
 		$res['data']['prosentase_pencapaian']= number_format((float)$prosentase_pencapaian*100,2).'%';
 		$res['data']['total_pencapaian']	= $complete_MT.'/'.$jumlah_MT;;
-		$res['data']['site_main_fail']		= $site_main_fail;
-		$res['data']['total_mbp']			= $site_main_fail;
+		$res['data']['site_main_fail']		= $mbp['site_main_fail'];
+		$res['data']['total_mbp']			= $total_mbp;
 		$res['data']['mbp_organik']			= $mbp_organik;
 		$res['data']['mbp_available']		= $mbp_available;
 		$res['data']['mbp_unavailable']		= $mbp_unavailable;
