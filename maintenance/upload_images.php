@@ -65,7 +65,7 @@ if ($maintenance == 0) {
 			try {
 				$upload_to_backup = move_uploaded_file($_FILES['images']['tmp_name'][$i], $target_img_backup_url);
 				if (!$upload_to_backup) {
-					//$response[$tmp_count]['success'] = false;
+					//$response[$tmp_count]['success'] = false; uncomment this to revert to its original version
 					$response[$tmp_count]['message'] = 'File tidak dapat upload';
 					$response[$tmp_count]['target lokasi'] = $target_img_backup_url;
 					$response[$tmp_count]['error'] = $_FILES["images"]["error"][$i];
@@ -81,7 +81,7 @@ if ($maintenance == 0) {
 					if (copy($target_img_backup_url, $target_img_url)) {
 
 						if(!file_exists($target_img_url) || !is_file($target_img_url)){
-							//$response[$tmp_count]['success'] = false;
+							//$response[$tmp_count]['success'] = false; uncomment this to revert to its original version
 							$response[$tmp_count]['message'] = 'Tidak dapat menyalin file dari backup ke images';
 							// $response[$tmp_count]['target lokasi'] = $target_img_backup_url;
 							// $response[$tmp_count]['error'] = $_FILES["images"]["error"][$i];
@@ -111,7 +111,7 @@ if ($maintenance == 0) {
 					}
 				}
 			} catch (Exception $e) {
-				//$response[$tmp_count]['success'] = false;
+				//$response[$tmp_count]['success'] = false; uncomment this to revert to its original version
 				$response[$tmp_count]['message'] = $e;
 			}
 			// $tmp_count = $tmp_count +1;
@@ -122,7 +122,7 @@ if ($maintenance == 0) {
 		$response['100% success'] = true;
 
 		if($tmp_count!=$success_count){
-			//$response['success'] = false;
+			//$response['success'] = false; uncomment this to revert to its original version
 			$response['100% success'] = false;
 		}
 
@@ -137,7 +137,7 @@ if ($maintenance == 0) {
 } elseif ($maintenance == 1) {
 
 	// echo "Sorry, We are under maintenance";
-	//$response['success'] = false;
+	//$response['success'] = false; uncomment this to revert to its original version
 	$response['100% success'] = false;
 	$response['message'] = 'Sorry, We are under maintenance';
 	exit(json_encode($response));
