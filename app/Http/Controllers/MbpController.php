@@ -2721,11 +2721,14 @@ class MbpController extends Controller
     $rtpo_id = $request->input('rtpo_id');
     $search = $request->input('search');
     $filter = $request->input('filter');
-    
+    $keyword = $request->input('keyword');
+
     $page = $request->input('page');
     $limit = 20;
     $offset = ($page-1)*$limit;
-
+    if(null($keyword)){
+      $keyword = NULL;
+    }
 
     // $data_site = DB::table('mbp')->select('*')->where('rtpo_id','=',$rtpo_id)->get();
     $data_site = DB::table('mbp')
