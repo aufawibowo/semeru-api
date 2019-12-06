@@ -25,27 +25,22 @@ if ($maintenance == 0) {
 		foreach ($_FILES['images']['name'] as $i => $name) {
 
 			$fname = basename($_FILES['images']['name'][$i]);
-
 			$explodeFname = (explode("_",$fname));
-
 			$dir_image_type = strtoupper("".@$explodeFname[0]);
 			
 			if ($dir_image_type=="MT") {
 				$dir_siteid = strtoupper("".@$explodeFname[1]);
-
 				$img_path = 'images/';
 				$img_backup_path = 'images_backup/maintenance/';
-
-			}elseif($dir_image_type=="GS"){
+			}
+			elseif($dir_image_type=="GS"){
 				$dir_siteid = strtoupper("".@$explodeFname[1]);
-
 				$img_path = 'images_GS/';
 				$img_backup_path = 'images_backup/replacement_part_genset/';
-
-			}else{
+			}
+			else{
 				continue;
 			}
-
 
 			$real_img_backup_path = $prefix_path.$img_backup_path.date("Y").'/'.date("m").'/'.$dir_siteid;
 			$img_backup_path .= date("Y").'/'.date("m").'/'.$dir_siteid;
@@ -73,15 +68,14 @@ if ($maintenance == 0) {
 					$response['100% success'] = false;
 					// $failed_count = 1;
 					die(json_encode($response));
-				} else {
-
-
+				} 
+				else {
 					$x=0;
 					$check_photo = false;
-					if (copy($target_img_backup_url, $target_img_url)) {
 
+					if (copy($target_img_backup_url, $target_img_url)) {
 						if(!file_exists($target_img_url) || !is_file($target_img_url)){
-							//$response[$tmp_count]['success'] = false; uncomment this to revert to its original version
+							// $response[$tmp_count]['success'] = false; // uncomment this to revert to its original version
 							$response[$tmp_count]['message'] = 'Tidak dapat menyalin file dari backup ke images';
 							// $response[$tmp_count]['target lokasi'] = $target_img_backup_url;
 							// $response[$tmp_count]['error'] = $_FILES["images"]["error"][$i];
@@ -105,10 +99,8 @@ if ($maintenance == 0) {
 						}else if ($dir_image_type=="GS") {				
 							$query = mysqli_query($con, "INSERT INTO `image_sparepart`( `host`, `uri`, `fname`, `date`) VALUES ('http://103.253.107.45/semeru-api/','$uri_upload','$fname','$date')");				
 						}
-
-
-
 					}
+
 				}
 			} catch (Exception $e) {
 				//$response[$tmp_count]['success'] = false; uncomment this to revert to its original version
@@ -118,7 +110,9 @@ if ($maintenance == 0) {
 			// $file_upload_url = 'images/';
 		}
 		
-		$response['success'] = true;
+
+		//$response['success'] = true;
+		$response['message'] = 'Success';
 		$response['100% success'] = true;
 
 		if($tmp_count!=$success_count){
