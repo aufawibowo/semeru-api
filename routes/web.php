@@ -748,7 +748,7 @@ $app->group(['prefix' => 'api'], function () use ($app) {
         $app->post('/get_mbp_regional', 'MbpController@getMbpRegional');
         $app->post('/get_mbp_ns', 'MbpController@getMbpNS');
         $app->post('/get_mbp_rtpo', 'MbpController@getMbpRtpo');
-        $app->post('/get_detail_mbp', 'MbpController@get_detail_mbp');
+        $app->post('/get_detail_mbp', 'MbpControllerNew@get_detail_mbp');
         $app->post('/get_detail_mbp_tiket', 'MbpControllerNew@get_detail_mbp_tiket');
         //
         //$app->post('/get_list_history_supplying_power', 'SupplyingPowerController@getListHistorySupplyingPower');

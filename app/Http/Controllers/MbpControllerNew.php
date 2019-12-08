@@ -111,22 +111,25 @@ public function get_detail_mbp(Request $request){
 								->first();
 
 				$data['get_in'] = 'AVAILABLE';
-				$data['status'] = mbp_status;
-				$data['mbp_name'] = mbp_name;
-				$data['name'] = name;
-				$data['phone'] = phone;
-				$data['latitude'] = latitude;
-				$data['longitude'] = longitude;
+				$data['status'] = $user_mbp_data->mbp_status;
+				$data['mbp_name'] = $user_mbp_data->mbp_name;
+				$data['name'] = $user_mbp_data->name;
+				$data['phone'] = $user_mbp_data->phone;
+				$data['latitude'] = $user_mbp_data->latitude;
+				$data['longitude'] = $user_mbp_data->longitude;
 				$data['borrowed'] = $borrowed;
 				$data['class_name'] = '-';
-				$data['fmc_id'] = fmc_id;
-				$data['fmc_name'] = fmc;
-				$data['rtpo_id_home'] = mbp_rtpo_id_home;
-				$data['rtpo_id_now'] = mbp_rtpo_id;
-				$data['rtpo_name_home'] = rtpo_name_home;
-				$data['rtpo_name_now'] = rtpo_name_now;
-				$res['success'] = "OK";
-				$res['message'] = 'Success';
+		
+				$data['fmc_id'] = $user_mbp_data->fmc_id;
+				$data['fmc_name'] = $user_mbp_data->fmc;
+				
+				$data['rtpo_id_home'] = $user_mbp_data->mbp_rtpo_id_home;
+				$data['rtpo_id_now'] = $user_mbp_data->mbp_rtpo_id;
+				$data['rtpo_name_home'] = $user_mbp_data->rtpo_name_home;
+				$data['rtpo_name_now'] = $user_mbp_data->rtpo_name_now;
+		
+				$res['success'] = true;
+				$res['message'] = 'SUCCESS';
 				$res['data'] = $data;
 
 				return response($res);
@@ -139,12 +142,12 @@ public function get_detail_mbp(Request $request){
 				->join('users as u', 'um.username', '=', 'u.username')
 				->join('message as msg', 'm.message_id', '=', 'msg.id')   
 				->select('*', 
-				'm.status as mbp_status', 
-				'm.rtpo_id as mbp_rtpo_id',
-				'm.rtpo_id_home as mbp_rtpo_id_home',
-				'm.last_update as lu', 
-				'rh.rtpo_name as rtpo_name_home', 
-				'rn.rtpo_name as rtpo_name_now')
+						'm.status as mbp_status', 
+						'm.rtpo_id as mbp_rtpo_id',
+						'm.rtpo_id_home as mbp_rtpo_id_home',
+						'm.last_update as lu', 
+						'rh.rtpo_name as rtpo_name_home', 
+						'rn.rtpo_name as rtpo_name_now')
 				->where('m.mbp_id','=',$mbp_id)
 				->first();
 
@@ -152,20 +155,23 @@ public function get_detail_mbp(Request $request){
 				$data['status'] = "UNAVAILABLE";
 				$data['borrowed'] = $borrowed;
 				$data['class_name'] = '-';
-				$data['fmc_id'] = fmc_id;
-				$data['fmc_name'] = fmc;
-				$data['rtpo_id_home'] = mbp_rtpo_id_home;
-				$data['rtpo_id_now'] = mbp_rtpo_id;
-				$data['rtpo_name_home'] = rtpo_name_home;
-				$data['rtpo_name_now'] = rtpo_name_now;
-				$data['mbp_name'] = mbp_name;
-				$data['name'] = name;
-				$data['phone'] = phone;
-				$data['latitude'] = latitude;
-				$data['longitude'] = longitude;
-				$data['subject'] = subject;
-				$data['text_message'] = text_message;
-				$data['time'] = $this->setDatedMYHis(active_at);
+		
+				$data['fmc_id'] = @$user_mbp_data->fmc_id;
+				$data['fmc_name'] = @$user_mbp_data->fmc;
+		
+				$data['rtpo_id_home'] = @$user_mbp_data->mbp_rtpo_id_home;
+				$data['rtpo_id_now'] = @$user_mbp_data->mbp_rtpo_id;
+				$data['rtpo_name_home'] = @$user_mbp_data->rtpo_name_home;
+				$data['rtpo_name_now'] = @$user_mbp_data->rtpo_name_now;
+		
+				$data['mbp_name'] = @$user_mbp_data->mbp_name;
+				$data['name'] = @$user_mbp_data->name;
+				$data['phone'] = @$user_mbp_data->phone;
+				$data['latitude'] = @$user_mbp_data->latitude;
+				$data['longitude'] = @$user_mbp_data->longitude;
+				$data['subject'] = @$user_mbp_data->subject;
+				$data['text_message'] = @$user_mbp_data->text_message;
+				$data['time'] = @$this->setDatedMYHis($user_mbp_data->active_at);
 
 				$res['success'] = "OK";
 				$res['message'] = 'Success';
@@ -195,31 +201,34 @@ public function get_detail_mbp(Request $request){
 				->first();
 
 				$data['get_in'] = "DEFAULT";
-				$data['ticket_by'] = ticket_by;
+				$data['ticket_by'] = $user_mbp_data->ticket_by;
 				$data['telegram_username'] = "";
-				$data['status'] = mbp_status;
-				$data['mbp_name'] = mbp_name;
-				$data['name'] = name;
-				$data['phone'] = phone;
-				$data['mbp_latitude'] = latitude;
-				$data['mbp_longitude'] = longitude;
-				$data['site_name'] = site_name;
-				$data['code_name'] = site_id;
-				$data['class_name'] = site_class;
-				$data['latitude'] = site_latitude;
-				$data['longitude'] = site_longitude;
+				$data['status'] = $user_mbp_data->mbp_status;
+				$data['mbp_name'] = $user_mbp_data->mbp_name;
+				$data['name'] = $user_mbp_data->name;
+				$data['phone'] = $user_mbp_data->phone;
+				$data['mbp_latitude'] = $user_mbp_data->latitude;
+				$data['mbp_longitude'] = $user_mbp_data->longitude;
+				$data['site_name'] = $user_mbp_data->site_name;
+				$data['code_name'] = $user_mbp_data->site_id;
+				$data['class_name'] = $user_mbp_data->site_class;
+				$data['latitude'] = $user_mbp_data->site_latitude;
+				$data['longitude'] = $user_mbp_data->site_longitude;
 				$data['borrowed'] = $borrowed;
-				$data['date_waiting'] = strtotime(date_waiting);
-				$data['date_onprogress'] = strtotime(date_onprogress);
-				$data['date_checkin'] = strtotime(date_checkin);
-				$data['fmc_id'] = fmc_id;
-				$data['fmc_name'] = fmc;
-				$data['rtpo_id_home'] = mbp_rtpo_id_home;
-				$data['rtpo_id_now'] = mbp_rtpo_id;
-				$data['rtpo_name_home'] = rtpo_name_home;
-				$data['rtpo_name_now'] = rtpo_name_now;
-				$res['success'] = "OK";
-				$res['message'] = 'Success';
+				$data['date_waiting'] = @strtotime(@$user_mbp_data->date_waiting);
+				$data['date_onprogress'] = @strtotime(@$user_mbp_data->date_onprogress);
+				$data['date_checkin'] = @strtotime(@$user_mbp_data->date_checkin);
+		
+				$data['fmc_id'] = $user_mbp_data->fmc_id;
+				$data['fmc_name'] = $user_mbp_data->fmc;
+		
+				$data['rtpo_id_home'] = $user_mbp_data->mbp_rtpo_id_home;
+				$data['rtpo_id_now'] = $user_mbp_data->mbp_rtpo_id;
+				$data['rtpo_name_home'] = $user_mbp_data->rtpo_name_home;
+				$data['rtpo_name_now'] = $user_mbp_data->rtpo_name_now;
+		
+				$res['success'] = true;
+				$res['message'] = 'SUCCESS';
 				$res['data'] = $data;
 				return response($res);
 			break;
