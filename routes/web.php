@@ -14,7 +14,7 @@
 $app->get('/', function () use ($app) {
 	return $app->version();
 });
-$app->post('/playground', 'PlaygroundController@playground');
+
 
 $app->get('/bts_off', 'BtsController@get_bts_off'); 
 // fixingSiteToRTPO
@@ -323,6 +323,7 @@ $app->get('/getAllMbpOnProggress', 'MbpController@getAllMbpOnProggress');
 // getMySite
 $app->post('/getMyMbp', 'MbpController@getMyMbp'); 
 $app->post('/getMyMbpPaginate', 'MbpController@getMyMbpPaginate'); 
+$app->post('/playground/getMyMbpPaginate', 'PlaygroundController@getMyMbpPaginate');
 $app->post('/getMyMbpCPOPaginate', 'MbpController@getMyMbpCPOPaginate'); 
 $app->post('/getMyMbpNSPaginate', 'MbpController@getMyMbpNSPaginate'); 
 $app->post('/getMyMbpFMCPaginate', 'MbpController@getMyMbpFMCPaginate'); 
@@ -750,7 +751,7 @@ $app->group(['prefix' => 'api'], function () use ($app) {
         $app->post('/get_mbp_rtpo', 'MbpController@getMbpRtpo');
         $app->post('/get_detail_mbp', 'MbpControllerNew@get_detail_mbp');
         $app->post('/get_detail_mbp_tiket', 'MbpControllerNew@get_detail_mbp_tiket');
-        //
+
         //$app->post('/get_list_history_supplying_power', 'SupplyingPowerController@getListHistorySupplyingPower');
         $app->post('/get_list_history_supplying_power', 'SupplyingPowerControllerNew@get_list_history_supplying_power');
         $app->post('/get_list_history_supplying_power_area', 'SupplyingPowerControllerNew@get_list_history_supplying_power_area');
