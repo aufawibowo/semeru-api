@@ -761,11 +761,22 @@ $app->group(['prefix' => 'api'], function () use ($app) {
         $app->post('/get_list_history_supplying_power_regional', 'SupplyingPowerControllerNew@get_list_history_supplying_power_regional');
         $app->post('/get_list_history_supplying_power_regional_paginate', 'SupplyingPowerControllerNew@get_list_history_supplying_power_regional_paginate');
 
-
+        //perubahan lokasi site
         $app->post('/list_report_new_site_paginate', 'SiteControllerNew@list_report_new_site_paginate');
         $app->post('/detail_report_site', 'SiteControllerNew@detail_report_site');
-        $app->post('/detail_report_site', 'SiteControllerNew@detail_report_site');
         $app->post('/approve_report_new_loc_site', 'SiteControllerNew@approveReportNewLocSite');
+        $app->post('/list_history_report_new_site_paginate', 'SiteControllerNew@list_history_report_new_site_paginate');
+
+        //reschedule SIK
+        $app->post('/get_list_reschedule_sik', 'RtpoControllerNew@get_list_reschedule_sik');
+        //$app->post('/getDetailRescheduleSik', 'RtpoControllerNew@getDetailRescheduleSik'); //new function
+        $app->post('/approve_reschedule_sik', 'RtpoControllerNew@approve_reschedule_sik');
+        $app->post('/reject_reschedule_sik', 'RtpoControllerNew@reject_reschedule_sik');
+
+        // sampling site
+        // getlistsamplingsite
+        // checkdistancesamplingsite
+        // insertsamplingsite
 
 
         // getListHistorySupplyingPowerRtpo
