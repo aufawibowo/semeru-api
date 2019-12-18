@@ -3,7 +3,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 // use App\Bts;
 use DB;
-class SiteController extends Controller
+class SiteControllerNew extends Controller
 {
 
 
@@ -2272,7 +2272,7 @@ class SiteController extends Controller
     return response($res);
   }
 
-  public function listHistoryReportNewSitePaginate(Request $request){
+  public function list_history_report_new_site_paginate(Request $request){
 
     $rtpo_id = $request->input('rtpo_id');
 
