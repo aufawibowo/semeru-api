@@ -105,6 +105,7 @@ if ($maintenance == 0) {
 			} catch (Exception $e) {
 				//$response[$tmp_count]['success'] = false; uncomment this to revert to its original version
 				$response[$tmp_count]['message'] = $e;
+				// $response[$tmp_count]['100% success'] = false;
 			}
 			// $tmp_count = $tmp_count +1;
 			// $file_upload_url = 'images/';
@@ -112,11 +113,11 @@ if ($maintenance == 0) {
 		
 
 		//$response['success'] = true;
-		$response['message'] = 'Success';
-		$response['100% success'] = true;
+		$response['message'] = 'Succes!!';
+		$response['100% success'] = 'true';
 
 		if($tmp_count!=$success_count){
-			//$response['success'] = false; uncomment this to revert to its original version
+			$response['message'] = 'Sebagian file gagal di upload!'; //uncomment this to revert to its original version
 			$response['100% success'] = false;
 		}
 
