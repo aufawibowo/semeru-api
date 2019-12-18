@@ -761,6 +761,13 @@ $app->group(['prefix' => 'api'], function () use ($app) {
         $app->post('/get_list_history_supplying_power_regional', 'SupplyingPowerControllerNew@get_list_history_supplying_power_regional');
         $app->post('/get_list_history_supplying_power_regional_paginate', 'SupplyingPowerControllerNew@get_list_history_supplying_power_regional_paginate');
 
+
+        $app->post('/list_report_new_site_paginate', 'SiteControllerNew@list_report_new_site_paginate');
+        $app->post('/detail_report_site', 'SiteControllerNew@detail_report_site');
+        $app->post('/detail_report_site', 'SiteControllerNew@detail_report_site');
+        $app->post('/approve_report_new_loc_site', 'SiteControllerNew@approveReportNewLocSite');
+
+
         // getListHistorySupplyingPowerRtpo
         $app->post('/get_list_history_supplying_power_rtpo', 'SupplyingPowerController@getListHistorySupplyingPowerRtpo');
     });
