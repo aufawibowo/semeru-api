@@ -1123,7 +1123,7 @@ class RtpoControllerNew extends Controller
     $reason = $request->input('reason');
     $is_approved = $request->input('is_approved');
     //$username = 'enggarrio';
-
+    settype($is_approved, "boolean");
     $rtpo_users_data = DB::table('users')
     ->select('*')
     ->where('username',$username)
@@ -1155,6 +1155,7 @@ class RtpoControllerNew extends Controller
         'rtpo_cn' => $rtpo_cn,
         'last_updated' => $date_now,
         'is_sync' => 0,
+        ]);
     }
 
 
