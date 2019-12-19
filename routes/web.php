@@ -769,14 +769,14 @@ $app->group(['prefix' => 'api'], function () use ($app) {
 
         //reschedule SIK
         $app->post('/get_list_reschedule_sik', 'RtpoControllerNew@get_list_reschedule_sik');
-        //$app->post('/getDetailRescheduleSik', 'RtpoControllerNew@getDetailRescheduleSik'); //new function
+        $app->post('/get_detail_reschedule_sik', 'RtpoControllerNew@get_detail_reschedule_sik'); //new function
         $app->post('/approve_reschedule_sik', 'RtpoControllerNew@approve_reschedule_sik');
         $app->post('/reject_reschedule_sik', 'RtpoControllerNew@reject_reschedule_sik');
 
         // sampling site
-        // getlistsamplingsite
-        // checkdistancesamplingsite
-        // insertsamplingsite
+        $app->post('/get_list_sampling_site', 'RtpoControllerNew@get_list_sampling_site');
+        $app->post('/check_distance_sampling_site', 'RtpoControllerNew@check_distance_sampling_site');
+        $app->post('/insert_sampling_site', 'RtpoControllerNew@insert_sampling_site');
 
 
         // getListHistorySupplyingPowerRtpo

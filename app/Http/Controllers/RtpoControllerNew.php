@@ -449,7 +449,7 @@ class RtpoControllerNew extends Controller
     return response($res);      
   }
 
-  public function getListSamplingSite(Request $request){
+  public function get_list_sampling_site(Request $request){
 
     date_default_timezone_set("Asia/Jakarta");
     $date_now = date('Y-m-d H:i:s');
@@ -516,7 +516,7 @@ class RtpoControllerNew extends Controller
     }
   }
 
-  public function checkDistanceSamplingSite(Request $request){
+  public function check_distance_sampling_site(Request $request){
     date_default_timezone_set("Asia/Jakarta");
     $now = date('Y-m-d H:i:s');
 
@@ -826,7 +826,7 @@ class RtpoControllerNew extends Controller
     return response($res);  
   }
 
-  public function insertSamplingSite(Request $request){
+  public function insert_sampling_site(Request $request){
 
     date_default_timezone_set("Asia/Jakarta");
     $date_now = date('Y-m-d H:i:s');
@@ -1074,6 +1074,44 @@ class RtpoControllerNew extends Controller
     return response($res); 
   }
 
+  public function get_detail_reschedule_sik(Request $request)
+  {
+    date_default_timezone_set("Asia/Jakarta");
+    $date_now = date('Y-m-d H:i:s');
+    $periode = date('Y-m');
+
+    $rtpo_id = $request->input('rtpo_id');
+    $page = $request->input('page');
+
+    $limit = 20;
+    $offset = ($page-1)*$limit;
+
+    $data_sik = DB::table('propose_reschedule')
+    ->select('*')
+    ->where('rtpo_id',$rtpo_id)
+    ->where('periode',$periode)
+    ->where('status',0)
+    ->offset($offset)
+    ->limit($limit)
+    ->get();
+
+    foreach ($data_sik as $key => $value) {
+      $date_created2 = $this->tanggal_bulan_tahun_indo_tiga_char($value->date_created);
+      //$old_schedule2 = $this->tanggal_bulan_tahun_indo_tiga_char($value->old_schedule);
+      //$new_schedule2 = $this->tanggal_bulan_tahun_indo_tiga_char($value->new_schedule);
+
+      $value->date_created = $date_created2;
+      //$value->old_schedule = $old_schedule2;
+      //$value->new_schedule = $new_schedule2;
+    }
+
+    $res['success'] = true;
+    $res['message'] = 'SUCCESS';
+    $res['data'] = $data_sik;
+
+    return response($res); 
+  }
+
   public function approve_reschedule_sik(Request $request)
   {
     date_default_timezone_set("Asia/Jakarta");
@@ -1082,7 +1120,8 @@ class RtpoControllerNew extends Controller
 
     $sik_no = $request->input('sik_no');
     $username = $request->input('username');
-
+    $reason = $request->input('reason');
+    $is_approved = $request->input('is_approved');
     //$username = 'enggarrio';
 
     $rtpo_users_data = DB::table('users')
@@ -1093,60 +1132,75 @@ class RtpoControllerNew extends Controller
     $rtpo_nik = $rtpo_users_data->id;
     $rtpo_cn = $rtpo_users_data->name;
 
-    $approve = DB::table('propose_reschedule')
-    ->where('sik_no',$sik_no)
-    ->update([
-      'status' => 1,
-      'status_desc' => 'WAITING FOR NOS APPROVAL',
-      'rtpo_nik' => $rtpo_nik,
-      'rtpo_cn' => $rtpo_cn,
-      'last_updated' => $date_now,
-      'is_sync' => 0,
-    ]);
+    if($is_approved){
+      $approve = DB::table('propose_reschedule')
+      ->where('sik_no',$sik_no)
+      ->update([
+        'status' => 1,
+        'status_desc' => 'WAITING FOR NOS APPROVAL',
+        'rtpo_nik' => $rtpo_nik,
+        'rtpo_cn' => $rtpo_cn,
+        'last_updated' => $date_now,
+        'is_sync' => 0,
+      ]);
+    }
+    else{
+      $approve = DB::table('propose_reschedule')
+      ->where('sik_no',$sik_no)
+      ->update([
+        'status' => 2,
+        'status_desc' => 'REJECTED BY RTPO',
+        'reject_reason' => $reason,
+        'rtpo_nik' => $rtpo_nik,
+        'rtpo_cn' => $rtpo_cn,
+        'last_updated' => $date_now,
+        'is_sync' => 0,
+    }
 
-    $res['success'] = true;
-    $res['message'] = 'SUCCESS';
+
+    $res['success'] = 'OK';
+    $res['message'] = 'Success';
     
     return response($res); 
   }
   
-  public function reject_reschedule_sik(Request $request)
-  {
-    date_default_timezone_set("Asia/Jakarta");
-    $date_now = date('Y-m-d H:i:s');
-    $periode = date('Y-m');
+  // public function reject_reschedule_sik(Request $request)
+  // {
+  //   date_default_timezone_set("Asia/Jakarta");
+  //   $date_now = date('Y-m-d H:i:s');
+  //   $periode = date('Y-m');
 
-    $sik_no = $request->input('sik_no');
-    $reason = $request->input('reason');
-    $username = $request->input('username');
+  //   $sik_no = $request->input('sik_no');
+  //   $reason = $request->input('reason');
+  //   $username = $request->input('username');
 
-    //$username = 'enggarrio';
+  //   //$username = 'enggarrio';
 
-    $rtpo_users_data = DB::table('users')
-    ->select('*')
-    ->where('username',$username)
-    ->first();
+  //   $rtpo_users_data = DB::table('users')
+  //   ->select('*')
+  //   ->where('username',$username)
+  //   ->first();
 
-    $rtpo_nik = $rtpo_users_data->id;
-    $rtpo_cn = $rtpo_users_data->name;
+  //   $rtpo_nik = $rtpo_users_data->id;
+  //   $rtpo_cn = $rtpo_users_data->name;
 
-    $approve = DB::table('propose_reschedule')
-    ->where('sik_no',$sik_no)
-    ->update([
-      'status' => 2,
-      'status_desc' => 'REJECTED BY RTPO',
-      'reject_reason' => $reason,
-      'rtpo_nik' => $rtpo_nik,
-      'rtpo_cn' => $rtpo_cn,
-      'last_updated' => $date_now,
-      'is_sync' => 0,
-    ]);
+  //   $approve = DB::table('propose_reschedule')
+  //   ->where('sik_no',$sik_no)
+  //   ->update([
+  //     'status' => 2,
+  //     'status_desc' => 'REJECTED BY RTPO',
+  //     'reject_reason' => $reason,
+  //     'rtpo_nik' => $rtpo_nik,
+  //     'rtpo_cn' => $rtpo_cn,
+  //     'last_updated' => $date_now,
+  //     'is_sync' => 0,
+  //   ]);
 
-    $res['success'] = true;
-    $res['message'] = 'SUCCESS';
+  //   $res['success'] = true;
+  //   $res['message'] = 'SUCCESS';
     
-    return response($res); 
-  }
+  //   return response($res); 
+  // }
 
   public function requestMbpToSiteDown(Request $request){
 
