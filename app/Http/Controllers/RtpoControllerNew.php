@@ -486,11 +486,11 @@ class RtpoControllerNew extends Controller
     }
 
 
-    $res['success'] = true;
-    $res['message'] = 'success'; 
+    $res['success'] = 'OK';
+    $res['message'] = 'Success';
     if (@$checkSampling==null) {
-      $res['success'] = false;
-      $res['message'] = 'data not found'; 
+      $res['success'] = 'NOT OK';
+      $res['message'] = 'Data Not Found';
     }
     $res['data'] = @$checkSampling;
 
@@ -520,8 +520,8 @@ class RtpoControllerNew extends Controller
     date_default_timezone_set("Asia/Jakarta");
     $now = date('Y-m-d H:i:s');
 
-    $res['success'] = true;
-    $res['message'] = 'success site';
+    $res['success'] = 'OK';
+    $res['message'] = 'Success';
     //$res['login'] =1;      
     //return response($res); 
 
@@ -539,8 +539,8 @@ class RtpoControllerNew extends Controller
     
 
     if ($latitude==null) {
-      $res['success'] = false;
-      $res['message'] = 'latitude is null'; 
+      $res['success'] = 'NOT OK';
+      $res['message'] = 'Latitude is null';
 
       $update_log = DB::table('log_masuk_sampling')
       ->where('id',$log_sampling)
@@ -551,8 +551,8 @@ class RtpoControllerNew extends Controller
       return response($res); 
     }
     if ($longitude==null) {
-      $res['success'] = false;
-      $res['message'] = 'longitude is null'; 
+      $res['success'] = 'NOT OK';
+      $res['message'] = 'Longitude is null';
 
       $update_log = DB::table('log_masuk_sampling')
       ->where('id',$log_sampling)
@@ -563,8 +563,8 @@ class RtpoControllerNew extends Controller
       return response($res); 
     }
     if ($site_id==null) {
-      $res['success'] = false;
-      $res['message'] = 'site_id is null'; 
+      $res['success'] = 'NOT OK';
+      $res['message'] = 'Site ID is null';
 
       $update_log = DB::table('log_masuk_sampling')
       ->where('id',$log_sampling)
@@ -575,8 +575,8 @@ class RtpoControllerNew extends Controller
       return response($res); 
     }
 
-      $res['success'] = true;
-      $res['message'] = 'success';
+      $res['success'] = 'OK';
+      $res['message'] = 'Success';
       $res['login'] =0;   
 
 
@@ -598,8 +598,8 @@ class RtpoControllerNew extends Controller
     ]);
 
     if ($jaraks<1) {
-      $res['success'] = true;
-      $res['message'] = 'success site';
+      $res['success'] = 'OK';
+      $res['message'] = 'Success';
       $res['login'] =1;
 
       $update_log = DB::table('log_masuk_sampling')
@@ -624,8 +624,8 @@ class RtpoControllerNew extends Controller
     $res['jarak'] =$jarak . " km";
 
     if ($jarak<1) {
-      $res['success'] = true;
-      $res['message'] = 'success report site';
+      $res['success'] = 'OK';
+      $res['message'] = 'Success';
       $res['login'] =1;     
 
       $update_log = DB::table('log_masuk_sampling')
@@ -843,13 +843,13 @@ class RtpoControllerNew extends Controller
     $data['sampling_id']=@$request->input('sampling_id');
     $data['sampling_date']=$date_now;
     if ($data['sampling_by']==null) {
-      $res['success'] = false;
-      $res['message'] = 'sampling_by not found';
+      $res['success'] = 'NOT OK';
+      $res['message'] = 'Sampling by not found';
       return response($res); 
     }
     if ($data['sampling_id']==null) {
-      $res['success'] = false;
-      $res['message'] = 'sampling_id not found';
+      $res['success'] = 'NOT OK';
+      $res['message'] = 'Sampling ID not found';
     }
 
     $data['nilai_kebersihan_ac']=$request->input('nilai_kebersihan_ac');
@@ -883,8 +883,8 @@ class RtpoControllerNew extends Controller
     $data['is_sync']=0;
     
     if ($data['sampling_by']==null) {  
-      $res['success'] = false;
-      $res['message'] = 'send by not found';
+      $res['success'] = 'NOT OK';
+      $res['message'] = 'Send by not found';
       return response($res); 
     }
 
@@ -894,8 +894,8 @@ class RtpoControllerNew extends Controller
     ->where('sampling_id','=',$data['sampling_id'])
     ->first();
     if (@$checkSampling->site_id==null) {
-      $res['success'] = false;
-      $res['message'] = 'data sampling not found';
+      $res['success'] = 'NOT OK';
+      $res['message'] = 'Data sampling not found';
       return response($res); 
     }
 
@@ -932,12 +932,12 @@ class RtpoControllerNew extends Controller
       ->update($data);
 
       if ($updateSampling) {
-        $res['success'] = true;
-        $res['message'] = 'success';
+        $res['success'] = 'OK';
+        $res['message'] = 'Success';
       }else{
 
-        $res['success'] = false;
-        $res['message'] = 'failed to update data';
+        $res['success'] = 'NOT OK';
+        $res['message'] = 'Failed to update data';
       }
 
     $getSampling = DB::table('sampling_site')
@@ -1067,8 +1067,8 @@ class RtpoControllerNew extends Controller
       //$value->new_schedule = $new_schedule2;
     }
 
-    $res['success'] = true;
-    $res['message'] = 'SUCCESS';
+    $res['success'] = 'OK';
+    $res['message'] = 'Success';
     $res['data'] = $data_sik;
 
     return response($res); 
@@ -1105,8 +1105,8 @@ class RtpoControllerNew extends Controller
       //$value->new_schedule = $new_schedule2;
     }
 
-    $res['success'] = true;
-    $res['message'] = 'SUCCESS';
+    $res['success'] = 'OK';
+    $res['message'] = 'Success';
     $res['data'] = $data_sik;
 
     return response($res); 

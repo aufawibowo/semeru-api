@@ -1000,7 +1000,7 @@ class SiteControllerNew extends Controller
     ->first();
 
     if ($report_data == null) {
-      $res['success'] = false;
+      $res['success'] = 'NOT OK';
       $res['message'] = 'FAILED_SIK_NOT_FOUND';
       // $res['data'] = $report_data;
       return response($res);
@@ -1028,8 +1028,8 @@ class SiteControllerNew extends Controller
       $data['old_lon'] = $report_data->old_lon;
       $data['image_url'] = @$report_data->base_url."".$report_data->fname;
 
-      $res['success'] = true;
-      $res['message'] = 'SUCCESS';
+      $res['success'] = 'OK';
+      $res['message'] = 'Success';
       // $res['data'] = $report_data;
       $res['data'] = $data;
       return response($res);
@@ -1236,12 +1236,13 @@ class SiteControllerNew extends Controller
         //  ()> $title      : Pengajuan koordinat site anda tidak disetujui
       }
 
-      $res['success'] = true;
-      $res['message'] = 'SUCCESS';
+
+      $res['success'] = 'OK';
+      $res['message'] = 'Success';
       // $res['data'] = $report_data;
       return response($res);
     }else{
-      $res['success'] = false;
+      $res['success'] = 'NOT OK';
       $res['message'] = 'FAILED_SIK_NOT_FOUND';
       return response($res);
     }
@@ -2266,8 +2267,8 @@ class SiteControllerNew extends Controller
     
 
     # return all
-    $res['success'] = "OK";
-    $res['message'] = 'SUCCESS';
+    $res['success'] = 'OK';
+    $res['message'] = 'Success';
     $res['data'] = $report_data;
     return response($res);
   }
@@ -2303,8 +2304,8 @@ class SiteControllerNew extends Controller
     
 
     # return all
-    $res['success'] = true;
-    $res['message'] = 'SUCCESS';
+    $res['success'] = 'OK';
+    $res['message'] = 'Success';
     $res['data'] = $report_data;
     return response($res);
   }
