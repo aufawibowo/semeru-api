@@ -771,7 +771,7 @@ $app->group(['prefix' => 'api'], function () use ($app) {
         $app->post('/get_list_reschedule_sik', 'RtpoControllerNew@get_list_reschedule_sik');
         $app->post('/get_detail_reschedule_sik', 'RtpoControllerNew@get_detail_reschedule_sik'); //new function
         $app->post('/approve_reschedule_sik', 'RtpoControllerNew@approve_reschedule_sik');
-        $app->post('/reject_reschedule_sik', 'RtpoControllerNew@reject_reschedule_sik');
+        //$app->post('/reject_reschedule_sik', 'RtpoControllerNew@reject_reschedule_sik');
 
         // sampling site
         $app->post('/get_list_sampling_site', 'RtpoControllerNew@get_list_sampling_site');

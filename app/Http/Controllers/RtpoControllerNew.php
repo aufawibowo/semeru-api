@@ -1143,6 +1143,11 @@ class RtpoControllerNew extends Controller
         'last_updated' => $date_now,
         'is_sync' => 0,
       ]);
+
+      $res['success'] = 'OK';
+      $res['message'] = 'Success';
+      
+      return response($res); 
     }
     else{
       $approve = DB::table('propose_reschedule')
@@ -1156,13 +1161,12 @@ class RtpoControllerNew extends Controller
         'last_updated' => $date_now,
         'is_sync' => 0,
         ]);
+
+      $res['success'] = 'OK';
+      $res['message'] = 'Success';
+      
+      return response($res); 
     }
-
-
-    $res['success'] = 'OK';
-    $res['message'] = 'Success';
-    
-    return response($res); 
   }
   
   // public function reject_reschedule_sik(Request $request)
