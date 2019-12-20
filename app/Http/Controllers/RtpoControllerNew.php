@@ -454,6 +454,11 @@ class RtpoControllerNew extends Controller
     date_default_timezone_set("Asia/Jakarta");
     $date_now = date('Y-m-d H:i:s');
     $rtpo_id = $request->input('rtpo_id');
+
+    $page = $request->input('page');
+    $limit = 20;
+    $offset = ($page-1)*$limit;
+
     $periode = @$request->input('periode');
     if (@$periode==null) {
       $periode = date('Y-m');
@@ -466,6 +471,8 @@ class RtpoControllerNew extends Controller
     //->wherein('periode',['2018-10','2018-11','2018-12','2019-01'])
     ->where('periode',$periode)
     ->where('flag','=','1')
+    ->offset($offset)
+    ->limit($limit)
     ->orderBy('periode','site_id')
     ->get();
 
@@ -476,6 +483,8 @@ class RtpoControllerNew extends Controller
       //->wherein('periode',['2018-10','2018-11','2018-12','2019-01'])
       ->wherein('periode',[$periode])
       ->where('flag','=','1')
+      ->offset($offset)
+      ->limit($limit)
       ->orderBy('periode','site_id')
       ->get();
     }

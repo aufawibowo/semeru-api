@@ -764,7 +764,7 @@ $app->group(['prefix' => 'api'], function () use ($app) {
         //perubahan lokasi site
         $app->post('/list_report_new_site_paginate', 'SiteControllerNew@list_report_new_site_paginate');
         $app->post('/detail_report_site', 'SiteControllerNew@detail_report_site');
-        $app->post('/approve_report_new_loc_site', 'SiteControllerNew@approveReportNewLocSite');
+        $app->post('/approve_report_new_loc_site', 'SiteControllerNew@approve_report_new_loc_site');
         $app->post('/list_history_report_new_site_paginate', 'SiteControllerNew@list_history_report_new_site_paginate');
 
         //reschedule SIK

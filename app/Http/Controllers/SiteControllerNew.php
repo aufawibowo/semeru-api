@@ -992,12 +992,19 @@ class SiteControllerNew extends Controller
     # masukan parameter report_id nya
     $report_id = $request->input('report_id');
 
+    $page = $request->input('page');
+
+    $limit = 20;
+    $offset = ($page-1)*$limit;
+
     # return tampilkan semua datanya where repoert_id nya sama dengan yang diinputkan..:D
     $report_data = DB::table('report_location_site as rls')
     ->join('site as s','rls.site_id','s.site_id')
     ->select('rls.*', 's.latitude as old_lat', 's.longitude as old_lon', 'rls.base_url','s.site_name', 'rls.fname')
     ->where('rls.report_id','=',$report_id)
-    ->first();
+    ->offset($offset)
+    ->limit($limit)
+    ->get();
 
     if ($report_data == null) {
       $res['success'] = 'NOT OK';
@@ -2259,13 +2266,11 @@ class SiteControllerNew extends Controller
     ->orderBy('rls.delivery_date','desc')
     ->get();
 
-    
     foreach ($report_data as $key => $value) {
       $delivery_date2 = $this->tanggal_bulan_tahun_indo($value->delivery_date);
       $value->delivery_date = $delivery_date2;
     }
     
-
     # return all
     $res['success'] = 'OK';
     $res['message'] = 'Success';
