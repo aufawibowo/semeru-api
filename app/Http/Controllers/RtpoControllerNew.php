@@ -476,6 +476,15 @@ class RtpoControllerNew extends Controller
     ->orderBy('periode','site_id')
     ->get();
 
+    $checkSampling_count = $checkSampling->count();
+    $totalPage = $checkSampling_count / $limit;
+    if(is_float($totalPage)){
+      $totalPage = ceil($totalPage);
+    }
+    else{
+      $totalPage = floor($totalPage);
+    }
+
     if ($rtpo_id==33) {
       $checkSampling = DB::table('sampling_site')
       ->select('sampling_id','site_id','site_name','regional','status_sampling', 'genset', 'kriteria_site','nilai_total','periode')
@@ -487,6 +496,15 @@ class RtpoControllerNew extends Controller
       ->limit($limit)
       ->orderBy('periode','site_id')
       ->get();
+
+      $checkSampling_count = $checkSampling->count();
+      $totalPage = $checkSampling_count / $limit;
+      if(is_float($totalPage)){
+        $totalPage = ceil($totalPage);
+      }
+      else{
+        $totalPage = floor($totalPage);
+      }
     }
 
     foreach ($checkSampling as $key => $value) {
@@ -497,6 +515,7 @@ class RtpoControllerNew extends Controller
 
     $res['success'] = 'OK';
     $res['message'] = 'Success';
+    $res['total_page'] = $totalPage;
     if (@$checkSampling==null) {
       $res['success'] = 'NOT OK';
       $res['message'] = 'Data Not Found';
@@ -1066,6 +1085,16 @@ class RtpoControllerNew extends Controller
     ->limit($limit)
     ->get();
 
+
+    $data_sik_count = $data_sik->count();
+    $totalPage = $data_sik_count / $limit;
+    if(is_float($totalPage)){
+      $totalPage = ceil($totalPage);
+    }
+    else{
+      $totalPage = floor($totalPage);
+    }
+
     foreach ($data_sik as $key => $value) {
       $date_created2 = $this->tanggal_bulan_tahun_indo_tiga_char($value->date_created);
       //$old_schedule2 = $this->tanggal_bulan_tahun_indo_tiga_char($value->old_schedule);
@@ -1078,6 +1107,7 @@ class RtpoControllerNew extends Controller
 
     $res['success'] = 'OK';
     $res['message'] = 'Success';
+    $res['total_page'] = $totalPage;
     $res['data'] = $data_sik;
 
     return response($res); 
@@ -1104,6 +1134,16 @@ class RtpoControllerNew extends Controller
     ->limit($limit)
     ->get();
 
+
+    $data_sik_count = $data_sik->count();
+    $totalPage = $data_sik_count / $limit;
+    if(is_float($totalPage)){
+      $totalPage = ceil($totalPage);
+    }
+    else{
+      $totalPage = floor($totalPage);
+    }
+
     foreach ($data_sik as $key => $value) {
       $date_created2 = $this->tanggal_bulan_tahun_indo_tiga_char($value->date_created);
       //$old_schedule2 = $this->tanggal_bulan_tahun_indo_tiga_char($value->old_schedule);
@@ -1116,6 +1156,7 @@ class RtpoControllerNew extends Controller
 
     $res['success'] = 'OK';
     $res['message'] = 'Success';
+    $res['total_page'] = $totalPage;
     $res['data'] = $data_sik;
 
     return response($res); 

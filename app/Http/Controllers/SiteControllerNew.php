@@ -1006,6 +1006,15 @@ class SiteControllerNew extends Controller
     ->limit($limit)
     ->get();
 
+    $report_data_count = $report_data->count();
+    $totalPage = $report_data_count / $limit;
+    if(is_float($totalPage)){
+      $totalPage = ceil($totalPage);
+    }
+    else{
+      $totalPage = floor($totalPage);
+    }
+
     if ($report_data == null) {
       $res['success'] = 'NOT OK';
       $res['message'] = 'FAILED_SIK_NOT_FOUND';
@@ -1037,6 +1046,7 @@ class SiteControllerNew extends Controller
 
       $res['success'] = 'OK';
       $res['message'] = 'Success';
+      $res['total_page'] = $totalPage;
       // $res['data'] = $report_data;
       $res['data'] = $data;
       return response($res);
@@ -2266,6 +2276,16 @@ class SiteControllerNew extends Controller
     ->orderBy('rls.delivery_date','desc')
     ->get();
 
+    $report_data_count = $report_data->count();
+
+    $totalPage = $report_data_count / $limit;
+    if(is_float($totalPage)){
+      $totalPage = ceil($totalPage);
+    }
+    else{
+      $totalPage = floor($totalPage);
+    }
+
     foreach ($report_data as $key => $value) {
       $delivery_date2 = $this->tanggal_bulan_tahun_indo($value->delivery_date);
       $value->delivery_date = $delivery_date2;
@@ -2274,6 +2294,7 @@ class SiteControllerNew extends Controller
     # return all
     $res['success'] = 'OK';
     $res['message'] = 'Success';
+    $res['total_page'] = $totalPage;
     $res['data'] = $report_data;
     return response($res);
   }
@@ -2301,6 +2322,15 @@ class SiteControllerNew extends Controller
     ->orderBy('rls.respon_by_rtpo_at','desc')
     ->get();
 
+    $report_data_count = $report_data->count();
+
+    $totalPage = $report_data_count / $limit;
+    if(is_float($totalPage)){
+      $totalPage = ceil($totalPage);
+    }
+    else{
+      $totalPage = floor($totalPage);
+    }
     
     foreach ($report_data as $key => $value) {
       $delivery_date2 = $this->tanggal_bulan_tahun_indo_tiga_char($value->delivery_date);
@@ -2311,6 +2341,7 @@ class SiteControllerNew extends Controller
     # return all
     $res['success'] = 'OK';
     $res['message'] = 'Success';
+    $res['total_page'] = $totalPage;
     $res['data'] = $report_data;
     return response($res);
   }
