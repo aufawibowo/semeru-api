@@ -1000,7 +1000,7 @@ class SiteControllerNew extends Controller
     # return tampilkan semua datanya where repoert_id nya sama dengan yang diinputkan..:D
     $report_data = DB::table('report_location_site as rls')
     ->join('site as s','rls.site_id','s.site_id')
-    ->select('rls.*', 's.latitude as old_lat', 's.longitude as old_lon', 'rls.base_url','s.site_name', 'rls.fname')
+    ->select('rls.*', 's.latitude as old_lat', 's.longitude as old_lon', 'rls.base_url','s.site_name', 'rls.fname', 'rls.report_id as report_id')
     ->where('rls.report_id','=',$report_id)
     ->offset($offset)
     ->limit($limit)
@@ -1015,35 +1015,36 @@ class SiteControllerNew extends Controller
       $totalPage = floor($totalPage);
     }
 
+    $report_data = json_decode($report_data, true);
     if ($report_data == null) {
       $res['success'] = 'NOT OK';
       $res['message'] = 'FAILED_SIK_NOT_FOUND';
       // $res['data'] = $report_data;
       return response($res);
     }else{
-
-      $data['report_id'] = $report_data->report_id;
-      $data['is_offline'] = $report_data->is_offline;
-      $data['send_by'] = $report_data->send_by;
-      $data['delivery_date'] = $this->tanggal_bulan_tahun_indo($report_data->delivery_date); //$report_data->delivery_date;
-      $data['site_id'] = $report_data->site_id;
-      $data['site_name'] = $report_data->site_name;
-      $data['sik_no'] = $report_data->sik_no;
-      $data['rtpo_id'] = $report_data->rtpo_id;
-      $data['new_lat'] = $report_data->new_lat;
-      $data['new_lon'] = $report_data->new_lon;
-      $data['device_acuration'] = $report_data->device_acuration;
-      $data['approval'] = $report_data->approval;
-      $data['respon_by'] = $report_data->respon_by;
-      $data['respon_at'] = $report_data->respon_at;
-      $data['last_update'] = $report_data->last_update;
-      $data['is_sync'] = $report_data->is_sync;
-      $data['last_sync'] = $report_data->last_sync;
-      $data['id_sync'] = $report_data->id_sync;
-      $data['old_lat'] = $report_data->old_lat;
-      $data['old_lon'] = $report_data->old_lon;
-      $data['image_url'] = @$report_data->base_url."".$report_data->fname;
-
+      foreach ($report_data as $param => $row) {
+        $data[$param]['report_id']      = $row['report_id'];
+        $data[$param]['is_offline']     = $row['is_offline'];
+        $data[$param]['send_by']        = $row['send_by'];
+        $data[$param]['delivery_date']  = $this->tanggal_bulan_tahun_indo($row['delivery_date']); //$report_data->delivery_date;
+        $data[$param]['site_id']        = $row['site_id'];
+        $data[$param]['site_name']      = $row['site_name'];
+        $data[$param]['sik_no']         = $row['sik_no'];
+        $data[$param]['rtpo_id']        = $row['rtpo_id'];
+        $data[$param]['new_lat']        = $row['new_lat'];
+        $data[$param]['new_lon']        = $row['new_lon'];
+        $data[$param]['device_acuration'] = $row['device_acuration'];
+        $data[$param]['approval']       = $row['approval'];
+        $data[$param]['respon_by']      = $row['respon_by'];
+        $data[$param]['respon_at']      = $row['respon_at'];
+        $data[$param]['last_update']    = $row['last_update'];
+        $data[$param]['is_sync']        = $row['is_sync'];
+        $data[$param]['last_sync']      = $row['last_sync'];
+        $data[$param]['id_sync']        = $row['id_sync'];
+        $data[$param]['old_lat']        = $row['old_lat'];
+        $data[$param]['old_lon']        = $row['old_lon'];
+        $data[$param]['image_url']      = $row['base_url']."".$row['fname'];
+      }
       $res['success'] = 'OK';
       $res['message'] = 'Success';
       $res['total_page'] = $totalPage;
@@ -2286,10 +2287,10 @@ class SiteControllerNew extends Controller
       $totalPage = floor($totalPage);
     }
 
-    foreach ($report_data as $key => $value) {
-      $delivery_date2 = $this->tanggal_bulan_tahun_indo($value->delivery_date);
-      $value->delivery_date = $delivery_date2;
-    }
+    // foreach ($report_data as $key => $value) {
+    //   $delivery_date2 = $this->tanggal_bulan_tahun_indo($value->delivery_date);
+    //   $value->delivery_date = $delivery_date2;
+    // }
     
     # return all
     $res['success'] = 'OK';
@@ -2332,10 +2333,10 @@ class SiteControllerNew extends Controller
       $totalPage = floor($totalPage);
     }
     
-    foreach ($report_data as $key => $value) {
-      $delivery_date2 = $this->tanggal_bulan_tahun_indo_tiga_char($value->delivery_date);
-      $value->delivery_date = $delivery_date2;
-    }
+    // foreach ($report_data as $key => $value) {
+    //   $delivery_date2 = $this->tanggal_bulan_tahun_indo_tiga_char($value->delivery_date);
+    //   $value->delivery_date = $delivery_date2;
+    // }
     
 
     # return all
