@@ -1006,50 +1006,46 @@ class SiteControllerNew extends Controller
     ->limit($limit)
     ->get();
 
-    $report_data_count = $report_data->count();
-    $totalPage = $report_data_count / $limit;
-    if(is_float($totalPage)){
-      $totalPage = ceil($totalPage);
-    }
-    else{
-      $totalPage = floor($totalPage);
-    }
-
     $report_data = json_decode($report_data, true);
+
+    // $res = [
+		// 	'success' => 'OK',
+		// 	'message' => 'Success',
+		// 	'data' => [],
+		// ];
     if ($report_data == null) {
       $res['success'] = 'NOT OK';
       $res['message'] = 'FAILED_SIK_NOT_FOUND';
       // $res['data'] = $report_data;
       return response($res);
     }else{
-      foreach ($report_data as $param => $row) {
-        $data[$param]['report_id']      = $row['report_id'];
-        $data[$param]['is_offline']     = $row['is_offline'];
-        $data[$param]['send_by']        = $row['send_by'];
-        $data[$param]['delivery_date']  = $this->tanggal_bulan_tahun_indo($row['delivery_date']); //$report_data->delivery_date;
-        $data[$param]['site_id']        = $row['site_id'];
-        $data[$param]['site_name']      = $row['site_name'];
-        $data[$param]['sik_no']         = $row['sik_no'];
-        $data[$param]['rtpo_id']        = $row['rtpo_id'];
-        $data[$param]['new_lat']        = $row['new_lat'];
-        $data[$param]['new_lon']        = $row['new_lon'];
-        $data[$param]['device_acuration'] = $row['device_acuration'];
-        $data[$param]['approval']       = $row['approval'];
-        $data[$param]['respon_by']      = $row['respon_by'];
-        $data[$param]['respon_at']      = $row['respon_at'];
-        $data[$param]['last_update']    = $row['last_update'];
-        $data[$param]['is_sync']        = $row['is_sync'];
-        $data[$param]['last_sync']      = $row['last_sync'];
-        $data[$param]['id_sync']        = $row['id_sync'];
-        $data[$param]['old_lat']        = $row['old_lat'];
-        $data[$param]['old_lon']        = $row['old_lon'];
-        $data[$param]['image_url']      = $row['base_url']."".$row['fname'];
+      foreach ($report_data as $row) {
+        $res['data']['report_id']      = $row['report_id'];
+        $res['data']['is_offline']     = $row['is_offline'];
+        $res['data']['send_by']        = $row['send_by'];
+        $res['data']['delivery_date']  = strtotime($row['delivery_date']); //$report_data->delivery_date;
+        $res['data']['site_id']        = $row['site_id'];
+        $res['data']['site_name']      = $row['site_name'];
+        $res['data']['sik_no']         = $row['sik_no'];
+        $res['data']['rtpo_id']        = $row['rtpo_id'];
+        $res['data']['new_lat']        = $row['new_lat'];
+        $res['data']['new_lon']        = $row['new_lon'];
+        $res['data']['device_acuration'] = $row['device_acuration'];
+        $res['data']['approval']       = $row['approval'];
+        $res['data']['respon_by']      = $row['respon_by'];
+        $res['data']['respon_at']      = $row['respon_at'];
+        $res['data']['last_update']    = $row['last_update'];
+        $res['data']['is_sync']        = $row['is_sync'];
+        $res['data']['last_sync']      = $row['last_sync'];
+        $res['data']['id_sync']        = $row['id_sync'];
+        $res['data']['old_lat']        = $row['old_lat'];
+        $res['data']['old_lon']        = $row['old_lon'];
+        $res['data']['image_url']      = $row['base_url']."".$row['fname'];
       }
       $res['success'] = 'OK';
       $res['message'] = 'Success';
-      $res['total_page'] = $totalPage;
       // $res['data'] = $report_data;
-      $res['data'] = $data;
+      // $res['data'] = $data;
       return response($res);
     }
   }
