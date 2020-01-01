@@ -231,7 +231,7 @@ class RtpoControllerNew extends Controller
       return response($res);  
   }
   
-  public function cancelRequestMbpToSiteDown(Request $request){
+  public function cancel_request_mbp_to_site_down(Request $request){
     /*
     ketika rtpo membatalkan penugasan mbp terhadap site tertentu, maka :
     > mbp status dirubah jadi available
@@ -280,34 +280,32 @@ class RtpoControllerNew extends Controller
     ->first();
 
     switch ($mbp_data->status) {
-      case "UNAVAILABLE":
-      // POPUP ANDA TIDAK SEDANG DITUGASKAN KARENA STATUS ANDA UNAVAILABLE
-      $res['success'] = false;
-      $res['message'] = 'YOUR_STATUS_UNAVAILABLE';
-      // $res['data'] =  $datax;
-      return response($res);
+      case "WAITING":
+        if ($tidak_dikerjakan) {
+          $tmp = $this->tiket_mbp_tidak_dikerjakan($sp_id,$reason,$cancel_by);
+        } else{
+          $tmp = $this->cancel_request_mbp($mbp_data->mbp_name,$mbp_id, $reason,$cancel_by, $cancel_category);
+        }
+        return response($tmp);
       break;
-      case "AVAILABLE":
-      // POPUP ANDA TIDAK SEDANG DITUGASKAN KARENA STATUS ANDA AVAILABLE
-      $res['success'] = false;
-      $res['message'] = 'YOUR_STATUS_AVAILABLE';
-      // $res['data'] =  $datax;
-      return response($res);
+      case "ON_PROGRESS":
+        if ($tidak_dikerjakan) {
+          $tmp = $this->tiket_mbp_tidak_dikerjakan($sp_id,$reason,$cancel_by);
+        } else{
+          $tmp = $this->cancel_request_mbp($mbp_data->mbp_name,$mbp_id, $reason,$cancel_by, $cancel_category);
+        }
+        return response($tmp);
       break;
       default:
-      // SET STATUS MBP KEMBALI KE AVAILABLE
-      // SET TABEL SP JADI CANCEL DAN DONE
-      // SET TABEL SITE MENJADI TIDAK DI ALOKASIKAN..:d
-      if ($tidak_dikerjakan) {
-        $tmp = $this->tiketMBPTidakDikerjakan($sp_id,$reason,$cancel_by);
-      } else{
-        $tmp = $this->CancelRequestMbp($mbp_data->mbp_name,$mbp_id, $reason,$cancel_by, $cancel_category);
-      }
-      return response($tmp);
+        // POPUP ANDA TIDAK SEDANG DITUGASKAN KARENA STATUS ANDA AVAILABLE
+        $res['success'] = false;
+        $res['message'] = 'YOUR_STATUS_AVAILABLE';
+        // $res['data'] =  $datax;
+        return response($res);
     }
   }
 
-  public function CancelRequestMbp($mbp_name,$mbp_id,$reason,$cancel_by, $cancel_category){
+  public function cancel_request_mbp($mbp_name,$mbp_id,$reason,$cancel_by, $cancel_category){
 
 
     // $notificationController = new NotificationController;
@@ -1502,7 +1500,7 @@ class RtpoControllerNew extends Controller
     return response($res);  
   }
 
-  public function tiketMBPTidakDikerjakan($sp_id,$reason,$cancel_by){
+  public function tiket_mbp_tidak_dikerjakan($sp_id,$reason,$cancel_by){
 
     date_default_timezone_set("Asia/Jakarta");
     $date_now = date('Y-m-d H:i:s');

@@ -84,8 +84,9 @@ $app->post('/getSiteClassTertinggiDariMbpTerdekat', 'RecommendationController@ge
 /*cek pengiriman notif*/$app->post('/requestMbpToSiteDown', 'RtpoController@requestMbpToSiteDown'); 
 /*cek pengiriman notif*/$app->post('/requestMbpToSiteDownNew', 'RtpoController@requestMbpToSiteDownNew'); 
 // fungsi untuk membatalkan penugasan mbp ke site dari sisi rtpo
-/*cek pengiriman notif*/$app->post('/cancelRequestMbpToSiteDown', 'RtpoController@cancelRequestMbpToSiteDown'); 
-
+/*cek pengiriman notif*/
+$app->post('/cancelRequestMbpToSiteDown', 'RtpoController@cancelRequestMbpToSiteDown'); 
+$app->post('/cancel_request_mbp_to_site_down', 'RtpoControllerNew@cancel_request_mbp_to_site_down'); 
 
 
 //-> fungsi untuk melakukan tugas dari rtpo -> mbp melaksanakan tugas dengan benar hingga done
@@ -105,6 +106,7 @@ $app->post('/misiPenyelamatanDataMbp', 'MbpController@misiPenyelamatanDataMbp');
 //. mbp mengirim pengajuan pembatalan penugasan kepada rtpo
 /*cek pengiriman notif*/$app->post('/sendCancellationLetterToRtpo', 'CancelController@sendCancellationLetterToRtpo'); 
 /*cek pengiriman notif*/$app->post('/sendCancellationLetterToRtpoNew', 'CancelController@sendCancellationLetterToRtpoNew'); 
+/*cek pengiriman notif*/$app->post('/send_cancellation_letter_to_rtpo', 'CancelController@send_cancellation_letter_to_rtpo'); 
 //. dan bila mbp ingin membatalkan pengajuannya, maka tinggal di delete aja dan tidak muncul di halaman rtpo
 /*cek pengiriman notif*/$app->post('/deleteCancellationLetterFromMbp1', 'CancelController@deleteCancellationLetterFromMbp1');
 /*cek pengiriman notif*/$app->post('/deleteCancellationLetterFromMbp', 'CancelController@deleteCancellationLetterFromMbp');
