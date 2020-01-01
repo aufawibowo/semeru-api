@@ -2254,7 +2254,6 @@ class SiteControllerNew extends Controller
   public function list_report_new_site_paginate(Request $request){
 
     $rtpo_id = $request->input('rtpo_id');
-
     $page = $request->input('page');
 
     $limit = 20;
@@ -2264,7 +2263,16 @@ class SiteControllerNew extends Controller
     # tampilakn site_id, username or nama yang mengajukan nama di ajukan pada tanggal..:D
     $report_data = DB::table('report_location_site as rls')
     ->join('site as s','rls.site_id','s.site_id')
-    ->select('rls.send_by','rls.site_id','s.site_name','rls.sik_no','rls.device_acuration','rls.delivery_date','rls.report_id','rls.is_offline','rls.approval')
+    ->select(
+      'rls.send_by',
+      'rls.site_id',
+      's.site_name',
+      'rls.sik_no',
+      'rls.device_acuration',
+      'rls.delivery_date',
+      'rls.report_id',
+      'rls.is_offline',
+      'rls.approval')
     ->where('rls.rtpo_id','=',$rtpo_id)
     // ->whereNotBetween('rls.approval', [1, 0])
     ->where('rls.approval','>',1)
@@ -2273,26 +2281,26 @@ class SiteControllerNew extends Controller
     ->orderBy('rls.delivery_date','desc')
     ->get();
 
-    $report_data_count = $report_data->count();
-
-    $totalPage = $report_data_count / $limit;
-    if(is_float($totalPage)){
-      $totalPage = ceil($totalPage);
-    }
-    else{
-      $totalPage = floor($totalPage);
-    }
-
     // foreach ($report_data as $key => $value) {
     //   $delivery_date2 = $this->tanggal_bulan_tahun_indo($value->delivery_date);
     //   $value->delivery_date = $delivery_date2;
     // }
     
+    foreach ($report_data as $row) {
+      $res['data']['send_by']      = $row['send_by'];
+      $res['data']['site_id']     = $row['site_id'];
+      $res['data']['site_name']        = $row['site_name'];
+      $res['data']['delivery_date']  = strtotime($row['delivery_date']); //$report_data->delivery_date;
+      $res['data']['sik_no']        = $row['sik_no'];
+      $res['data']['device_acuration']      = $row['device_acuration'];
+      $res['data']['sik_no']         = $row['sik_no'];
+      $res['data']['report_id']        = $row['report_id'];
+      $res['data']['is_offline']        = $row['is_offline'];
+      $res['data']['approval']        = $row['approval'];
+    }
     # return all
     $res['success'] = 'OK';
     $res['message'] = 'Success';
-    $res['total_page'] = $totalPage;
-    $res['data'] = $report_data;
     return response($res);
   }
 
