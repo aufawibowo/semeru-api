@@ -874,6 +874,14 @@ class UserController extends Controller
                   'status'=> @$row['status'],
                 ]
               );
+
+              $update_data=[
+                'regional'=> @$row['regional'],
+              ];
+              DB::table('users')->where('username',$row['username'])->update(
+                $update_data
+              );
+
               break;
 
             case 'RTPO':
@@ -889,6 +897,7 @@ class UserController extends Controller
                   'status'=> @$row['status'],
                 ]
               );
+
               break;
 
             case 'MBP_MT':
@@ -1038,7 +1047,7 @@ class UserController extends Controller
                   'cluster'=> @$row['cluster_name'],
                   'cluster_id'=> @$row['cluster_id'],
                 ];
-              DB::table('users')->where('username',$row['nik'])->update(
+              DB::table('users')->where('username',$row['username'])->update(
                 $update_data
               );
             //   print_r($update_data);
