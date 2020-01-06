@@ -447,7 +447,7 @@ class CancelController extends Controller
               'sp.reason_by' => $mbp_trouble->send_by_cn,
               
               'sp.cancel_image' => @$mbp_trouble->cancel_image,
-
+              'sp.is_sync' => 0,
               'sp.cancel_approved_by' => $user_data->username,
               'sp.detail_finish' =>4,
             ]
@@ -471,7 +471,8 @@ class CancelController extends Controller
           );
 
 
-        }else{
+        }
+        else{
 
             $upd_mtr = DB::table('mbp_trouble as mtr')
           ->where('mtr.id', $cancel_id)
@@ -497,7 +498,7 @@ class CancelController extends Controller
               'sp.reason_by' => $mbp_trouble->send_by_cn,
               
               'sp.cancel_image' => @$mbp_trouble->cancel_image,
-
+              'sp.is_sync' => 0,
               'sp.cancel_approved_by' => $user_data->username,
               'sp.detail_finish' =>4,
             ]
