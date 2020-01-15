@@ -11,9 +11,12 @@
 |
 */
 
-$app->get('/', function () use ($app) {
-	return $app->version();
-});
+$app->get(
+	'/',
+	function () use ($app) {
+		return $app->version();
+	}
+);
 $app->post('/playground', 'PlaygroundController@playground');
 
 $app->get('/bts_off', 'BtsController@get_bts_off'); 
@@ -29,27 +32,25 @@ $app->get('/convertSitetmpToQueryInsert', 'BtsController@convertSitetmpToQueryIn
 // setclassSite
 $app->get('/setclassSite', 'BtsController@setclassSite');
 
-$app->post('/register', 'UserController@register'); 
-$app->post('/users_update', 'UserController@users_update'); 
+$app->post('/register', 'UserController@register');
+$app->post('/users_update', 'UserController@users_update');
 
 $app->post('/login', 'UserController@login'); 
 // loginApp
-$app->post('/loginApp', 'UserController@loginApp'); 
-$app->get('/user/{id}', ['middleware' => 'auth', 'uses' =>  'UserController@get_user']);
-$app->post('/loginUserArea', 'UserController@loginUserArea'); 
+$app->post('/loginApp', 'UserController@loginApp');
+$app->get('/user/{id}', ['middleware' => 'auth', 'uses' => 'UserController@get_user']);
+$app->post('/loginUserArea', 'UserController@loginUserArea');
 $app->post('/cekUserType', 'UserController@cekUserType');
 $app->post('/cekUserPIN', 'UserController@cekUserPIN');
 
-
 // fungsi saat server private memberitahukan bahwa status mbp sudah berubah dari mainfail menjadi normal atau sebaliknya
-$app->post('/setSiteMainsFail', 'SiteController@setSiteMainsFail'); 
-$app->post('/update_report_location', 'SiteController@update_report_location'); 
-$app->post('/updateSiteMainsFail', 'SiteController@updateSiteMainsFail'); 
+$app->post('/setSiteMainsFail', 'SiteController@setSiteMainsFail');
+$app->post('/update_report_location', 'SiteController@update_report_location');
+$app->post('/updateSiteMainsFail', 'SiteController@updateSiteMainsFail');
 
-$app->get('/cekFileMt', 'SiteController@cekFileMt'); 
-$app->post('/cekFileMaintenance', 'SiteController@cekFileMaintenance'); 
-$app->post('/cekFileReplacement', 'SiteController@cekFileReplacement'); 
-
+$app->get('/cekFileMt', 'SiteController@cekFileMt');
+$app->post('/cekFileMaintenance', 'SiteController@cekFileMaintenance');
+$app->post('/cekFileReplacement', 'SiteController@cekFileReplacement');
 
 $app->post('/cekSamplingFormula', 'RtpoController@cekSamplingFormula');
 $app->post('/insertSamplingSite', 'RtpoController@insertSamplingSite');
@@ -61,10 +62,6 @@ $app->post('/getFinishSamplingSite', 'RtpoController@getFinishSamplingSite');
 $app->post('/updateSyncSamplingSite', 'RtpoController@updateSyncSamplingSite');
 $app->post('/updateFlagSamplingSite', 'RtpoController@updateFlagSamplingSite');
 $app->post('/createSamplingSiteFlag', 'RtpoController@createSamplingSiteFlag');
-
-
-
-
 
 //-> fungsi untuk melihat lokasi dan status emua site dan semua rtpo sampai rtpo memberikan tugas..
 //. memberpihatkan semua status site dan mbp ke map.
@@ -81,12 +78,13 @@ $app->post('/getMbpDariSiteTerdekat', 'RecommendationController@getMbpDariSiteTe
 $app->post('/getSiteClassTertinggiDariMbpTercepat', 'RecommendationController@getSiteClassTertinggiDariMbpTercepat'); //DONE..:D dan 
 $app->post('/getSiteClassTertinggiDariMbpTerdekat', 'RecommendationController@getSiteClassTertinggiDariMbpTerdekat'); //DONE..:D dan
 //. rtpo memberikan tugas kepada mbp menuju site tertentu
-/*cek pengiriman notif*/$app->post('/requestMbpToSiteDown', 'RtpoController@requestMbpToSiteDown'); 
-/*cek pengiriman notif*/$app->post('/requestMbpToSiteDownNew', 'RtpoController@requestMbpToSiteDownNew'); 
+/*cek pengiriman notif*/
+$app->post('/requestMbpToSiteDown', 'RtpoController@requestMbpToSiteDown');
+/*cek pengiriman notif*/
+$app->post('/requestMbpToSiteDownNew', 'RtpoController@requestMbpToSiteDownNew'); 
 // fungsi untuk membatalkan penugasan mbp ke site dari sisi rtpo
-/*cek pengiriman notif*/$app->post('/cancelRequestMbpToSiteDown', 'RtpoController@cancelRequestMbpToSiteDown'); 
-
-
+/*cek pengiriman notif*/
+$app->post('/cancelRequestMbpToSiteDown', 'RtpoController@cancelRequestMbpToSiteDown'); 
 
 //-> fungsi untuk melakukan tugas dari rtpo -> mbp melaksanakan tugas dengan benar hingga done
 //. mbp melihat statusnya sendiri
@@ -94,46 +92,56 @@ $app->post('/getStatusMbp', 'MbpController@getStatusMbp');
 $app->post('/getStatusMbp1', 'MbpController@getStatusMbp1');
 $app->post('/getStatusMbpNew', 'MbpController@getStatusMbpNew');
 //. mengupdate status mbp menjadi sesuai keinginan, entah dia minta dijadiin (on progress, chck'in atau kembali ke available)
-/*cek pengiriman notif*/$app->post('/updateStatusMbp', 'MbpController@updateStatusMbp');
-/*cek pengiriman notif*/$app->post('/updateStatusMbpNew', 'MbpController@updateStatusMbpNew');
+/*cek pengiriman notif*/
+$app->post('/updateStatusMbp', 'MbpController@updateStatusMbp');
+/*cek pengiriman notif*/
+$app->post('/updateStatusMbpNew', 'MbpController@updateStatusMbpNew');
 $app->post('/updateStatusMbp1', 'MbpController@updateStatusMbp1');
 $app->post('/misiPenyelamatanDataMbp', 'MbpController@misiPenyelamatanDataMbp');
 
-
-
 //-> fungsi untuk mbp melakukan pembatalan penugasan -> rtpo memberikan aksi terhadap pengajuan tersebut
 //. mbp mengirim pengajuan pembatalan penugasan kepada rtpo
-/*cek pengiriman notif*/$app->post('/sendCancellationLetterToRtpo', 'CancelController@sendCancellationLetterToRtpo'); 
-/*cek pengiriman notif*/$app->post('/sendCancellationLetterToRtpoNew', 'CancelController@sendCancellationLetterToRtpoNew'); 
+/*cek pengiriman notif*/
+$app->post('/sendCancellationLetterToRtpo', 'CancelController@sendCancellationLetterToRtpo');
+/*cek pengiriman notif*/
+$app->post('/sendCancellationLetterToRtpoNew', 'CancelController@sendCancellationLetterToRtpoNew'); 
 //. dan bila mbp ingin membatalkan pengajuannya, maka tinggal di delete aja dan tidak muncul di halaman rtpo
-/*cek pengiriman notif*/$app->post('/deleteCancellationLetterFromMbp1', 'CancelController@deleteCancellationLetterFromMbp1');
-/*cek pengiriman notif*/$app->post('/deleteCancellationLetterFromMbp', 'CancelController@deleteCancellationLetterFromMbp');
+/*cek pengiriman notif*/
+$app->post('/deleteCancellationLetterFromMbp1', 'CancelController@deleteCancellationLetterFromMbp1');
+/*cek pengiriman notif*/
+$app->post('/deleteCancellationLetterFromMbp', 'CancelController@deleteCancellationLetterFromMbp');
 // rtpo bisa melihat list pengajuan pembatalan dari mbp-mbpnya (bila sudah di lakukan aksi pada pesan tersebut maka tinggal di beri flag)
 $app->post('/deleteCancellationLetterFromMbpTest', 'CancelController@deleteCancellationLetterFromMbpTest');
 
-
 $app->post('/getCancellationLetter1', 'CancelController@getCancellationLetter1');
-$app->post('/getCancellationLetter', 'CancelController@getCancellationLetter');  
+$app->post('/getCancellationLetter', 'CancelController@getCancellationLetter');
 $app->post('/getCancellationLetterPaginate', 'CancelController@getCancellationLetterPaginate');  
 // rtpo melihat detil dari pengajuan mbp
-$app->post('/getMessageDetil1', 'MessageController@getMessageDetil1'); 
+$app->post('/getMessageDetil1', 'MessageController@getMessageDetil1');
 $app->post('/getMessageDetil', 'MessageController@getMessageDetil'); 
 // disini merupakan aksi untuk melakukan persetujuan atau tidak menyetujui dengan yang di ajukan mbp 
-/*cek pengiriman notif*/$app->post('/cancellationStatementRtpo1', 'CancelController@cancellationStatementRtpo1'); 
-/*cek pengiriman notif*/$app->post('/cancellationStatementRtpo', 'CancelController@cancellationStatementRtpo'); 
+/*cek pengiriman notif*/
+$app->post('/cancellationStatementRtpo1', 'CancelController@cancellationStatementRtpo1');
+/*cek pengiriman notif*/
+$app->post('/cancellationStatementRtpo', 'CancelController@cancellationStatementRtpo'); 
 
 
 //-> fungsi untuk mbp melakukan pemberitahuan delay -> rtpo memberikan aksi terhadap pengajuan tersebut (di genti dan dibatalkan / di)
 // mengirimkan pesan pemberitahuan tentang delay yang dilakukan oleh mbp
-/*cek pengiriman notif*/$app->post('/sendDelayLetterToRtpo', 'CancelController@sendDelayLetterToRtpo'); 
-/*cek pengiriman notif*/$app->post('/sendDelayLetterToRtpoNew', 'CancelController@sendDelayLetterToRtpoNew'); 
+/*cek pengiriman notif*/
+$app->post('/sendDelayLetterToRtpo', 'CancelController@sendDelayLetterToRtpo');
+/*cek pengiriman notif*/
+$app->post('/sendDelayLetterToRtpoNew', 'CancelController@sendDelayLetterToRtpoNew'); 
 // rtpo bisa melihat list pengajuan pembatalan dari mbp-mbpnya (bila sudah di lakukan aksi pada pesan tersebut maka tinggal di beri flag)
 $app->post('/getCancellationLetter', 'CancelController@getCancellationLetter');  
 // fungsi ini digunakan mbp bila delay yang mereka rasakan telah usai
-/*cek pengiriman notif*/$app->post('/finishDelayFromMbp', 'CancelController@finishDelayFromMbp'); //belim mencantumkan nama mbp
+/*cek pengiriman notif*/
+$app->post('/finishDelayFromMbp', 'CancelController@finishDelayFromMbp'); //belim mencantumkan nama mbp
 // delayStatementRtpo
-/*cek pengiriman notif*/$app->post('/delayStatementRtpo1', 'CancelController@delayStatementRtpo1');
-/*cek pengiriman notif*/$app->post('/delayStatementRtpo', 'CancelController@delayStatementRtpo');
+/*cek pengiriman notif*/
+$app->post('/delayStatementRtpo1', 'CancelController@delayStatementRtpo1');
+/*cek pengiriman notif*/
+$app->post('/delayStatementRtpo', 'CancelController@delayStatementRtpo');
 
 
 //-> MELIHAT STATUS AKTIF DAN  TIDAK AKTIF DARI MBP -> DIA MERUBAH STATUSNYA SENDIRI
@@ -155,10 +163,6 @@ $app->post('/getNotificationHome', 'NotificationController@getNotificationHome')
 // checkNotisMbpSOS
 $app->post('/checkNotif', 'NotificationController@checkNotif');
 $app->post('/getTelegramQueue', 'NotificationController@getTelegramQueue');
-
-
-
-
 
 // -> melihat list sos sampai memberikan bantuan mbp
 // getListSOS
@@ -214,9 +218,6 @@ $app->post('/checkOtpTicketing', 'OtpController@checkOtpTicketing');
 // setOtpApp
 $app->post('/setOtpLoginApp', 'OtpController@setOtpLoginApp');
 
-
-
-
 // getListAssignment
 $app->post('/getListAssignment', 'MbpController@getListAssignment');
 $app->post('/getListAssignmentPaginate', 'MbpController@getListAssignmentPaginate');
@@ -224,41 +225,19 @@ $app->post('/getListAssignmentPaginate', 'MbpController@getListAssignmentPaginat
 $app->post('/getListActiveNotActive', 'MbpController@getListActiveNotActive');
 
 
-
-
-
-
-
-
 // uploadImage
 // $app->post('/uploadImage', 'ImageController@uploadImage');
 // getListStatusImage
 $app->post('/getListStatusImage', 'ImageController@getListStatusImage');
 
-
-
-
-
-
-
-
 // setNotification
 $app->post('/setNotification', 'NotificationController@setNotification');
-
-
 
 
 // CheckActiveMbp
 $app->post('/CheckActiveMbp', 'CheckingController@CheckActiveMbp');
 // CheckExpiredSos
 $app->post('/CheckExpiredSos', 'CheckingController@CheckExpiredSos');
-
-
-
-
-
-
-
 
 // sendNotification
 $app->post('/sendNotification', 'FireBaseController@sendNotification');
@@ -303,33 +282,33 @@ $app->post('/closeSPTicketAfter3Day', 'SupplyingPowerController@closeSPTicketAft
 $app->post('/getDetailMbp', 'MbpController@getDetailMbp');
 
 // getAllSite
-$app->get('/getAllSite', 'SiteController@getAllSite'); 
+$app->get('/getAllSite', 'SiteController@getAllSite');
 $app->get('/getAllSiteDown', 'SiteController@getAllSiteDown'); 
 // getMySite
-$app->post('/getMySite', 'SiteController@getMySite'); 
-$app->post('/getMySiteDown', 'SiteController@getMySiteDown'); 
-$app->post('/getMySiteCorrective', 'SiteController@getMySiteCorrective'); 
-$app->post('/getMySitePaginate', 'SiteController@getMySitePaginate'); 
+$app->post('/getMySite', 'SiteController@getMySite');
+$app->post('/getMySiteDown', 'SiteController@getMySiteDown');
+$app->post('/getMySiteCorrective', 'SiteController@getMySiteCorrective');
+$app->post('/getMySitePaginate', 'SiteController@getMySitePaginate');
 $app->post('/getListSite', 'SiteController@getListSite'); 
 
 // getMySiteAll
-$app->post('/getMySiteAll', 'SiteController@getMySiteAll'); 
+$app->post('/getMySiteAll', 'SiteController@getMySiteAll');
 
 $app->post('/get_site_name', 'SiteController@get_site_name'); 
 
 // getMyMbp
-$app->get('/getAllMbp', 'MbpController@getAllMbp'); 
+$app->get('/getAllMbp', 'MbpController@getAllMbp');
 $app->get('/getAllMbpOnProggress', 'MbpController@getAllMbpOnProggress'); 
 // getMySite
-$app->post('/getMyMbp', 'MbpController@getMyMbp'); 
-$app->post('/getMyMbpPaginate', 'MbpController@getMyMbpPaginate'); 
-$app->post('/getMyMbpCPOPaginate', 'MbpController@getMyMbpCPOPaginate'); 
-$app->post('/getMyMbpNSPaginate', 'MbpController@getMyMbpNSPaginate'); 
-$app->post('/getMyMbpFMCPaginate', 'MbpController@getMyMbpFMCPaginate'); 
-$app->post('/getMyMbpCPO', 'MbpController@getMyMbpCPO'); 
-$app->post('/getMyMbpNS', 'MbpController@getMyMbpNS'); 
-$app->post('/getMyMbpOnProgress', 'MbpController@getMyMbpOnProgress'); 
-$app->post('/getMyMbpAvailable', 'MbpController@getMyMbpAvailable'); 
+$app->post('/getMyMbp', 'MbpController@getMyMbp');
+$app->post('/getMyMbpPaginate', 'MbpController@getMyMbpPaginate');
+$app->post('/getMyMbpCPOPaginate', 'MbpController@getMyMbpCPOPaginate');
+$app->post('/getMyMbpNSPaginate', 'MbpController@getMyMbpNSPaginate');
+$app->post('/getMyMbpFMCPaginate', 'MbpController@getMyMbpFMCPaginate');
+$app->post('/getMyMbpCPO', 'MbpController@getMyMbpCPO');
+$app->post('/getMyMbpNS', 'MbpController@getMyMbpNS');
+$app->post('/getMyMbpOnProgress', 'MbpController@getMyMbpOnProgress');
+$app->post('/getMyMbpAvailable', 'MbpController@getMyMbpAvailable');
 $app->post('/getMyMbpWaiting', 'MbpController@getMyMbpWaiting'); 
 // updateLatLongMbp
 $app->get('/getMbp', 'MbpController@getMbp'); 
@@ -490,7 +469,6 @@ $app->post('/fmcClusterUpdate', 'ConfigAppController@fmcClusterUpdate');
 // getMaintenanceReason
 $app->post('/getMaintenanceReason', 'ConfigAppController@getMaintenanceReason');
 
-
 /*
 	PARSING XML MAINTENANCE DAN GANTI SPAREPART
 */
@@ -570,7 +548,10 @@ $app->post('/updateIsSyncCorrective', 'CorrectiveController@updateIsSyncCorrecti
 // getActiveCorrectiveCount
 $app->post('/getActiveCorrectiveCount', 'NotificationController@getActiveCorrectiveCount');
 $app->get('/CloseTicketCorrectiveAfter24h', 'CorrectiveController@CloseTicketCorrectiveAfter24h');
-$app->get('/CloseTicketCorrectiveTidakDiresponLebihDari15Menit', 'CorrectiveController@CloseTicketCorrectiveTidakDiresponLebihDari15Menit');
+$app->get(
+	'/CloseTicketCorrectiveTidakDiresponLebihDari15Menit',
+	'CorrectiveController@CloseTicketCorrectiveTidakDiresponLebihDari15Menit'
+);
 
 $app->post('/openPendingCorrectiveByFmc', 'CorrectiveController@openPendingCorrectiveByFmc');
 
@@ -608,7 +589,6 @@ $app->post('/setKwhMeterAfter', 'MbpController@setKwhMeterAfter');
 $app->post('/setRunningHourBefore', 'MbpController@setRunningHourBefore');
 $app->post('/setRunningHourAfter', 'MbpController@setRunningHourAfter');
 
-
 $app->post('/getListRegional', 'SuperUserController@getListRegional');
 
 $app->post('/getListFmccluster', 'SuperUserController@getListFmccluster');
@@ -623,7 +603,6 @@ $app->post('/getListRtpoRegionalNsa', 'SuperUserController@getListRtpoRegionalNS
 $app->post('/getListFmcRegionalNsa', 'SuperUserController@getListFmcRegionalNsa');
 $app->post('/getListNsaRegional', 'SuperUserController@getListNsaRegional');
 
-
 $app->post('/signinSuperUser', 'SuperUserController@signinSuperUser');
 
 $app->get('/cekAdn', 'SuperUserController@cekAdn');
@@ -633,13 +612,10 @@ $app->post('/cekGambarMt', 'SuperUserController@cekGambarMt');
 $app->get('/cekXmlMtBulanIni', 'SuperUserController@cekXmlMtBulanIni');
 $app->get('/cekSiteTerakhirDiboking', 'SuperUserController@cekSiteTerakhirDiboking');
 
-
-
 $app->post('/setRecomendationMbpSite', 'MbpController@setRecomendationMbpSite');
 $app->post('/getRecomendationMbpSite', 'MbpController@getRecomendationMbpSite');
 $app->post('/getRecomendationMbpSitePaginate', 'MbpController@getRecomendationMbpSitePaginate');
 $app->post('/deleteRecomendationMbpSite', 'MbpController@deleteRecomendationMbpSite');
-
 
 $app->post('/getMbpSiteDownCPO', 'MapController@getMbpSiteDownCPO');
 $app->post('/getMbpSiteDownNS', 'MapController@getMbpSiteDownNS');
@@ -647,7 +623,6 @@ $app->post('/getMbpSiteDownNS', 'MapController@getMbpSiteDownNS');
 $app->post('/misiPenyelamatanDataMbp', 'MbpController@misiPenyelamatanDataMbp');
 
 // AGUS 2019
-
 
 $app->post('/getMbpSite', 'DashboardController@getMbpSite');
 $app->post('/getMbpSiteNS', 'DashboardController@getMbpSiteNS');
@@ -720,55 +695,78 @@ $app->post('/tesDelIm', 'SupplyingPowerController@tesDelIm');
 $app->get('/api/supplying_power/fix_meet_sla', 'Api\QueryController@sp_fix_meet_sla');
 $app->post('/api/supplying_power/get_sp_by_id_sync', 'Api\QueryController@sp_get_by_id_sync');
 
-$app->get('api/test', ['middleware' => 'api_token', function () {
-    //
-    echo "work";
-}]);
+$app->get(
+	'api/test',
+	[
+		'middleware' => 'api_token', function () {
+			echo "work";
+		}
+	]
+);
 
-$app->group(['prefix' => 'api'], function () use ($app) {
-    $app->post('/auth/get_otp', 'Api\AuthController@get_otp');
-    $app->post('/auth/login', 'Api\AuthController@login');
-    $app->post('/auth/login_new', 'Api\AuthControllerNew@login');
-    $app->get('/supplying_power/fix_meet_sla', 'Api\QueryController@sp_fix_meet_sla');
-    $app->post('/supplying_power/fix_meet_sla', 'Api\QueryController@sp_fix_meet_sla');  
-    $app->post('/supplying_power/active_ticket', 'Api\SupplyingPowerController@active_ticket');  
-    
-    $app->group(['prefix' => 'sync'], function () use ($app) {
-        $app->get('/getConcernData', 'Api\Sync\ConcernController@getConcernData');  
-        $app->post('/updateIsSyncConcern', 'Api\Sync\ConcernController@updateIsSyncConcern');  
-    });
+$app->group(
+	['prefix' => 'api'],
+	function () use ($app) {
+		$app->post('/auth/get_otp', 'Api\AuthController@get_otp');
+		$app->post('/auth/login', 'Api\AuthController@login');
+		$app->post('/auth/login_new', 'Api\AuthControllerNew@login');
+		$app->get('/supplying_power/fix_meet_sla', 'Api\QueryController@sp_fix_meet_sla');
+		$app->post('/supplying_power/fix_meet_sla', 'Api\QueryController@sp_fix_meet_sla');
+		$app->post('/supplying_power/active_ticket', 'Api\SupplyingPowerController@active_ticket');
 
-    $app->group(['middleware'=>'api_token'], function () use ($app) {
+		$app->group(
+			['prefix' => 'sync'],
+			function () use ($app) {
+				$app->get('/getConcernData', 'Api\Sync\ConcernController@getConcernData');
+				$app->post('/updateIsSyncConcern', 'Api\Sync\ConcernController@updateIsSyncConcern');
+				$app->get('/getReportLocationSite', 'Api\Sync\ReportLocationSiteController@getReportLocationSite');
+				$app->post('/updateIsSyncReportLocationSite', 'Api\Sync\ReportLocationSiteController@updateIsSyncReportLocationSite');
+			}
+		);
+
+		$app->post('/get_home_content_test', 'Api\DashboardController@get_data');
+		$app->group(
+			['middleware' => 'api_token'],
+			function () use ($app) {
     	//ambil data untuk dashboard
-        $app->post('/get_home_content', 'Api\DashboardController@get_data');
-        $app->post('/get_home_content_test', 'Api\DashboardController@get_data_test');
-	    $app->post('/get_dashboard_data', 'Api\DashboardController@get_data_filter');
-	    $app->post('/get_dashboard_filter', 'Api\DashboardController@get_filter');
+				$app->post('/get_home_content', 'Api\DashboardController@get_data');
+				$app->post('/get_home_content_test', 'Api\DashboardController@get_data_test');
+				$app->post('/get_dashboard_data', 'Api\DashboardController@get_data_filter');
+				$app->post('/get_dashboard_filter', 'Api\DashboardController@get_filter');
 	    //concern
-	    $app->post('/concern/submit','Api\ConcernController@submit_concern');
+				$app->post('/concern/submit', 'Api\ConcernController@submit_concern');
 
         //new
-        $app->post('/get_mbp_area', 'MbpController@getMbpArea');
-        $app->post('/get_mbp_regional', 'MbpController@getMbpRegional');
-        $app->post('/get_mbp_ns', 'MbpController@getMbpNS');
-        $app->post('/get_mbp_rtpo', 'MbpController@getMbpRtpo');
-        $app->post('/get_detail_mbp', 'MbpController@get_detail_mbp');
-        $app->post('/get_detail_mbp_tiket', 'MbpControllerNew@get_detail_mbp_tiket');
+				$app->post('/get_mbp_area', 'MbpController@getMbpArea');
+				$app->post('/get_mbp_regional', 'MbpController@getMbpRegional');
+				$app->post('/get_mbp_ns', 'MbpController@getMbpNS');
+				$app->post('/get_mbp_rtpo', 'MbpController@getMbpRtpo');
+				$app->post('/get_detail_mbp', 'MbpController@get_detail_mbp');
+				$app->post('/get_detail_mbp_tiket', 'MbpControllerNew@get_detail_mbp_tiket');
         //
         //$app->post('/get_list_history_supplying_power', 'SupplyingPowerController@getListHistorySupplyingPower');
-        $app->post('/get_list_history_supplying_power', 'SupplyingPowerControllerNew@get_list_history_supplying_power');
-        $app->post('/get_list_history_supplying_power_area', 'SupplyingPowerControllerNew@get_list_history_supplying_power_area');
-        $app->post('/get_list_history_supplying_power_area_paginate', 'SupplyingPowerControllerNew@get_list_history_supplying_power_area_paginate');
-        $app->post('/get_list_history_supplying_power_ns', 'SupplyingPowerControllerNew@get_list_history_supplying_power_ns');
-        $app->post('/get_list_history_supplying_power_ns_paginate', 'SupplyingPowerControllerNew@get_list_history_supplying_power_ns_paginate');
-        $app->post('/get_list_history_supplying_power_regional', 'SupplyingPowerControllerNew@get_list_history_supplying_power_regional');
-        $app->post('/get_list_history_supplying_power_regional_paginate', 'SupplyingPowerControllerNew@get_list_history_supplying_power_regional_paginate');
+				$app->post('/get_list_history_supplying_power', 'SupplyingPowerControllerNew@get_list_history_supplying_power');
+				$app->post('/get_list_history_supplying_power_area', 'SupplyingPowerControllerNew@get_list_history_supplying_power_area');
+				$app->post(
+					'/get_list_history_supplying_power_area_paginate',
+					'SupplyingPowerControllerNew@get_list_history_supplying_power_area_paginate'
+				);
+				$app->post('/get_list_history_supplying_power_ns', 'SupplyingPowerControllerNew@get_list_history_supplying_power_ns');
+				$app->post(
+					'/get_list_history_supplying_power_ns_paginate',
+					'SupplyingPowerControllerNew@get_list_history_supplying_power_ns_paginate'
+				);
+				$app->post('/get_list_history_supplying_power_regional', 'SupplyingPowerControllerNew@get_list_history_supplying_power_regional');
+				$app->post(
+					'/get_list_history_supplying_power_regional_paginate',
+					'SupplyingPowerControllerNew@get_list_history_supplying_power_regional_paginate'
+				);
 
         // getListHistorySupplyingPowerRtpo
-        $app->post('/get_list_history_supplying_power_rtpo', 'SupplyingPowerController@getListHistorySupplyingPowerRtpo');
-    });
-    $app->post('/sp/create_ticket', 'Api\SupplyingPowerController@create_ticket');
-});
-
-
+				$app->post('/get_list_history_supplying_power_rtpo', 'SupplyingPowerController@getListHistorySupplyingPowerRtpo');
+			}
+		);
+		$app->post('/sp/create_ticket', 'Api\SupplyingPowerController@create_ticket');
+	}
+);
 
