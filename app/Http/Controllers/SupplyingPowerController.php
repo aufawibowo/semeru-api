@@ -1857,12 +1857,12 @@ class SupplyingPowerController extends Controller
 			$dbquery_running_hour_before = $p['running_hour_before'];
 		}
 
-		if($dbquery_running_hour_before > $rh_after){
-			$res['success'] = false;
-			$res['message'] = 'Running Hour Sesudah Tidak Boleh Lebih Kecil Dari Sebelum';
+		// if($dbquery_running_hour_before > $rh_after){
+		// 	$res['success'] = false;
+		// 	$res['message'] = 'Running Hour Sesudah Tidak Boleh Lebih Kecil Dari Sebelum';
 		
-			return response($res);
-		}
+		// 	return response($res);
+		// }
 
 		$data_sp = DB::table('supplying_power')
 					->select('mbp_id','site_id')
@@ -1983,63 +1983,63 @@ class SupplyingPowerController extends Controller
 
 		$x=0;
 		foreach ($SP_data as $value) {
-		$data[$x]['sp_id']=$value->sp_id;
-		$data[$x]['date_waiting']=$value->date_waiting;
-		$data[$x]['by']=$value->user_rtpo_cn;
-		$x=$x+1;
+			$data[$x]['sp_id']=$value->sp_id;
+			$data[$x]['date_waiting']=$value->date_waiting;
+			$data[$x]['by']=$value->user_rtpo_cn;
+			$x=$x+1;
 
 
-		$mbp_data = DB::table('supplying_power')                        
-		->join('mbp', 'supplying_power.mbp_id', '=', 'mbp.mbp_id')      
-		->join('site', 'supplying_power.site_id', '=', 'site.site_id')  
-		->where('supplying_power.mbp_id','=',$value->mbp_id)
-		->where('supplying_power.date_waiting','<',$delete_date_fix)
-		->where('supplying_power.finish',null)
-		->update(
-			[
-			'supplying_power.finish' =>'AUTO CLOSE',
-			'supplying_power.date_finish' =>date('Y-m-d H:i:s'),
-			'supplying_power.detail_finish' => '5',
-			'mbp.status' =>'AVAILABLE',
-			'mbp.submission' =>null,
-			'mbp.submission_id' =>null,
-			'mbp.active_at' =>null,
-			'mbp.message_id' =>null,
-			'site.is_allocated' =>'0',
-			'supplying_power.is_sync' =>'0',
+			$mbp_data = DB::table('supplying_power')                        
+			->join('mbp', 'supplying_power.mbp_id', '=', 'mbp.mbp_id')      
+			->join('site', 'supplying_power.site_id', '=', 'site.site_id')  
+			->where('supplying_power.mbp_id','=',$value->mbp_id)
+			->where('supplying_power.date_waiting','<',$delete_date_fix)
+			->where('supplying_power.finish',null)
+			->update(
+				[
+				'supplying_power.finish' =>'AUTO CLOSE',
+				'supplying_power.date_finish' =>date('Y-m-d H:i:s'),
+				'supplying_power.detail_finish' => '5',
+				'mbp.status' =>'AVAILABLE',
+				'mbp.submission' =>null,
+				'mbp.submission_id' =>null,
+				'mbp.active_at' =>null,
+				'mbp.message_id' =>null,
+				'site.is_allocated' =>'0',
+				'supplying_power.is_sync' =>'0',
 
 
-			'supplying_power.cancel_reason' =>"tiket tidak diterima melebihi 30 menit",
-			'supplying_power.reason_by' => "system",
-			'supplying_power.cancel_approved_by' => "system",
-			]
-		);
+				'supplying_power.cancel_reason' =>"tiket tidak diterima melebihi 30 menit",
+				'supplying_power.reason_by' => "system",
+				'supplying_power.cancel_approved_by' => "system",
+				]
+			);
 
 
-		$getCancellationLetter = DB::table('mbp_trouble')
-		->select('*')
-		->where('is_active','=',1)
-		->where('mbp_id','=',$value->mbp_id)
-		->where('send_date','<',$delete_date_fix)
-		->first();
-
-
-		if ($getCancellationLetter!=null) {
-			$updateCancellationLetter = DB::table('mbp_trouble')
+			$getCancellationLetter = DB::table('mbp_trouble')
+			->select('*')
 			->where('is_active','=',1)
 			->where('mbp_id','=',$value->mbp_id)
-			->update(
-			[
-				'is_active' =>'0',
-				'respon_date' =>date('Y-m-d H:i:s'),
-			]
-			);
-		}
+			->where('send_date','<',$delete_date_fix)
+			->first();
 
-		if ($value->date_waiting<$delete_date_fix) {
-			$supplyingPowerController = new SupplyingPowerController;
-			$value_sp_log = $supplyingPowerController->saveLogSP1($value->sp_id, "system", "system", 'CANCEL','system '."system".' dibatalkan dengan alasan tiket tidak diterima melebihi 30 menit' ,'tiket tidak diterima melebihi 30 menit', '', $date_now);
-		}
+
+			if ($getCancellationLetter!=null) {
+				$updateCancellationLetter = DB::table('mbp_trouble')
+				->where('is_active','=',1)
+				->where('mbp_id','=',$value->mbp_id)
+				->update(
+				[
+					'is_active' =>'0',
+					'respon_date' =>date('Y-m-d H:i:s'),
+				]
+				);
+			}
+
+			if ($value->date_waiting<$delete_date_fix) {
+				$supplyingPowerController = new SupplyingPowerController;
+				$value_sp_log = $supplyingPowerController->saveLogSP1($value->sp_id, "system", "system", 'CANCEL','system '."system".' dibatalkan dengan alasan tiket tidak diterima melebihi 30 menit' ,'tiket tidak diterima melebihi 30 menit', '', $date_now);
+			}
 
 		}
 
