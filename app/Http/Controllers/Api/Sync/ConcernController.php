@@ -18,7 +18,7 @@ class ConcernController extends Controller {
 			$concern[$i]->concern_img = DB::table('concern_image')->where('concern_id', $v->id)->get();
 		}   
         $res = [
-			'sucess'=>true,
+			'success'=>true,
 			'data'=>$concern,
 		];
 		return response($res);
