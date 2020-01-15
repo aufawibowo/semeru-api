@@ -1194,7 +1194,8 @@ class SiteController extends Controller
         'approval' => @$status,
         'respon_at' => @$date_now,
         'respon_by_rtpo_at' => @$date_now,
-        'approval_by_rtpo'=>'1'
+        'approval_by_rtpo'=>'1',
+        'is_sync'=>'0'
       ]
     );
 
