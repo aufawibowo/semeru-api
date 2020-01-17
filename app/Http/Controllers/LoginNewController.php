@@ -66,6 +66,230 @@ class LoginNewController extends Controller
         return $num;
     }
 
+    public function loginMaintSite(Request $request){
+    	$content = $request->input('content');
+        $str = explode(" ",$content);
+        #doing
+        $key = @$str[1];
+
+        if( substr($key, 0,3) =='GS/' ){
+            return($this->login_gs($key));
+        }else{
+            return($this->login_maint_site($key));
+        }   
+    }
+
+    public function login_gs($content){
+        date_default_timezone_set("Asia/Jakarta");
+        $now = date('Y-m-d H:i:s');
+
+        $current_date = date('Y-m-d');
+        $current_date_time = date('Y-m-d H:i:s');
+        $current_year = date('Y');
+        $current_month = date('m');
+
+        $inp = $content;
+
+        //$content = explode(" ", $inp);
+        $str = explode("#", $inp);
+
+        $spk_no = @$str[0];
+        $latitude = @$str[1];
+        $longitude = @$str[2];
+        $username = @$str[3];
+        $bypas=false;
+
+        $str2 = explode("/", @$spk_no);
+        $gnst_id = @$str2[2];
+
+        if(in_array($username, [
+            'root', 'suJTM001', 'suJTM003', 'su', 'su23', 'sentanuR0', 'su_galihhari', 'su_geng','enggarrio'
+        ])) $bypas=true;
+
+        $id_lookup = DB::table('lookup_mt_gs_new')->insertGetId([
+            'content' => $inp,
+            'spk_no' => $spk_no,
+            'latitude' => $latitude,
+            'longitude' => $longitude,
+            'username' => $username,
+            'date_created' => $now,
+        ]);
+
+        $msg="-"; $site_id="-"; $otp="-"; $range_valid=false;
+
+        $query_spk = DB::table('spk_sparepart')->select('*');
+        $query_spk->where('spk_no', $spk_no);
+        $spk = $query_spk->first();
+
+        if(empty($spk)){ 
+            $this->updateRespondLookup($id_lookup,"NGS404".'#'.$gnst_id); 
+            exit('NGS404'.'#'.$gnst_id); 
+        } //spk not found
+        if($spk->spk_no!=$spk_no){
+            $this->updateRespondLookup($id_lookup,"NGS404".'#'.$gnst_id);
+            exit('NGS404'.'#'.$gnst_id);
+        }
+        if($spk->flag==0){ 
+            $this->updateRespondLookup($id_lookup,"NGS410".'#'.$gnst_id); 
+            exit("NGS410".'#'.$gnst_id); 
+        } //spk deactive
+
+        $site_id = $spk->site_id;
+
+        list($y,$m,$d) = explode('-', $spk->replacement_schedule);
+
+        switch ($spk->respond_status) {
+
+            case 0: //not yet
+            case 1: //reassign
+            case 6: //incomplete
+            case 7: //pending submit
+                if($m!=$current_month || $y!=$current_year) {
+                    $this->updateRespondLookup($id_lookup,"NGS405".'#'.$gnst_id); 
+                    exit('NGS405'.'#'.$gnst_id);
+                }
+
+                $start  = $spk->min_schedule;
+                $end    = $spk->max_schedule;
+                
+                if($current_date<$start || $current_date>$end){
+                    $this->updateRespondLookup($id_lookup,"NGS408#".$gnst_id."#".date('d-m-Y',$start)."#".date('d-m-Y',$end));
+                    exit('NGS408#'.$gnst_id.'#'.date('d-m-Y',$start).'#'.date('d-m-Y',$end));
+                }
+                break;
+            case 2: 
+                $this->updateRespondLookup($id_lookup,"NGS406".'#'.$gnst_id); 
+                exit('NGS406'.'#'.$gnst_id); 
+            break; //Report Sudah diapprove
+            case 3: 
+                $this->updateRespondLookup($id_lookup,"NGS407".'#'.$gnst_id); 
+                exit('NGS407'.'#'.$gnst_id); 
+            break; //Report Telah direject Oleh RTPO
+            case 4: 
+                $this->updateRespondLookup($id_lookup,"NGS406".'#'.$gnst_id); 
+                exit('NGS406'.'#'.$gnst_id); 
+            break; //Report Sudah diapprove
+            case 5: 
+                $this->updateRespondLookup($id_lookup,"NGS407".'#'.$gnst_id); 
+                exit('NGS407'.'#'.$gnst_id); 
+            break; //Report Sudah reject by system
+            case 8: 
+                $this->updateRespondLookup($id_lookup,"NGS412".'#'.$gnst_id); 
+                exit('NGS412'.'#'.$gnst_id); 
+            break; //Report dalam masa review
+            default: 
+                $this->updateRespondLookup($id_lookup,"UNDEFINED".'#'.$gnst_id); 
+                exit('UNDEFINED'.'#'.$gnst_id); 
+            break; //Report Telah direject Oleh RTPO
+        }
+
+        $query_accountSU = DB::table('users')->select('*');
+        $query_accountSU->where('username',$username);
+        $query_accountSU->whereIn('su',[1,2]);
+        $accountSU = $query_accountSU->first();
+
+        $query_user = DB::table('users')->select('*');
+        $query_user->join('user_mbp_mt','users.username','=','user_mbp_mt.mbp_mt_username');
+        $query_user->where('username',$username);
+        $query_user->where('user_mbp_mt.status',1);
+        $user = $query_user->first();
+
+        if(empty($user) && empty($accountSU)){ 
+            $this->updateRespondLookup($id_lookup,"NGS401".'#'.$gnst_id); 
+            exit('NGS401'.'#'.$gnst_id); 
+        }
+
+        $fmc_valid=false;
+        if($user){
+            $fmc_valid = ( $spk->fmc_id==$user->fmc_id) ? true:false;
+        } elseif($accountSU){
+            $fmc_valid=true;
+        }
+
+        if($fmc_valid==false && $bypas==false){ 
+            $this->updateRespondLookup($id_lookup,"NGS403".'#'.$gnst_id); 
+            exit('NGS403'.'#'.$gnst_id); 
+        } // Akses Ditolak! ('jika ada validasi cluster tambahkan disini')
+
+        //validasi cluster
+        $cluster_valid=false;
+        if($user){
+            $cluster_valid = ( $spk->cluster_id==$user->cluster_id) ? true:false;
+        } elseif($accountSU){
+            $cluster_valid=true;
+        }
+
+        if ($bypas==false && $cluster_valid==false){
+            $this->updateRespondLookup($id_lookup,"NGS403".'#'.$gnst_id);
+            exit('NGS403'.'#'.$gnst_id);
+        }
+
+        if(empty($spk->otp_id)){
+            $this->updateRespondLookup($id_lookup,"NGS500".'#'.$gnst_id);
+            exit('NGS500'.'#'.$gnst_id);
+        }
+
+        $query_update_spk = DB::table('spk_sparepart');
+        $query_update_spk->where('spk_no',$spk_no);
+        $query_update_spk->update([
+            'has_login' => 1
+        ]);
+
+        if ($id_lookup>0){
+            $distance = $this->getDistanceBetween(doubleval($spk->latitude), doubleval($spk->longitude), doubleval($latitude), doubleval($longitude), 'Km');
+            if($distance>1 && $bypas==false){
+                //DISINI DI CEK DENGANDATA SITE TERBARU
+                $checksite = DB::table('site')
+                ->select('site_id','latitude','longitude')
+                ->where('site_id','=',$site_id)
+                ->first();
+                $jaraks = @$this->getDistanceBetween(doubleval(@$checksite->latitude), doubleval(@$checksite->longitude), doubleval($latitude), doubleval($longitude), "Km");
+
+                if (@$jaraks<1) {
+                    $msg = "NGS200";
+                } else{
+                    $report_data = DB::table('report_location_site as rls')
+                    ->join('site as s','rls.site_id','s.site_id')
+                    ->select('rls.*', 's.latitude as old_lat', 's.longitude as old_lon')
+                    ->where('rls.site_id','=',$site_id)
+                    ->where('rls.approval','=',1)
+                    ->orderBy('rls.respon_by_rtpo_at','=','asc')
+                    ->first();
+                    if ($report_data == null) {
+                        $msg="NGS400"; //Out of Range
+                    } else{
+                        if (@$report_data->approval==5){
+                            $msg="NGS400"; //Out of Range
+                        } else{
+                            $get_distance = $this->getDistanceBetween(doubleval(@$report_data->new_lat), doubleval(@$report_data->new_lon), doubleval($latitude), doubleval($longitude), 'Km');
+                            if ($get_distance>1) {
+                                $msg="NGS400"; //Out of Range
+                            } else $msg="NGS200";
+                        }
+                    }
+                }
+            } else{
+                $msg="NGS200";
+            }
+        } else{
+            $this->updateRespondLookup($id_lookup,"NGS500".'#'.$gnst_id);
+            exit('NGS500'.'#'.$gnst_id);
+        }
+
+        //print_r($msg.' ');
+
+        $month = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+
+        if ($msg=="NGS200"){
+            $site_name = $spk->site_name; $otp_spk = $spk->otp_id;
+            $otp_sik = "-"; $site_type = "-"; $utype = "-"; $team_code = "-"; $mandatory_form = "-"; $gt = "-"; $gr = "-"; $spk_no = $spk->spk_no;
+            $this->updateRespondLookup($id_lookup,$msg.'#'.$site_id.'#'.$site_name.'#'.$otp_sik.'#'.$site_type.'#'.$utype.'#'.$team_code.'#'.$mandatory_form.'#'.$gt.'#'.$gr."#".$spk_no.'#'.$otp_spk);
+            exit($msg.'#'.$site_id.'#'.$site_name.'#'.$otp_sik.'#'.$site_type.'#'.$utype.'#'.$team_code.'#'.$mandatory_form.'#'.$gt.'#'.$gr."#".$spk_no.'#'.$otp_spk.'#'.$month[(int)$current_month - 1].' '.$current_year);
+        } else{
+            $this->updateRespondLookup($id_lookup,$msg.'#'.$gnst_id);
+            exit($msg.'#'.$gnst_id);
+        }
+    }
 
     public function login_maint_site($content)
     {
@@ -308,6 +532,8 @@ class LoginNewController extends Controller
             } else $msg="NGS401"; //Akun Tidak Ditemukan
         } else $msg="NGS404"; //Nomor SIK Tidak Sesuai/Tdk ditemukan
 
+        $month = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+
         if ($msg=="NGS200"){
             $code_gt = ['GT1','GT2','GT3','GT4','GT5','GT6','GT7','GT8'];
             $code_gr = ['GR1','GR2'];
@@ -348,200 +574,12 @@ class LoginNewController extends Controller
                 }
             }
 
-            $this->updateRespondLookup($id_lookup,$msg.'#'.$site_id.'#'.$site_name.'#'.$sik->otp_id.'#'.$site_type.'#'.$utype.'#'.$team_code.'#'.$sik->mandatory_form.'#'.$gt.'#'.$gr."#".$spk_no.'#'.$otp_spk);
-            exit($msg.'#'.$site_id.'#'.$site_name.'#'.$sik->otp_id.'#'.$site_type.'#'.$utype.'#'.$team_code.'#'.$sik->mandatory_form.'#'.$gt.'#'.$gr."#".$spk_no.'#'.$otp_spk);
+            $this->updateRespondLookup($id_lookup,$msg.'#'.$site_id.'#'.$site_name.'#'.$sik->otp_id.'#'.$site_type.'#'.$utype.'#'.$team_code.'#'.$sik->mandatory_form.'#'.$gt.'#'.$gr."#".$spk_no.'#'.$otp_spk.'#'.$month[(int)$current_month - 1].' '.$current_year);
+            exit($msg.'#'.$site_id.'#'.$site_name.'#'.$sik->otp_id.'#'.$site_type.'#'.$utype.'#'.$team_code.'#'.$sik->mandatory_form.'#'.$gt.'#'.$gr."#".$spk_no.'#'.$otp_spk.'#'.$month[(int)$current_month - 1].' '.$current_year);
         } else{
             $this->updateRespondLookup($id_lookup,$msg.'#'.$site_id);
             exit($msg.'#'.$site_id);
         }
-    }
-
-    public function login_gs($content){
-        date_default_timezone_set("Asia/Jakarta");
-        $now = date('Y-m-d H:i:s');
-
-        $current_date = date('Y-m-d');
-        $current_date_time = date('Y-m-d H:i:s');
-        $current_year = date('Y');
-        $current_month = date('m');
-
-        $inp = $content;
-
-        //$content = explode(" ", $inp);
-        $str = explode("#", $inp);
-
-        $spk_no = @$str[0];
-        $latitude = @$str[1];
-        $longitude = @$str[2];
-        $username = @$str[3];
-        $bypas=false;
-
-        $str2 = explode("/", @$spk_no);
-        $gnst_id = @$str2[2];
-
-        if(in_array($username, [
-            'root', 'suJTM001', 'suJTM003', 'su', 'su23', 'sentanuR0', 'su_galihhari', 'su_geng','enggarrio'
-        ])) $bypas=true;
-
-        $id_lookup = DB::table('lookup_mt_gs_new')->insertGetId([
-            'content' => $inp,
-            'spk_no' => $spk_no,
-            'latitude' => $latitude,
-            'longitude' => $longitude,
-            'username' => $username,
-            'date_created' => $now,
-        ]);
-
-        $msg="-"; $site_id="-"; $otp="-"; $range_valid=false;
-
-        $query_spk = DB::table('spk_sparepart')->select('*');
-        $query_spk->where('spk_no', $spk_no);
-        $spk = $query_spk->first();
-
-        if(empty($spk)){ $this->updateRespondLookup($id_lookup,"NGS404".'#'.$gnst_id); exit('NGS404'.'#'.$gnst_id); } //spk not found
-        if($spk->spk_no!=$spk_no) {$this->updateRespondLookup($id_lookup,"NGS404".'#'.$gnst_id); exit('NGS404'.'#'.$gnst_id);}
-        if($spk->flag==0){ $this->updateRespondLookup($id_lookup,"NGS410".'#'.$gnst_id); exit("NGS410".'#'.$gnst_id); } //spk deactive
-
-        $site_id = $spk->site_id;
-
-        list($y,$m,$d) = explode('-', $spk->replacement_schedule);
-
-        switch ($spk->respond_status) {
-
-            case 0: //not yet
-            case 1: //reassign
-            case 6: //incomplete
-            case 7: //pending submit
-                if($m!=$current_month || $y!=$current_year) {$this->updateRespondLookup($id_lookup,"NGS405".'#'.$gnst_id); exit('NGS405'.'#'.$gnst_id);}
-
-                $start  = $spk->min_schedule;
-                $end    = $spk->max_schedule;
-                
-                if($current_date<$start || $current_date>$end){
-                    $this->updateRespondLookup($id_lookup,"NGS408#".$gnst_id."#".date('d-m-Y',$start)."#".date('d-m-Y',$end));
-                    exit('NGS408#'.$gnst_id.'#'.date('d-m-Y',$start).'#'.date('d-m-Y',$end));
-                }
-                break;
-            case 2: $this->updateRespondLookup($id_lookup,"NGS406".'#'.$gnst_id); exit('NGS406'.'#'.$gnst_id); break; //Report Sudah diapprove
-            case 3: $this->updateRespondLookup($id_lookup,"NGS407".'#'.$gnst_id); exit('NGS407'.'#'.$gnst_id); break; //Report Telah direject Oleh RTPO
-            case 4: $this->updateRespondLookup($id_lookup,"NGS406".'#'.$gnst_id); exit('NGS406'.'#'.$gnst_id); break; //Report Sudah diapprove
-            case 5: $this->updateRespondLookup($id_lookup,"NGS407".'#'.$gnst_id); exit('NGS407'.'#'.$gnst_id); break; //Report Sudah reject by system
-            case 8: $this->updateRespondLookup($id_lookup,"NGS412".'#'.$gnst_id); exit('NGS412'.'#'.$gnst_id); break; //Report dalam masa review
-            default: $this->updateRespondLookup($id_lookup,"UNDEFINED".'#'.$gnst_id); exit('UNDEFINED'.'#'.$gnst_id); break; //Report Telah direject Oleh RTPO
-        }
-
-        $query_accountSU = DB::table('users')->select('*');
-        $query_accountSU->where('username',$username);
-        $query_accountSU->whereIn('su',[1,2]);
-        $accountSU = $query_accountSU->first();
-
-        $query_user = DB::table('users')->select('*');
-        $query_user->join('user_mbp_mt','users.username','=','user_mbp_mt.mbp_mt_username');
-        $query_user->where('username',$username);
-        $query_user->where('user_mbp_mt.status',1);
-        $user = $query_user->first();
-
-        if(empty($user) && empty($accountSU)){ $this->updateRespondLookup($id_lookup,"NGS401".'#'.$gnst_id); exit('NGS401'.'#'.$gnst_id); }
-
-        $fmc_valid=false;
-        if($user){
-            $fmc_valid = ( $spk->fmc_id==$user->fmc_id) ? true:false;
-        } elseif($accountSU){
-            $fmc_valid=true;
-        }
-
-        if($fmc_valid==false && $bypas==false){ $this->updateRespondLookup($id_lookup,"NGS403".'#'.$gnst_id); exit('NGS403'.'#'.$gnst_id); } // Akses Ditolak! ('jika ada validasi cluster tambahkan disini')
-
-        //validasi cluster
-        $cluster_valid=false;
-        if($user){
-            $cluster_valid = ( $spk->cluster_id==$user->cluster_id) ? true:false;
-        } elseif($accountSU){
-            $cluster_valid=true;
-        }
-
-        if ($bypas==false && $cluster_valid==false){
-            $this->updateRespondLookup($id_lookup,"NGS403".'#'.$gnst_id);
-            exit('NGS403'.'#'.$gnst_id);
-        }
-
-        if(empty($spk->otp_id)){
-            $this->updateRespondLookup($id_lookup,"NGS500".'#'.$gnst_id);
-            exit('NGS500'.'#'.$gnst_id);
-        }
-
-        $query_update_spk = DB::table('spk_sparepart');
-        $query_update_spk->where('spk_no',$spk_no);
-        $query_update_spk->update([
-            'has_login' => 1
-        ]);
-
-        if ($id_lookup>0){
-            $distance = $this->getDistanceBetween(doubleval($spk->latitude), doubleval($spk->longitude), doubleval($latitude), doubleval($longitude), 'Km');
-            if($distance>1 && $bypas==false){
-                //DISINI DI CEK DENGANDATA SITE TERBARU
-                $checksite = DB::table('site')
-                ->select('site_id','latitude','longitude')
-                ->where('site_id','=',$site_id)
-                ->first();
-                $jaraks = @$this->getDistanceBetween(doubleval(@$checksite->latitude), doubleval(@$checksite->longitude), doubleval($latitude), doubleval($longitude), "Km");
-
-                if (@$jaraks<1) {
-                    $msg = "NGS200";
-                } else{
-                    $report_data = DB::table('report_location_site as rls')
-                    ->join('site as s','rls.site_id','s.site_id')
-                    ->select('rls.*', 's.latitude as old_lat', 's.longitude as old_lon')
-                    ->where('rls.site_id','=',$site_id)
-                    ->where('rls.approval','=',1)
-                    ->orderBy('rls.respon_by_rtpo_at','=','asc')
-                    ->first();
-                    if ($report_data == null) {
-                        $msg="NGS400"; //Out of Range
-                    } else{
-                        if (@$report_data->approval==5){
-                            $msg="NGS400"; //Out of Range
-                        } else{
-                            $get_distance = $this->getDistanceBetween(doubleval(@$report_data->new_lat), doubleval(@$report_data->new_lon), doubleval($latitude), doubleval($longitude), 'Km');
-                            if ($get_distance>1) {
-                                $msg="NGS400"; //Out of Range
-                            } else $msg="NGS200";
-                        }
-                    }
-                }
-            } else{
-                $msg="NGS200";
-            }
-        } else{
-            $this->updateRespondLookup($id_lookup,"NGS500".'#'.$gnst_id);
-            exit('NGS500'.'#'.$gnst_id);
-        }
-
-        //print_r($msg.' ');
-
-        if ($msg=="NGS200"){
-            $site_name = $spk->site_name; $otp_spk = $spk->otp_id;
-            $otp_sik = "-"; $site_type = "-"; $utype = "-"; $team_code = "-"; $mandatory_form = "-"; $gt = "-"; $gr = "-"; $spk_no = $spk->spk_no;
-            $this->updateRespondLookup($id_lookup,$msg.'#'.$site_id.'#'.$site_name.'#'.$otp_sik.'#'.$site_type.'#'.$utype.'#'.$team_code.'#'.$mandatory_form.'#'.$gt.'#'.$gr."#".$spk_no.'#'.$otp_spk);
-            exit($msg.'#'.$site_id.'#'.$site_name.'#'.$otp_sik.'#'.$site_type.'#'.$utype.'#'.$team_code.'#'.$mandatory_form.'#'.$gt.'#'.$gr."#".$spk_no.'#'.$otp_spk);
-        } else{
-            $this->updateRespondLookup($id_lookup,$msg.'#'.$gnst_id);
-            exit($msg.'#'.$gnst_id);
-        }
-    }
-
-
-    public function loginMaintSite(Request $request){
-    	$content = $request->input('content');
-        $str = explode(" ",$content);
-
-        $key = @$str[1];
-
-        if( substr($key, 0,3) =='GS/' ){
-            return($this->login_gs($key));
-        }else{
-            return($this->login_maint_site($key));
-        }   
     }
 
     public function cekJarak(Request $request) 
