@@ -1559,21 +1559,46 @@ class SupplyingPowerController extends Controller
 			->where('username','=',$check_type->username)
 			->first();
 
+			// $btss = DB::table('supplying_power')
+			// ->join('users', 'supplying_power.user_id', '=', 'users.id')
+			// ->join('user_rtpo', 'users.username', '=', 'user_rtpo.username')
+			// ->join('rtpo', 'user_rtpo.rtpo_id', '=', 'rtpo.rtpo_id')
+			// ->join('mbp', 'supplying_power.mbp_id', '=', 'mbp.mbp_id')
+			// ->join('site', 'supplying_power.site_id', '=', 'site.site_id')
+			// ->select('supplying_power.sp_id','users.name as person_in_charge','mbp.mbp_name', 'site.site_name','site.site_id','supplying_power.date_waiting','supplying_power.finish','supplying_power.unique_id')
+			// ->where('supplying_power.rtpo_id','=',$check_rtpo->rtpo_id)
+			// //->where('supplying_power.finish','!=',NULL)
+			// ->where('supplying_power.date_finish','<',$date_now)
+			// ->whereraw('(site.site_id like "%'.$search.'%" or site.site_name like "%'.$search.'%")')
+			// ->offset($offset)
+			// ->limit($limit)
+			// ->orderBy('supplying_power.sp_id', 'desc')
+			// ->get();
+			
 			$btss = DB::table('supplying_power')
-			->join('users', 'supplying_power.user_id', '=', 'users.id')
-			->join('user_rtpo', 'users.username', '=', 'user_rtpo.username')
-			->join('rtpo', 'user_rtpo.rtpo_id', '=', 'rtpo.rtpo_id')
-			->join('mbp', 'supplying_power.mbp_id', '=', 'mbp.mbp_id')
-			->join('site', 'supplying_power.site_id', '=', 'site.site_id')
-			->select('supplying_power.sp_id','users.name as person_in_charge','mbp.mbp_name', 'site.site_name','site.site_id','supplying_power.date_waiting','supplying_power.finish','supplying_power.unique_id')
-			->where('supplying_power.rtpo_id','=',$check_rtpo->rtpo_id)
-			//->where('supplying_power.finish','!=',NULL)
-			->where('supplying_power.date_finish','<',$date_now)
-			->whereraw('(site.site_id like "%'.$search.'%" or site.site_name like "%'.$search.'%")')
-			->offset($offset)
-			->limit($limit)
-			->orderBy('supplying_power.sp_id', 'desc')
-			->get();
+			->select(
+				'supplying_power.sp_id', 
+				'supplying_power.unique_id', 
+				'supplying_power.mbp_id', 
+				'mbp.mbp_name', 
+				'supplying_power.site_id', 
+				'supplying_power.site_name', 
+				'supplying_power.finish', 
+				'supplying_power.date_waiting' 
+				)
+				->join('mbp', 'supplying_power.mbp_id', '=', 'mbp.mbp_id')
+				->whereraw('(supplying_power.site_id like "%'.$search.'%" or supplying_power.site_name like "%'.$search.'%")')
+				->where('supplying_power.rtpo_id', $check_rtpo->rtpo_id)
+				->where('supplying_power.date_finish','<',$date_now)
+				->offset($offset)
+				->limit($limit)
+				->orderBy('supplying_power.sp_id', 'desc')
+				->get();
+
+
+			//
+			
+			
 
 			$result = json_decode($btss, true);
 			if ($result==NULL) {
@@ -1588,7 +1613,7 @@ class SupplyingPowerController extends Controller
 			$newDate = $this->setDatedMYHis($row['date_waiting'].'');
 			$data[$param]['sp_id']        = $row['sp_id'];
 			$data[$param]['sp_name']      = 'SP-'.$row['sp_id'];
-			$data[$param]['rtpo_name']    = $row['person_in_charge'].'';
+			// $data[$param]['rtpo_name']    = $row['person_in_charge'].'';
 			$data[$param]['mbp_name']     = $row['mbp_name'].'';
 			$data[$param]['site_name']    = $row['site_name'].'';
 			$data[$param]['site_id']      = $row['site_id'].'';
@@ -1601,6 +1626,7 @@ class SupplyingPowerController extends Controller
 			$res['success'] = true;
 			$res['message'] = 'SUCCESS';
 			$res['data'] = $data;
+			$res['date'] = $date_now;
 
 			return response($res);
 			}else{
