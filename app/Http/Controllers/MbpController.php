@@ -3456,7 +3456,8 @@ public function updateStatusMbpNew(Request $request){
 	if ($status!="AVAILABLE") $status = str_replace(" ", "_", $status);
 
 	$SP = DB::table('supplying_power')->where('mbp_id', $mbp_id)
-		->where('finish','=', null)
+		->where('finish','=', 'AUTO CLOSE')
+		->where('detail_finish','=', null)
 		->orderBy('sp_id','desc')
 		->first();
 
@@ -3494,6 +3495,9 @@ public function updateStatusMbpNew(Request $request){
 				'date_finish' => null,
 				'is_sync' => '0',
 			];
+
+			$log_description = @$SP->user_mbp_cn.' telah menerima tiket';
+			
 			break;
 
 		case 'CHECK_IN':
