@@ -1830,7 +1830,150 @@ class SupplyingPowerController extends Controller
 
 		}
 
-	public function submitValueSP(Request $request)
+		public function submitValueSP($request)
+		{
+			// $res['success'] = false;
+			// $res['message'] = 'DEVELOPMENT';
+	
+			// return response($res);
+			
+			date_default_timezone_set("Asia/Jakarta");
+			$date_now = date('Y-m-d H:i:s');
+	
+
+			$sp_id = $request->input('sp_id');
+			$kwh_meter_before = @$request->input('kwh_meter_before');
+			$kwh_meter_after = @$request->input('kwh_meter_after');
+			$rh_before = @$request->input('rh_before');
+			$rh_after = @$request->input('rh_after');
+	
+			$SP = DB::table('supplying_power')->where('sp_id',$sp_id)->first();
+			if(empty($SP)){
+				$res['success'] = false;
+				$res['message'] = 'TICKET_NOT_FOUND';
+				return response($res);
+			}
+
+			$MBP = DB::table('mbp')->where('mbp_id',$SP->mbp_id)->first();
+			if(empty($MBP)){
+				$res['success'] = false;
+				$res['message'] = 'MBP_NOT_FOUND';
+				return response($res);
+			}
+
+			$mbp_id = $SP->mbp_id;
+			$site_id = $SP->site_id;
+	
+			// $sp_m_s_data = DB::table('supplying_power as sp')
+			// 				->join('mbp as m', 'sp.mbp_id', 'm.mbp_id')
+			// 				->join('site as s', 'sp.site_id', 's.site_id')
+			// 				->select('*', 'sp.user_mbp as driver_mbp', 'sp.user_mbp_cn as driver_mbp_cn')
+			// 				->where('m.mbp_id', $mbp_id)
+			// 				->orderBy('sp.sp_id', 'desc')
+			// 				->first();
+	
+			if (!is_null($kwh_meter_before) && !is_null($rh_before)) {
+				$status = 'CHECK_IN';
+				$log_status = 'CHECK_IN';
+
+				if($MBP->status!='ON_PROGRESS'){
+					$res['success'] = false;
+					$res['message'] = 'REQUEST_DENIED, CURENT STATUS : '.$MBP->status;
+					return response($res);
+				}
+
+				$SPvalue = DB::table('supplying_power')->where('sp_id',$sp_id)
+					->update([
+						'date_checkin' => $date_now,
+						'last_update' => $date_now,
+						'kwh_meter_before' => $kwh_meter_before,
+						'running_hour_before' => $rh_before,
+						'is_sync' => 0,
+					]);
+	
+				$updateStatusMBP = DB::table('mbp')->where('mbp_id',$mbp_id)
+					->update(['status' => $status,
+				]);
+				
+				$log_description = @$SP->user_mbp_cn.' telah sampai di site tujuan';
+				// $desc = @$sp_m_s_data->driver_mbp_cn.' telah sampai di site tujuan';
+			
+			}elseif( !is_null($kwh_meter_after) && !is_null($rh_after) ) {
+				
+				$status = 'AVAILABLE';
+				$log_status = 'CHECK_OUT';
+
+				if($MBP->status!='CHECK_IN'){
+					$res['success'] = false;
+					$res['message'] = 'REQUEST_DENIED, CURENT STATUS : '.$MBP->status;
+					return response($res);
+				}
+			
+				//CEK MEET SLA
+				$datetime1 = new DateTime($SP->date_waiting);
+				$datetime2 = new DateTime($SP->date_onprogress);
+				$datetime3 = new DateTime($SP->date_checkin);
+	
+				$time_to_site = $datetime2->diff($datetime3);
+	
+				$second = $time_to_site->h*3600+$time_to_site->i*60+$time_to_site->s;
+	
+				$meet_sla = $second>7200 ? 0 : 1;
+			
+				$SPvalue = DB::table('supplying_power')->where('sp_id',$sp_id)
+					->update([
+						'date_finish' => $date_now,
+						'last_update' => $date_now,
+						'finish' => 'DONE',
+						'detail_finish' => '1',
+						'kwh_meter_after' => $kwh_meter_after,
+						'running_hour_after' => $rh_after,
+						'meet_sla' => $meet_sla,
+						'is_sync' => 0,
+					]);
+	
+				$updateStatusMBP = DB::table('mbp')->where('mbp_id',$mbp_id)
+					->update([
+						'status' => $status,
+					]);
+	
+				$updateStatusSite = DB::table('site')->where('site_id',$site_id)
+					->update([
+						'is_allocated' =>'0',
+					]);
+				
+				$log_description = @$SP->user_mbp_cn.' menyelesaikan tugasnya';
+				// $desc = @$sp_m_s_data->driver_mbp_cn.' menyelesaikan tugasnya';
+			}
+			
+			$supplyingPowerController = new SupplyingPowerController;
+			$value_sp_log = $supplyingPowerController->saveLogSP1(
+				$SP->sp_id, 
+				$SP->user_mbp, 
+				$SP->user_mbp_cn, 
+				$log_status,
+				$log_description,
+				 '', 
+				 '', 
+				 $date_now
+			);
+			
+			$notificationController = new NotificationController; 
+			$tmp = $notificationController->setNotification0(
+				'MBP_STATUS_TO_SITE',
+				$MBP->mbp_name,
+				$SP->site_name,
+				$mbp_id,
+				$status,
+				$SP->rtpo_id
+			);
+			
+			$res['success'] = true;
+			$res['message'] = 'SUCCESS';
+			return response($res);
+		}
+
+	public function submitValueSPDeprecated(Request $request)
 	{
 
 		//PERLU REWORK FUNGSINYA 
@@ -1840,11 +1983,17 @@ class SupplyingPowerController extends Controller
 		date_default_timezone_set("Asia/Jakarta");
 		$date_now = date('Y-m-d H:i:s');
 
+
+
 		$sp_id = $request->input('sp_id');
 		$kwh_meter_before = @$request->input('kwh_meter_before');
 		$kwh_meter_after = @$request->input('kwh_meter_after');
 		$rh_before = @$request->input('rh_before');
 		$rh_after = @$request->input('rh_after');
+
+		if($sp_id='64852'){
+			return $this->submitValueSPDev($request);
+		}
 
 		$query = DB::table('supplying_power as sp')
 				->select('sp.running_hour_before')
