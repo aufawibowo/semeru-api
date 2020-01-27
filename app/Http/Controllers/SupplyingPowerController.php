@@ -1856,7 +1856,7 @@ class SupplyingPowerController extends Controller
 
 		}
 
-		public function submitValueSP($request)
+		public function submitValueSP(Request $request)
 		{
 			// $res['success'] = false;
 			// $res['message'] = 'DEVELOPMENT';
