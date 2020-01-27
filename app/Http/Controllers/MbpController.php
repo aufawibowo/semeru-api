@@ -3446,10 +3446,159 @@ public function getStatusMbpNew(Request $request){
 }
 
 public function updateStatusMbpNew(Request $request){
+
+	//TERNYATA CUMA DIPAKAI UNTUK PERRUBAHAN STATUS DARI WAITING KE ON PROGRESS
 	date_default_timezone_set("Asia/Jakarta");
 	$date_now = date('Y-m-d H:i:s');
 	$mbp_id = $request->input('mbp_id');
 	$status = $request->input('status');
+
+	if ($status!="AVAILABLE") $status = str_replace(" ", "_", $status);
+
+	$SP = DB::table('supplying_power')->where('mbp_id', $mbp_id)
+		->where('finish','=', null)
+		->orderBy('sp_id','desc')
+		->first();
+
+	//validasi terhadap ada atau tidaknya tiket yg aktif
+	if(empty($SP)){
+		$res['success'] = false;
+		$res['message'] = 'NOT_ACTIVE_TICKET_FOUND';
+		return response($res);
+	}
+
+	$MBP = DB::table('mbp')->where('mbp_id', $mbp_id)->first();
+	if(empty($MBP)){
+		$res['success'] = false;
+		$res['message'] = 'MBP_NOT_FOUND';
+		return response($res);
+	}
+
+	$update_sp_data = [];
+	$log_description = '';
+
+	switch($status){
+
+		case 'ON_PROGRESS':
+
+			if($MBP->status!='WAITING'){
+				$res['success'] = false;
+				$res['message'] = 'REQUEST_DENIED, CURENT STATUS : '.$MBP->status;
+				return response($res);
+			}
+
+			$update_sp_data = [
+				'date_onprogress' => $date_now,
+				'last_update' => $date_now,
+				'finish' => null,
+				'date_finish' => null,
+				'is_sync' => '0',
+			];
+			break;
+
+		case 'CHECK_IN':
+
+			$res['success'] = false;
+			$res['message'] = 'REQUEST_DENIED, FUNCTION IS DEPRECATED : '.$MBP->status;
+			return response($res);
+
+			if($MBP->status!='ON_PROGRESS'){
+				$res['success'] = false;
+				$res['message'] = 'REQUEST_DENIED, CURENT STATUS : '.$MBP->status;
+				return response($res);
+			}
+			
+			$update_sp_data = [
+				'date_checkin' => $date_now,
+				'last_update' => $date_now,
+				'finish' => null,
+				'date_finish' => null,
+				'is_sync' => '0',
+			];
+			$log_description = @$SP->user_mbp_cn.' telah sampai di site tujuan';
+			
+			break;
+
+		case 'AVAILABLE':
+
+			$res['success'] = false;
+			$res['message'] = 'REQUEST_DENIED, FUNCTION IS DEPRECATED : '.$MBP->status;
+			return response($res);
+
+			if($MBP->status!='CHECK_IN'){
+				$res['success'] = false;
+				$res['message'] = 'REQUEST_DENIED, CURENT STATUS : '.$MBP->status;
+				return response($res);
+			}
+
+			$update_sp_data = [
+				'last_update' => $date_now,
+				'date_finish' => $date_now,
+				'finish' => 'DONE',
+				'detail_finish' => '1',
+				'is_sync' => '0',
+			];
+			$update_site_data = [
+				'is_allocated'=>'0'
+			];
+			DB::table('site')->where('site_id', $SP->site_id)->update($update_site_data);
+
+			$log_description = @$SP->user_mbp_cn.' menyelesaikan tugasnya';
+
+			break;
+
+		default:
+			$res['success'] = false;
+			$res['message'] = 'INVALID_PARAMETER';
+			return response($res);
+			break;
+	}
+
+	if(!empty($update_sp_data)) DB::table('supplying_power')->where('sp_id', $SP->sp_id)->update($update_sp_data);
+	$update_mbp_data = [
+		'status'=>$status,
+	];
+	DB::table('mbp')->where('mbp_id', $SP->mbp_id)->update($update_mbp_data);
+
+	$supplyingPowerController = new SupplyingPowerController;
+	// {$sp_id, $user_nik, $user_cn, $status, $description,$message , $image, $date_log}
+	$value_sp_log = $supplyingPowerController->saveLogSP1(
+		$SP->sp_id, 
+		$SP->user_mbp, 
+		$SP->user_mbp_cn, 
+		$status,
+		$log_description,
+		 '', 
+		 '', 
+		 $date_now
+	);
+
+	$notificationController = new NotificationController; 
+	$tmp = $notificationController->setNotification0(
+		'MBP_STATUS_TO_SITE',
+		$MBP->mbp_name,
+		$SP->site_name,
+		$mbp_id,
+		$status,
+		$SP->rtpo_id
+	);
+
+	$res['success'] = true;
+	$res['message'] = 'SUCCESS';
+	return response($res);
+
+	// return $this->getStatusMbp2($mbp_id);
+}
+
+public function updateStatusMbpNewDeprecated(Request $request){
+	date_default_timezone_set("Asia/Jakarta");
+	$date_now = date('Y-m-d H:i:s');
+	$mbp_id = $request->input('mbp_id');
+	$status = $request->input('status');
+
+	// if($mbp_id=='DMY05301'){
+	// 	return $this->updateStatusMbpNewClone($request);
+	// }
 
 	if ($status!="AVAILABLE") {
 	$status = str_replace(" ", "_", $status);
