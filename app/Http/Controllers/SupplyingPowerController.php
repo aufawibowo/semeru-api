@@ -752,7 +752,7 @@ class SupplyingPowerController extends Controller
 		return response($res);
 		}
 
-		public function updateDataSpAdn(Request $request){
+	public function updateDataSpAdn(Request $request){
 
 		date_default_timezone_set("Asia/Jakarta");
 		
@@ -765,160 +765,137 @@ class SupplyingPowerController extends Controller
 		$kwh = @$request->input('kwh');
 		$rh = @$request->input('rh');
 
-		if($sp_id==NULL){
+		if(empty($sp_id) || empty($status)){
 			$res['success'] = false;
-			$res['message'] = 'FAILED_UPDATE_STATUS';
+			$res['message'] = 'INVALID_PARAMETER';
 			return response($res);
 		}
-		if($mbp_id==NULL){
+
+		$SP = DB::table('supplying_power')->where('sp_id', $sp_id)->first();
+		if(empty($SP)){
 			$res['success'] = false;
-			$res['message'] = 'FAILED_UPDATE_STATUS';
+			$res['message'] = 'DATA_NOT_FOUND';
 			return response($res);
 		}
-		if($status==NULL){
+
+		$MBP = DB::table('mbp')->where('mbp_id', $SP->mbp_id)->first();
+		if(empty($MBP)){
 			$res['success'] = false;
-			$res['message'] = 'FAILED_UPDATE_STATUS';
+			$res['message'] = 'DATA_NOT_FOUND';
 			return response($res);
 		}
 
-		$mbp_data = DB::table('mbp')
-		->join('user_mbp', 'mbp.mbp_id', 'user_mbp.mbp_id')
-		->join('users', 'user_mbp.username', '=', 'users.username')
-		->select('*','users.id as user_id')
-		->where('mbp.mbp_id','=',$mbp_id)
-		->first();
+		$update_sp_data = [];
+		$update_site_data = [];
+		$update_mbp_data = [];
+		$log_description = '';
 
-		$SP_data = DB::table('supplying_power')
-		->select('*')
-		->where('sp_id','=',$sp_id)
-		->first();
+		switch($status){
+			case 'ON_PROGRESS':
 
-		if($mbp_data==NULL){
-			$res['success'] = false;
-			$res['message'] = 'FAILED_SP_DATA_NOT_FOUND';
-			return response($res);
+				if($MBP->status=='ON_PROGRESS'){
+					$res['success'] = true;
+					$res['message'] = 'Success';
+					return response($res);
+				}elseif($MBP->status=='WAITING'){
+					
+					$log_status = 'ON_PROGRESS';
+					$update_mbp_data['status'] = $status;
+					$update_sp_data = [
+						'date_onprogress' => $date_now,
+						'last_update' => $date_now,
+						'finish' => null,
+						'date_finish' => null,
+						'is_sync' => '0',
+					];
+					$log_description = @$SP->user_mbp_cn.' telah menerima tiket [OFFLINE MODE]';
+
+				}else{
+					$res['success'] = false;
+					$res['message'] = 'REQUEST_DENIED, current status : '.$MBP->status;
+					return response($res);
+				}
+
+				break;
+			case 'CHECK_IN':
+
+				if($MBP->status=='CHECK_IN'){
+					$res['success'] = true;
+					$res['message'] = 'Success';
+					return response($res);
+				}elseif($MBP->status=='ON_PROGRESS'){
+					
+					$log_status = 'CHECK_IN';
+					$update_mbp_data['status'] = $status;
+					$update_sp_data = [
+						'kwh_meter_before' => $kwh,
+						'running_hour_before' => $rh,
+						'date_checkin' => $date_now,
+						'last_update' => $date_now,
+						'finish' => null,
+						'date_finish' => null,
+						'is_sync' => '0',
+					];
+					$log_description = @$SP->user_mbp_cn.' telah sampai di site tujuan [OFFLINE MODE]';
+
+				}else{
+					$res['success'] = false;
+					$res['message'] = 'REQUEST_DENIED, current status : '.$MBP->status;
+					return response($res);
+				}
+
+				break;
+			case 'AVAILABLE':
+
+				if($MBP->status=='CHECK_IN'){
+					
+					$log_status = 'CHECK_OUT';
+					$update_mbp_data['status'] = $status;
+					$update_sp_data = [
+						'kwh_meter_after' => $kwh,
+						'running_hour_after' => $rh,
+						'date_finish' => $date_now,
+						'finish' => 'DONE',
+						'detail_finish' => '1',
+						'is_sync' => '0',
+					];
+					$update_site_data = ['is_allocated'=>'0'];
+					$log_description = @$SP->user_mbp_cn.' telah menyelesaikan tugasnya [OFFLINE MODE]';
+				
+				}else{
+					$res['success'] = false;
+					$res['message'] = 'REQUEST_DENIED, current status : '.$MBP->status;
+					return response($res);
+				}
+
+				break;
+			default: 
+				$res['success'] = false;
+				$res['message'] = 'UNDEFINED_STATUS';
+				return response($res);
+				break;
 		}
+		if(!empty($update_sp_data)) DB::table('supplying_power')->where('sp_id', $SP->sp_id)->update($update_sp_data);
+		if(!empty($update_mbp_data)) DB::table('mbp')->where('mbp_id', $SP->mbp_id)->update($update_mbp_data);
+		if(!empty($update_site_data)) DB::table('site')->where('site_id', $SP->site_id)->update($update_site_data);
 
-		if($SP_data==NULL){
-			$res['success'] = false;
-			$res['message'] = 'FAILED_MBP_DATA_NOT_FOUND';
-			return response($res);
-		}
-
-		if($mbp_data->status==$status){
-			$data['sp_id'] = $sp_id;
-			$data['mbp_id'] = $mbp_id;
-			$data['status'] = $status;
-			$res['success'] = true;
-			$res['message'] = 'SUCCESS';
-			$res['data'] = $data;
-			return response($res);
-		}
-
-		$editMbp = DB::table('mbp')
-		->where('mbp.mbp_id', $mbp_id)
-		->update(['status' => $status]);
-
-		$sp_log_desc = '';
-
-
-		if($status=='CHECK_IN') {
-			if ($before_after=='BEFORE') {
-			$insertSP = DB::table('supplying_power')
-			->where('sp_id', $sp_id)
-			->where('mbp_id', $mbp_id)
-			->where('finish', NULL)
-			->update(
-				[
-				'kwh_meter_before' => $kwh,
-				'running_hour_before' => $rh,
-				'date_checkin' => date('Y-m-d H:i:s'),
-				'last_update' => date('Y-m-d H:i:s'),
-				'is_sync' => '0',
-				]
-			);
-			} else {
-			// isi date checkinnya
-			$insertSP = DB::table('supplying_power')
-			->where('sp_id', $sp_id)
-			->where('mbp_id', $mbp_id)
-			->where('finish', NULL)
-			->update(
-				[
-				'date_checkin' => date('Y-m-d H:i:s'),
-				'last_update' => date('Y-m-d H:i:s'),
-				'is_sync' => '0',
-				]
-			);
-			}
-
-			$sp_log_desc = '  telah sampai di site tujuan menggunakan mode offline';
-
-		}else if($status=='AVAILABLE'){
-			if ($before_after=='AFTER') {
-			$insertSP = DB::table('supplying_power')
-			->join('site', 'supplying_power.site_id', '=', 'site.site_id') 
-			->where('supplying_power.sp_id', $sp_id)
-			->where('supplying_power.mbp_id', $mbp_id)
-			->where('supplying_power.finish', NULL)
-			->update(
-				[
-				'kwh_meter_after' => $kwh,
-				'running_hour_after' => $rh,
-				'supplying_power.date_finish' => date('Y-m-d H:i:s'),
-				'supplying_power.finish' =>'DONE',
-				'supplying_power.detail_finish'=>'1',
-				'site.is_allocated' =>'0',
-				'supplying_power.is_sync' => '0',
-				]
-			);
-			} else{
-			$insertSP = DB::table('supplying_power')
-			->join('site', 'supplying_power.site_id', '=', 'site.site_id') 
-			->where('supplying_power.sp_id', $sp_id)
-			->where('supplying_power.mbp_id', $mbp_id)
-			->where('supplying_power.finish', NULL)
-			->update(
-				[
-				'supplying_power.date_finish' => date('Y-m-d H:i:s'),
-				'supplying_power.finish' =>'DONE',
-				'supplying_power.detail_finish'=>'1',
-				'site.is_allocated' =>'0',
-				'supplying_power.is_sync' => '0',
-				]
-			);
-
-			}
-
-			$sp_log_desc = '  telah menyelesaikan tugasnya menggunakan mode offline';
-		}else if($status=='ON_PROGRESS'){
-			$insertSP = DB::table('supplying_power')
-			->join('site', 'supplying_power.site_id', '=', 'site.site_id') 
-			->where('supplying_power.sp_id', $sp_id)
-			->where('supplying_power.mbp_id', $mbp_id)
-			->where('supplying_power.finish', NULL)
-			->update(
-				[
-				'supplying_power.date_onprogress' => date('Y-m-d H:i:s'),
-				'supplying_power.is_sync' => '0',
-				]
-			);
-		}
 
 		$supplyingPowerController = new SupplyingPowerController;
-		$value_sp_log = $supplyingPowerController->saveLogSP1($sp_id, $mbp_data->user_id, $mbp_data->username, $status,$mbp_data->username.''.$sp_log_desc, '', '', $date_now);
+		// {$sp_id, $user_nik, $user_cn, $status, $description,$message , $image, $date_log}
+		$value_sp_log = $supplyingPowerController->saveLogSP1($SP->sp_id, $SP->user_mbp, $SP->user_mbp_cn, $log_status, 
+			$log_description, '', '', $date_now
+		);
 
-		$notificationController = new NotificationController;
-		$tmp = $notificationController->setNotification0('MBP_STATUS_TO_SITE',$mbp_data->mbp_name,$SP_data->site_id,$mbp_id,$status,$SP_data->rtpo_id);
+		$notificationController = new NotificationController; 
+		$tmp = $notificationController->setNotification0(
+			'MBP_STATUS_TO_SITE', $MBP->mbp_name, $SP->site_name,
+			$mbp_id, $status, $SP->rtpo_id
+		);
 
-		$data['sp_id'] = $sp_id;
-		$data['mbp_id'] = $mbp_id;
-		$data['status'] = $status;
 		$res['success'] = true;
 		$res['message'] = 'SUCCESS';
-		$res['data'] = $data;
 		return response($res);
-		}
+	}
 
 	// fungsi untuk close tiket yang sudah tiga hari g close juga
 
