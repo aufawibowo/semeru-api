@@ -1914,6 +1914,9 @@ class SupplyingPowerController extends Controller
 						'last_update' => $date_now,
 						'kwh_meter_before' => $kwh_meter_before,
 						'running_hour_before' => $rh_before,
+						'finish' => null,
+						'date_finish' => null,
+						'detail_finish' => null,
 						'is_sync' => 0,
 					]);
 	
