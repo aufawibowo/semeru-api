@@ -848,6 +848,13 @@ class SupplyingPowerController extends Controller
 			case 'AVAILABLE':
 
 				if($MBP->status=='CHECK_IN'){
+
+					$datetime1 = new DateTime($SP->date_waiting);
+					$datetime2 = new DateTime($SP->date_onprogress);
+					$datetime3 = new DateTime($SP->date_checkin);
+					$time_to_site = $datetime2->diff($datetime3);
+					$second = $time_to_site->h*3600+$time_to_site->i*60+$time_to_site->s;
+					$meet_sla = $second>7200 ? 0 : 1;
 					
 					$log_status = 'CHECK_OUT';
 					$update_mbp_data['status'] = $status;
@@ -856,6 +863,7 @@ class SupplyingPowerController extends Controller
 						'running_hour_after' => $rh,
 						'date_finish' => $date_now,
 						'finish' => 'DONE',
+						'meet_sla' => $meet_sla,
 						'detail_finish' => '1',
 						'is_sync' => '0',
 					];
