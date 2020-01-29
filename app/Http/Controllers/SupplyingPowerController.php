@@ -1315,6 +1315,7 @@ class SupplyingPowerController extends Controller
 		return response($res);
 	}
 
+	//get list tiket MBP
 	public function getListNotApprovedSP(Request $request)
 	{
 		date_default_timezone_set("Asia/Jakarta");
@@ -1330,6 +1331,7 @@ class SupplyingPowerController extends Controller
 		$limit = 20;
 		$offset = ($page-1)*$limit;
 
+		#bug
 		$data_sp_autoclose = DB::table('supplying_power')
 		->select('*')
 		->where('finish','AUTO CLOSE')
@@ -1338,35 +1340,49 @@ class SupplyingPowerController extends Controller
 		->get();
 
 		foreach ($data_sp_autoclose as $param => $row) {
-		$update_mbp = DB::table('mbp')
-		->where('mbp_id',$row->mbp_id)
-		->update([
-			'status' => 'AVAILABLE',
-		]);
+			$update_mbp = DB::table('mbp')
+						->where('mbp_id',$row->mbp_id)
+						->update([
+							'status' => 'AVAILABLE',
+						]);
 
-		$update_site = DB::table('site')
-		->where('site_id',$row->site_id)
-		->update([
-			'is_allocated' => 0,
-		]);
+			$update_site = DB::table('site')
+						->where('site_id',$row->site_id)
+						->update([
+							'is_allocated' => 0,
+						]);
 
-		$update_sp = DB::table('supplying_power')
-		->where('sp_id',$row->sp_id)
-		->update([
-			'last_update' => $date_now,
-			'is_sync' => '0',
-			
-			'detail_finish'=>'5',
-		]);
+			$update_sp = DB::table('supplying_power')
+						->where('sp_id',$row->sp_id)
+						->update([
+							'last_update' => $date_now,
+							'is_sync' => '0',
+							
+							'detail_finish'=>'5',
+						]);
 
-		$value_sp_log = $this->saveLogSP1($row->sp_id, 'system', 'system', 'AUTO_CLOSE', 'Auto close tiket oleh sistem karena tidak diterima dalam waktu 30 menit', '', '', $row->date_finish);
+			$value_sp_log = $this->saveLogSP1($row->sp_id, 'system', 'system', 'AUTO_CLOSE', 'Auto close tiket oleh sistem karena tidak diterima dalam waktu 30 menit', '', '', $row->date_finish);
 		}
 
 		$data_sp = DB::table('supplying_power')
 		->join('users', 'supplying_power.user_id', '=', 'users.id')
 		->join('mbp', 'supplying_power.mbp_id', '=', 'mbp.mbp_id')
 		->join('site', 'supplying_power.site_id', '=', 'site.site_id')
-		->select('supplying_power.sp_id','users.name as person_in_charge','mbp.mbp_id','mbp.mbp_name', 'site.site_name','site.site_id','supplying_power.finish','supplying_power.date_waiting','supplying_power.date_onprogress','supplying_power.date_checkin','supplying_power.date_finish','supplying_power.unique_id')
+		->select(
+			'supplying_power.sp_id',
+			'users.name as person_in_charge',
+			'mbp.mbp_id',
+			'mbp.mbp_name', 
+			'mbp.status',
+			'mbp.submission',
+			'site.site_name',
+			'site.site_id',
+			'supplying_power.finish',
+			'supplying_power.date_waiting',
+			'supplying_power.date_onprogress',
+			'supplying_power.date_checkin',
+			'supplying_power.date_finish',
+			'supplying_power.unique_id')
 		->whereraw('(supplying_power.date_finish >"'.$date_now.'" or supplying_power.date_finish is null)')
 		//->where('supplying_power.detail_finish',null)
 		->where('supplying_power.rtpo_id',$rtpo_id)
@@ -1379,31 +1395,26 @@ class SupplyingPowerController extends Controller
 		->get();
 
 		foreach ($data_sp as $key => $value) {
-		$value->date_waiting = ($value->date_waiting==NULL)? '-' : $this->tanggal_bulan_tahun_indo_tiga_char($value->date_waiting);
-		$value->date_onprogress = ($value->date_onprogress==NULL)? '-' : $this->tanggal_bulan_tahun_indo_tiga_char($value->date_onprogress);
-		$value->date_checkin = ($value->date_checkin==NULL)? '-' : $this->tanggal_bulan_tahun_indo_tiga_char($value->date_checkin);
-		$value->date_finish = ($value->date_finish==NULL)? '-' : $this->tanggal_bulan_tahun_indo_tiga_char($value->date_finish);
+			$value->date_waiting 	= ($value->date_waiting==NULL)? '-' : $this->tanggal_bulan_tahun_indo_tiga_char($value->date_waiting);
+			$value->date_onprogress = ($value->date_onprogress==NULL)? '-' : $this->tanggal_bulan_tahun_indo_tiga_char($value->date_onprogress);
+			$value->date_checkin 	= ($value->date_checkin==NULL)? '-' : $this->tanggal_bulan_tahun_indo_tiga_char($value->date_checkin);
+			$value->date_finish 	= ($value->date_finish==NULL)? '-' : $this->tanggal_bulan_tahun_indo_tiga_char($value->date_finish);
 
-		$data_mbp = DB::table('mbp')
-		->select('mbp_id','mbp_name','status','submission')
-		->where('mbp_id',$value->mbp_id)
-		->first();
+			$value->status = str_replace("_", " ", $value->status);
 
-		$value->status = str_replace("_", " ", $data_mbp->status);
-
-		if ($data_mbp->submission=='DELAY') {
-			$value->status = 'DELAY';
-		}
+			if ($value->submission=='DELAY') {
+				$value->status = 'DELAY';
+			}
 		}
 
 		if ($data_sp) {
-		$res['success'] = true;
-		$res['message'] = 'SUCCESS';
-		$res['data'] = $data_sp;
+			$res['success'] = true;
+			$res['message'] = 'SUCCESS';
+			$res['data'] = $data_sp;
 		} else{
-		$res['success'] = false;
-		$res['message'] = 'Server Error';
-		$res['data'] = $data_sp;
+			$res['success'] = false;
+			$res['message'] = 'Server Error';
+			$res['data'] = $data_sp;
 		}
 		return response($res);
 	}
