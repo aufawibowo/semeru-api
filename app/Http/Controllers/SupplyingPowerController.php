@@ -1898,7 +1898,11 @@ class SupplyingPowerController extends Controller
 				$status = 'CHECK_IN';
 				$log_status = 'CHECK_IN';
 
-				if($MBP->status!='ON_PROGRESS'){
+				if($MBP->status=='CHECK_IN'){
+					$res['success'] = true;
+					$res['message'] = 'Success';
+					return response($res);
+				}elseif($MBP->status!='ON_PROGRESS'){
 					$res['success'] = false;
 					$res['message'] = 'REQUEST_DENIED, CURENT STATUS : '.$MBP->status;
 					return response($res);
