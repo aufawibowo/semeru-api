@@ -3235,62 +3235,40 @@ public function getListAssignmentPaginate(Request $request){
 	->join('users', 'user_mbp.username', '=', 'users.username')
 	->join('supplying_power', 'mbp.mbp_id', '=', 'supplying_power.mbp_id')
 	->join('site', 'supplying_power.site_id', '=', 'site.site_id')
-	->select('supplying_power.sp_id','users.name as person_in_charge','mbp.mbp_id','mbp.mbp_name', 'site.site_name','site.site_id','supplying_power.finish','supplying_power.date_waiting','supplying_power.date_onprogress','supplying_power.date_checkin','supplying_power.date_finish','supplying_power.unique_id')
+	->select(
+		'supplying_power.sp_id',
+		'mbp.mbp_id',
+		'mbp.mbp_name', 
+		'mbp.status',
+		'mbp.submission',
+		'site.site_name',
+		'site.site_id',
+		'supplying_power.finish',
+		'supplying_power.date_waiting',
+		'supplying_power.date_onprogress',
+		'supplying_power.date_checkin',
+		'supplying_power.date_finish',
+		'supplying_power.unique_id')
 	->whereraw('(supplying_power.date_finish >"'.$date_now.'" or supplying_power.date_finish is null)')
-	//->where('detail_finish',null)
 	->where('users.id','=',$user_id)
 	->where('mbp.status','!=','AVAILABLE')
 	->where('mbp.status','!=','UNAVAILABLE')
-	//->where('supplying_power.finish','=',NULL)
-	//->where('supplying_power.mbp_id','mbp.mbp_id')
-	//->where('supplying_power.date_waiting','>',$date2)
 	->orderBy('supplying_power.sp_id', 'desc')  
 	->offset($offset)
 	->limit($limit)
 	->get();
-
-	/*
-	if ($user_id=='mbp_rio_dumy' || $user_id=='mbp_lf_dummy') {
-	$data_sp = DB::table('mbp')
-	->join('user_mbp', 'mbp.mbp_id', '=', 'user_mbp.mbp_id')
-	->join('users', 'user_mbp.username', '=', 'users.username')
-	->join('supplying_power', 'mbp.mbp_id', '=', 'supplying_power.mbp_id')
-	->join('site', 'supplying_power.site_id', '=', 'site.site_id')
-	->select('supplying_power.sp_id','users.name as person_in_charge','mbp.mbp_id','mbp.mbp_name', 'site.site_name','site.site_id','supplying_power.finish','supplying_power.date_waiting','supplying_power.date_onprogress','supplying_power.date_checkin','supplying_power.date_finish','supplying_power.unique_id')
-	->whereraw('(supplying_power.date_finish >"'.$date_now.'" or supplying_power.date_finish is null)')
-	//->where('detail_finish',null)
-	->where('supplying_power.sp_id','=',42531)
-	->where('mbp.status','!=','AVAILABLE')
-	->where('mbp.status','!=','UNAVAILABLE')
-	//->where('supplying_power.finish','=',NULL)
-	//->where('supplying_power.mbp_id','mbp.mbp_id')
-	//->where('supplying_power.date_waiting','>',$date2)
-	->orderBy('supplying_power.sp_id', 'desc')  
-	->offset($offset)
-	->limit($limit)
-	->get();
-	}
-	*/
 
 	foreach ($data_sp as $key => $value) {
-	$value->date_waiting = ($value->date_waiting==NULL)? '-' : $this->tanggal_bulan_tahun_indo_tiga_char($value->date_waiting);
-	$value->date_onprogress = ($value->date_onprogress==NULL)? '-' : $this->tanggal_bulan_tahun_indo_tiga_char($value->date_onprogress);
-	$value->date_checkin = ($value->date_checkin==NULL)? '-' : $this->tanggal_bulan_tahun_indo_tiga_char($value->date_checkin);
-	$value->date_finish = ($value->date_finish==NULL)? '-' : $this->tanggal_bulan_tahun_indo_tiga_char($value->date_finish);
+		$value->date_waiting 	= ($value->date_waiting==NULL)? '-' : $this->tanggal_bulan_tahun_indo_tiga_char($value->date_waiting);
+		$value->date_onprogress = ($value->date_onprogress==NULL)? '-' : $this->tanggal_bulan_tahun_indo_tiga_char($value->date_onprogress);
+		$value->date_checkin 	= ($value->date_checkin==NULL)? '-' : $this->tanggal_bulan_tahun_indo_tiga_char($value->date_checkin);
+		$value->date_finish 	= ($value->date_finish==NULL)? '-' : $this->tanggal_bulan_tahun_indo_tiga_char($value->date_finish);
 
-	//$value->finish = '-';
+		$value->status = str_replace("_", " ", $value->status);
 
-	$data_mbp = DB::table('mbp')
-	->select('mbp_id','mbp_name','status','submission')
-	->where('mbp_id',$value->mbp_id)
-	->first();
-	
-	$value->status = str_replace("_", " ", $data_mbp->status);
-
-	if ($data_mbp->submission=='DELAY') {
-		$value->status = 'DELAY';
-	}
-	//$value->status = $data_mbp->status;
+		if ($value->submission=='DELAY') {
+			$value->status = 'DELAY';
+		}
 	}
 
 	if ($data_sp) {
