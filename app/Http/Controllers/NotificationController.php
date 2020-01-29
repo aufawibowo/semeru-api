@@ -26,23 +26,41 @@ public function getTelegramQueue(Request $request){
 	$queue_telegram_data = DB::table('queue_telegram')
 	->select('id','chat_id','message', 'create_at as date_created')
 	->where('sent','=',0)
+	->limit(50)
 	->get();
-
-	foreach ($queue_telegram_data as $param) {
-
-	$update_queue_telegram_data = DB::table('queue_telegram')
-	->where('id', $param->id)
-	->update(
-		[
-		'sent' => '1',
-		'send_at' => $date_now,
-		]
-	);
-	}
 
 	$res['success'] = true;
 	$res['data'] = $queue_telegram_data;
 	return response($res);
+}
+
+public function updateTelegramQueue(Request $request){
+	date_default_timezone_set("Asia/Jakarta");
+	$date_now =date('Y-m-d H:i:s');
+
+	$ids = $request->input('ids');
+	//return response(json_encode(is_array($ids)));
+
+	if(is_null($ids)){
+		$res['success'] = false;
+		$res['message'] = 'Parameter `ID` is NULL';
+	}
+	
+	foreach($ids as $id){
+		DB::table('queue_telegram')
+		->where('id', $id)
+		->update(
+			[
+			'sent' => '1',
+			'send_at' => $date_now,
+			]
+		);
+	}
+
+	$res['success'] = true;
+	$res['message'] = 'SUCCESS';
+	return response($res);
+
 }
 
 public function setNotification(Request $request){

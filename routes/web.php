@@ -163,7 +163,7 @@ $app->post('/getNotificationHome', 'NotificationController@getNotificationHome')
 // checkNotisMbpSOS
 $app->post('/checkNotif', 'NotificationController@checkNotif');
 $app->post('/getTelegramQueue', 'NotificationController@getTelegramQueue');
-
+$app->post('/updateTelegramQueue', 'NotificationController@updateTelegramQueue');
 // -> melihat list sos sampai memberikan bantuan mbp
 // getListSOS
 $app->post('/getListSOS', 'SosController@getListSOS');
@@ -723,28 +723,28 @@ $app->group(
 				$app->post('/updateIsSyncReportLocationSite', 'Api\Sync\ReportLocationSiteController@updateIsSyncReportLocationSite');
 			}
 		);
-
+		$app->post('/get_list_site', 'SiteControllerNew@get_list_site'); 
 		$app->post('/get_home_content_test', 'Api\DashboardController@get_data');
 		$app->group(
 			['middleware' => 'api_token'],
 			function () use ($app) {
-    	//ambil data untuk dashboard
+    			//ambil data untuk dashboard
 				$app->post('/get_home_content', 'Api\DashboardController@get_data');
 				$app->post('/get_home_content_test', 'Api\DashboardController@get_data_test');
 				$app->post('/get_dashboard_data', 'Api\DashboardController@get_data_filter');
 				$app->post('/get_dashboard_filter', 'Api\DashboardController@get_filter');
-	    //concern
+	    		//concern
 				$app->post('/concern/submit', 'Api\ConcernController@submit_concern');
 
-        //new
+        		//new
 				$app->post('/get_mbp_area', 'MbpController@getMbpArea');
 				$app->post('/get_mbp_regional', 'MbpController@getMbpRegional');
 				$app->post('/get_mbp_ns', 'MbpController@getMbpNS');
 				$app->post('/get_mbp_rtpo', 'MbpController@getMbpRtpo');
 				$app->post('/get_detail_mbp', 'MbpController@get_detail_mbp');
 				$app->post('/get_detail_mbp_tiket', 'MbpControllerNew@get_detail_mbp_tiket');
-        //
-        //$app->post('/get_list_history_supplying_power', 'SupplyingPowerController@getListHistorySupplyingPower');
+        		//
+        		//$app->post('/get_list_history_supplying_power', 'SupplyingPowerController@getListHistorySupplyingPower');
 				$app->post('/get_list_history_supplying_power', 'SupplyingPowerControllerNew@get_list_history_supplying_power');
 				$app->post('/get_list_history_supplying_power_area', 'SupplyingPowerControllerNew@get_list_history_supplying_power_area');
 				$app->post(
@@ -757,13 +757,17 @@ $app->group(
 					'SupplyingPowerControllerNew@get_list_history_supplying_power_ns_paginate'
 				);
 				$app->post('/get_list_history_supplying_power_regional', 'SupplyingPowerControllerNew@get_list_history_supplying_power_regional');
-				$app->post(
-					'/get_list_history_supplying_power_regional_paginate',
-					'SupplyingPowerControllerNew@get_list_history_supplying_power_regional_paginate'
-				);
+				$app->post('/get_list_history_supplying_power_regional_paginate','SupplyingPowerControllerNew@get_list_history_supplying_power_regional_paginate');
 
-        // getListHistorySupplyingPowerRtpo
+        		// getListHistorySupplyingPowerRtpo
 				$app->post('/get_list_history_supplying_power_rtpo', 'SupplyingPowerController@getListHistorySupplyingPowerRtpo');
+				$app->post('/send_cancellation_letter_to_rtpo', 'CancelController@send_cancellation_letter_to_rtpo');
+				$app->post('/get_list_site', 'SiteControllerNew@get_list_site'); 
+				
+				
+				$app->post('/get_data_vandalism', 'VandalismController@get_data_vandalism');
+				$app->post('/delete_data_vandalism', 'VandalismController@delete_data_vandalism');
+				$app->post('/submit_data_vandalism', 'VandalismController@submit_data_vandalism');
 			}
 		);
 		$app->post('/sp/create_ticket', 'Api\SupplyingPowerController@create_ticket');
