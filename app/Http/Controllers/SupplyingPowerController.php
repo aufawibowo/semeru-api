@@ -847,7 +847,11 @@ class SupplyingPowerController extends Controller
 				break;
 			case 'AVAILABLE':
 
-				if($MBP->status=='CHECK_IN'){
+				if($MBP->status=='AVAILABLE'){
+					$res['success'] = true;
+					$res['message'] = 'Success';
+					return response($res);
+				}elseif($MBP->status=='CHECK_IN'){
 
 					$datetime1 = new DateTime($SP->date_waiting);
 					$datetime2 = new DateTime($SP->date_onprogress);
@@ -1930,7 +1934,11 @@ class SupplyingPowerController extends Controller
 				$status = 'AVAILABLE';
 				$log_status = 'CHECK_OUT';
 
-				if($MBP->status!='CHECK_IN'){
+				if($MBP->status=='AVAILABLE'){
+					$res['success'] = true;
+					$res['message'] = 'Success';
+					return response($res);
+				}elseif($MBP->status!='CHECK_IN'){
 					$res['success'] = false;
 					$res['message'] = 'REQUEST_DENIED, CURENT STATUS : '.$MBP->status;
 					return response($res);
