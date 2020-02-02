@@ -1378,7 +1378,6 @@ class SupplyingPowerController extends Controller
 		->join('site', 'supplying_power.site_id', '=', 'site.site_id')
 		->select(
 			'supplying_power.sp_id',
-			'users.name as person_in_charge',
 			'mbp.mbp_id',
 			'mbp.mbp_name', 
 			'mbp.status',
@@ -1392,10 +1391,9 @@ class SupplyingPowerController extends Controller
 			'supplying_power.date_finish',
 			'supplying_power.unique_id')
 		->whereraw('(supplying_power.date_finish >"'.$date_now.'" or supplying_power.date_finish is null)')
-		//->where('supplying_power.detail_finish',null)
 		->where('supplying_power.rtpo_id',$rtpo_id)
-		//->where('supplying_power.finish',null)
-		//->where('supplying_power.date_waiting','>',$date2)
+		->where('mbp.status','!=','AVAILABLE')
+		->where('mbp.status','!=','UNAVAILABLE')
 		->where('supplying_power.approved_by_rtpo',0)
 		->orderBy('supplying_power.sp_id', 'desc')  
 		->offset($offset)
