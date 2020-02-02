@@ -138,16 +138,30 @@ class CancelController extends Controller
 	);
 
 	$supplyingPowerController = new SupplyingPowerController;
-	$value_sp_log = $supplyingPowerController->saveLogSP1($sp_data->sp_id, $user_id_mbp, $sp_data->user_mbp_cn, 'SUBMIT_CANCEL', $sp_data->user_mbp_cn.' mengajukan pembatalan penugasan kepada rtpo dengan alasan sebagai berikut : '.$text_message,$text_message, '', $date_now);
+	$value_sp_log = $supplyingPowerController	->	saveLogSP1(
+														$sp_data->sp_id, 
+														$user_id_mbp, 
+														$sp_data->user_mbp_cn, 
+														'SUBMIT_CANCEL', 
+														$sp_data->user_mbp_cn.' mengajukan pembatalan penugasan kepada rtpo dengan alasan sebagai berikut : '.$text_message,
+														$text_message,
+														'',
+														$date_now);
 
 	$notificationController = new NotificationController;
-	$tmp = $notificationController->setNotificationMbpSubmission($sp_data->mbp_name,$sp_data->site_name,$rtpo_id, $sp_data->message_id, 'CANCEL');
+	$tmp = $notificationController	->	setNotificationMbpSubmission(
+											$sp_data->mbp_name,
+											$sp_data->site_name,
+											$rtpo_id, 
+											$sp_data->message_id, 
+											'CANCEL');
 
 	$res['success'] = true;
 	$res['message'] = 'SUCCESS';
 	// $res['data'] = $mbp_data;
 	return response($res);
 	}
+
 	public function sendDelayLetterToRtpo(Request $request){
 	date_default_timezone_set("Asia/Jakarta");
 	$date_now = date('Y-m-d H:i:s');
@@ -1446,6 +1460,7 @@ class CancelController extends Controller
 	}
 
 	public function sendCancellationLetterToRtpoNew(Request $request){
+		
 	date_default_timezone_set("Asia/Jakarta");
 	$date_now = date('Y-m-d H:i:s');
 
@@ -1472,12 +1487,7 @@ class CancelController extends Controller
 		return response($res);
 	}
 
-	$data_mbp = DB::table('mbp')
-	->select('*')
-	->where('mbp_id',$mbp_id)
-	->first();
-
-	$rtpo_id = $data_mbp->rtpo_id;
+	$rtpo_id = $sp_data->rtpo_id;
 	
 	if(empty($rtpo_id) || $rtpo_id==0) {
 		$res['success'] = false;
@@ -1531,7 +1541,6 @@ class CancelController extends Controller
 		[
 		'send_to_rtpo_id' => $rtpo_id,
 		'send_to_rtpo_name' => $sp_data->rtpo_name,
-		
 		'desc' => $text_message,
 		'cancel_category' => @$cancel_category,
 		'send_by_nik' => $user_id_mbp,
@@ -1577,14 +1586,26 @@ class CancelController extends Controller
 	);
 
 	$supplyingPowerController = new SupplyingPowerController;
-	$value_sp_log = $supplyingPowerController->saveLogSP1($sp_data->sp_id, $user_id_mbp, $sp_data->user_mbp_cn, 'SUBMIT_CANCEL', $sp_data->user_mbp_cn.' mengajukan pembatalan penugasan kepada rtpo dengan alasan sebagai berikut : '.$text_message,$text_message, '', $date_now);
+	$value_sp_log = $supplyingPowerController	->	saveLogSP1(
+														$sp_data->sp_id, 
+														$user_id_mbp, 
+														$sp_data->user_mbp_cn, 
+														'SUBMIT_CANCEL', 
+														$sp_data->user_mbp_cn.' mengajukan pembatalan penugasan kepada rtpo dengan alasan sebagai berikut : '.$text_message,
+														$text_message,
+														'',
+														$date_now);
 
 	$notificationController = new NotificationController;
-	$tmp = $notificationController->setNotificationMbpSubmission($sp_data->mbp_name,$sp_data->site_name,$rtpo_id, $sp_data->message_id, 'CANCEL');
+	$tmp = $notificationController	->	setNotificationMbpSubmission(
+											$sp_data->mbp_name,
+											$sp_data->site_name,
+											$rtpo_id, 
+											$sp_data->message_id, 
+											'CANCEL');
 
 	$res['success'] = true;
 	$res['message'] = 'SUCCESS';
-	// $res['data'] = $mbp_data;
 	return response($res);
 	}
 
@@ -1721,8 +1742,8 @@ class CancelController extends Controller
 	);
 
 	$supplyingPowerController = new SupplyingPowerController;
-	$value_sp_log = $supplyingPowerController->saveLogSP1($sp_data->sp_id, $user_id_mbp, $sp_data->user_mbp_cn, 'SUBMIT_CANCEL', $sp_data->user_mbp_cn.' mengajukan pembatalan penugasan kepada rtpo dengan alasan sebagai berikut : '.$text_message,$text_message, '', $date_now);
-
+	$value_sp_log = $supplyingPowerController->saveLogSP1(	$sp_data->sp_id, $user_id_mbp, $sp_data->user_mbp_cn, 'SUBMIT_CANCEL', $sp_data->user_mbp_cn.' mengajukan pembatalan penugasan kepada rtpo dengan alasan sebagai berikut : '.$text_message,$text_message, '', $date_now);
+	
 	$notificationController = new NotificationController;
 	$tmp = $notificationController->setNotificationMbpSubmission($sp_data->mbp_name,$sp_data->site_name,$rtpo_id, $sp_data->message_id, 'CANCEL');
 
@@ -1843,7 +1864,7 @@ class CancelController extends Controller
 
 	$supplyingPowerController = new SupplyingPowerController;
 	$value_sp_log = $supplyingPowerController->saveLogSP1($sp_data->sp_id, $user_id_mbp, $sp_data->user_mbp_cn, 'SUBMIT_DELAY', $sp_data->user_mbp_cn.' mengirimkan pengajuan delay kepada rtpo dengan pesan sebagai berikut : '.$text_message,$text_message, '', $date_now);
-
+	
 	$notificationController = new NotificationController;
 	$tmp = $notificationController->setNotificationMbpSubmission($sp_data->mbp_name,$sp_data->site_name,$rtpo_id, $sp_data->message_id, 'DELAY');
 
