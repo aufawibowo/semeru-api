@@ -2397,55 +2397,37 @@ public function getMySitePaginate(Request $request){
 	}
 }
 
-public function getListSite(Request $request)
+public function get_list_site(Request $request)
 {
-	$username = $request->input('username');
-
 	$page = $request->input('page');
 	$search = $request->input('search');
 
 	$limit = 20;
 	$offset = ($page-1)*$limit;
 
-
-
-	$user_rtpo = DB::table('user_rtpo')->where(['username'=> $username,'status'=>1])->first();
-	
 	$DB = DB::table('site')
-	->select('site_id','site_name','latitude','longitude','cluster_id','cluster','rtpo_id','rtpo','ns_id','ns','regional','site.status', 'site.class_id as class_name')
-	->whereraw('(site_id like "%'.$search.'%" or site_name like "%'.$search.'%")')
-	->offset($offset)
-	->limit($limit);
-	
-	if($user_rtpo){
-	$DB = $DB->where('rtpo_id',$user_rtpo->rtpo_id);
-	}else{
-	$data_user = DB::table('users')
-	->select('cluster_id')
-	->where('username',$username)
-	->first();
-
-	$DB = $DB->where('cluster_id',$data_user->cluster_id);
-
-	}
+		->select('site_id','site_name','latitude','longitude','cluster_id','cluster','rtpo_id','rtpo','ns_id','ns','regional','site.status', 'site.class_id as class_name')
+		->orderBy('site_name','asc')
+		->offset($offset)
+		->limit($limit);
 
 	$data_site = $DB->get();
 
 	if ($data_site) {
-	$res['success'] = true;
-	$res['message'] = 'SUCCESS';
-	$res['data'] = $data_site;
+		$res['success'] = 'OK';
+		$res['message'] = 'SUCCESS';
+		$res['data'] = $data_site;
 
-	foreach ($data_site as $i => $site) {
-		$data_site[$i]->class_name = is_null($site->class_name)?'-':$site->class_name;
-	}
-	
-	return response($res);
+		foreach ($data_site as $i => $site) {
+			$data_site[$i]->class_name = is_null($site->class_name)?'-':$site->class_name;
+		}
+		
+		return response($res);
 	}else{
-	$res['success'] = false;
-	$res['message'] = 'Server Error!';
-	
-	return response($res);
+		$res['success'] = 'OK';
+		$res['message'] = 'Server Error!';
+		
+		return response($res);
 	}
 }
 
