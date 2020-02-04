@@ -1902,7 +1902,7 @@ class SupplyingPowerController extends Controller
 
 				if($MBP->status=='CHECK_IN'){
 					$res['success'] = true;
-					$res['message'] = 'Success';
+					$res['message'] = 'SUCCESS';
 					return response($res);
 				}elseif($MBP->status!='ON_PROGRESS'){
 					$res['success'] = false;
@@ -1936,7 +1936,7 @@ class SupplyingPowerController extends Controller
 
 				if($MBP->status=='AVAILABLE'){
 					$res['success'] = true;
-					$res['message'] = 'Success';
+					$res['message'] = 'SUCCESS';
 					return response($res);
 				}elseif($MBP->status!='CHECK_IN'){
 					$res['success'] = false;
