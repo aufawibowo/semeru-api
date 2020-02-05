@@ -1160,7 +1160,7 @@ public function requestMbpToSiteDown(Request $request){
 	$user_id = $request->input('user_id');
 
 	//get data SP yang sedang aktif
-	$SPActive = DB::select("SELECT * FROM supplying_power WHERE mbp_id='.$mbp_id.' AND (finish IS NULL OR (finish='AUTO CLOSE' AND detail_finish IS NULL) )")->where(['mbp_id'=>$mbp_id])->first();
+	$SPActive = DB::select("SELECT * FROM supplying_power WHERE mbp_id='.$mbp_id.' AND (finish IS NULL OR (finish='AUTO CLOSE' AND detail_finish IS NULL) )");
 	if ($SPActive) return response(['success'=>false, 'message'=>'FAILED_MBP_TERBOKING']);
 
 	//get data mbp
