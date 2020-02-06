@@ -4127,6 +4127,7 @@ public function getDataCorrectiveIsSync0(Request $request){
 			->select('*')
 			->where('ut.fmc_id','=',$app_corrective_data->fmc_id)
 			->where('ut.cluster','=',$app_corrective_data->cluster)
+			->where('u.user_type','=','TSRA')
 			->get();
 		}elseif ($app_corrective_data->target_role_id == 7) {
 			$users_data = DB::table('user_mbp_mt as ut')
@@ -4134,11 +4135,12 @@ public function getDataCorrectiveIsSync0(Request $request){
 			->select('*', 'ut.mbp_mt_username as tsra_username')
 			->where('ut.fmc_id','=',$app_corrective_data->fmc_id)
 			->where('ut.cluster','=',$app_corrective_data->cluster)
+			->where('u.user_type','=','MBP')
 			->get();
 		}
 
 
-			$to_token_id = array();
+		$to_token_id = array();
 		if ($request_status == 11) {
 			//get all user dimana fmc_id nya == $data['fmc_id']
 			$notificationController = new NotificationController;
