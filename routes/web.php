@@ -494,8 +494,8 @@ $app->post('/check15mntResponMbp', 'SupplyingPowerController@check15mntResponMbp
 // sendImageValue
 $app->post('/sendImageValue', 'ImageController@sendImageValue');
 
-// mbp_update
-$app->post('/mbp_update', 'MbpController@mbp_update');
+$app->post('/mbp_update', 'Api\Sync\MbpController@mbp_update');
+// $app->post('/mbp_update', 'MbpController@mbp_update');
 // fmc_cluster_update
 $app->post('/fmc_cluster_update', 'ConfigAppController@fmc_cluster_update');
 // rtpo_update
