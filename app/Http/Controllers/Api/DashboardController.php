@@ -361,7 +361,14 @@ class DashboardController extends Controller {
 		$maintenance['incomplete']				 = $maintenance['target'] - $maintenance['completed'];
 		$total_approve							 = $maintenance['approved'] + $maintenance['auto_approved'];
 		$maintenance['achievement']				 = $total_approve.'/'.$maintenance['target'];
-		$maintenance['percentage_achievement']	 = round(($total_approve*100)/$maintenance['target'],2).'%';
+
+		if($maintenance['target'] == 0){
+			$maintenance['percentage_achievement'] = '0%';
+		}
+		else{
+			$maintenance['percentage_achievement']	 = round( $total_approve*100 / $maintenance['target'],2).'%';
+		}
+		
 		// ($maintenance['approved']+$maintenance['auto_approved'])/$maintenance['target'];
 
 		//total status mbp
