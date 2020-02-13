@@ -37,6 +37,11 @@ class MbpController extends Controller {
       $mbp_data = [
         'mbp_id' => @$row['mbp_id'],
         'mbp_name' => @$row['mbp_name'],
+        'jenis_rh' => @$row['jenis_rh'],
+        'merk_mbp' => @$row['merk_mbp'],
+        'kapasitas' => @$row['kapasitas'],
+
+
         'fmc_id' => @$row['fmc_id'],
         'fmc' => @$row['fmc'],
         'cluster_id' => @$row['cluster_id'],
