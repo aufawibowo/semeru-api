@@ -796,7 +796,9 @@ class SupplyingPowerController extends Controller
 				if($MBP->status=='ON_PROGRESS'){
 					$res['success'] = true;
 					$res['message'] = 'Success';
+					$res['data']['status'] = $MBP->status;
 					return response($res);
+
 				}elseif($MBP->status=='WAITING'){
 					
 					$log_status = 'ON_PROGRESS';
@@ -822,6 +824,7 @@ class SupplyingPowerController extends Controller
 				if($MBP->status=='CHECK_IN'){
 					$res['success'] = true;
 					$res['message'] = 'Success';
+					$res['data']['status'] = $MBP->status;
 					return response($res);
 				}elseif($MBP->status=='ON_PROGRESS'){
 					
@@ -850,6 +853,7 @@ class SupplyingPowerController extends Controller
 				if($MBP->status=='AVAILABLE'){
 					$res['success'] = true;
 					$res['message'] = 'Success';
+					$res['data']['status'] = $MBP->status;
 					return response($res);
 				}elseif($MBP->status=='CHECK_IN'){
 
@@ -906,6 +910,7 @@ class SupplyingPowerController extends Controller
 
 		$res['success'] = true;
 		$res['message'] = 'SUCCESS';
+		$res['data']['status'] = $MBP->status;
 		return response($res);
 	}
 
