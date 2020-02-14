@@ -1213,8 +1213,8 @@ class ConfigAppController extends Controller
 			$regional = $row['regional'].'';
 			$latitude = @$row['latitude'].'';
 			$longitude = @$row['longitude'].'';
-			$status = $row['status'].'';
-			$last_update = $row['last_update'].'';
+			$status = @$row['status'].'';
+			$last_update = @$row['last_update'].'';
 			
 			$rtpo_data = DB::table('rtpo')
 			->select('*')
@@ -1256,6 +1256,50 @@ class ConfigAppController extends Controller
 		return response($res);
 	}
 
+	public function nsUpdate(Request $request){
+		$data = $request->input('data');
+
+		foreach ($data as $param => $row) {
+
+
+			$ns_id = $row['ns_id'].'';
+			$ns_name = @$row['ns_name'].'';
+			$regional = @$row['regional'].'';
+			$latitude = @$row['latitude'].'';
+			$longitude = @$row['longitude'].'';
+			$status = @$row['status'].'';
+			$last_update = @$row['last_update'].'';
+			
+			$ns_data = DB::table('ns')
+			->select('*')
+			->where('ns_id','=',$ns_id)
+			->first();
+
+			$row_ns = [
+				'ns_id' => $ns_id,
+				'ns_name' => $ns_name,
+				'regional' => $regional,
+				'latitude' => $latitude,
+				'longitude' => $longitude,
+				'status' => $status,
+				'last_update' => $last_update,
+			];
+
+			if ($ns_data!=null) {
+				$updateNsData = DB::table('ns')
+				->where('ns_id','=',$ns_id)
+				->update($row_ns);
+			}else{
+				$insertNsData = DB::table('ns')->insert($row_ns);
+			}
+
+		}
+
+		$res['success'] = true;
+		$res['message'] = 'SUCCESS';
+		return response($res);
+	}
+
 	public function fmcUpdate(Request $request){
 		$data = $request->input('data');
 		// print_r($data);
@@ -1265,14 +1309,14 @@ class ConfigAppController extends Controller
 		foreach ($data as $param => $row) {
 
 
-			$fmc_id = $row['fmc_id'].'';
-			$fmc_name = $row['fmc_name'].'';
-			$fmc_alias = $row['fmc_alias'].'';
-			$regional = $row['regional'].'';
+			$fmc_id = @$row['fmc_id'].'';
+			$fmc_name = @$row['fmc_name'].'';
+			$fmc_alias = @$row['fmc_alias'].'';
+			$regional = @$row['regional'].'';
 			// $latitude = @$row['latitude'].'';
 			// $longitude = @$row['longitude'].'';
-			$status = $row['status'].'';
-			$last_update = $row['last_update'].'';
+			$status = @$row['status'].'';
+			$last_update = @$row['last_update'].'';
 			
 			$fmc_data = DB::table('fmc')
 			->select('*')

@@ -501,6 +501,7 @@ $app->post('/fmc_cluster_update', 'ConfigAppController@fmc_cluster_update');
 // rtpo_update
 $app->post('/rtpo_update', 'ConfigAppController@rtpo_update');
 $app->post('/rtpoUpdate', 'ConfigAppController@rtpoUpdate');
+$app->post('/nsUpdate', 'ConfigAppController@nsUpdate');
 $app->post('/fmcUpdate', 'ConfigAppController@fmcUpdate');
 
 // setDataSitefromDStoMaster
