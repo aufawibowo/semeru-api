@@ -494,6 +494,7 @@ $app->post('/check15mntResponMbp', 'SupplyingPowerController@check15mntResponMbp
 // sendImageValue
 $app->post('/sendImageValue', 'ImageController@sendImageValue');
 
+// mbp_update
 $app->post('/mbp_update', 'Api\Sync\MbpController@mbp_update');
 // $app->post('/mbp_update', 'MbpController@mbp_update');
 // fmc_cluster_update
@@ -705,6 +706,8 @@ $app->get(
 	]
 );
 
+
+
 $app->group(
 	['prefix' => 'api'],
 	function () use ($app) {
@@ -715,22 +718,24 @@ $app->group(
 		$app->post('/supplying_power/fix_meet_sla', 'Api\QueryController@sp_fix_meet_sla');
 		$app->post('/supplying_power/active_ticket', 'Api\SupplyingPowerController@active_ticket');
 
-		$app->group(
-			['prefix' => 'sync'],
-			function () use ($app) {
-				$app->get('/getConcernData', 'Api\Sync\ConcernController@getConcernData');
-				$app->post('/updateIsSyncConcern', 'Api\Sync\ConcernController@updateIsSyncConcern');
-				$app->get('/getReportLocationSite', 'Api\Sync\ReportLocationSiteController@getReportLocationSite');
-				$app->post('/updateIsSyncReportLocationSite', 'Api\Sync\ReportLocationSiteController@updateIsSyncReportLocationSite');
-			}
-		);
+		
 		$app->post('/get_list_site', 'SiteControllerNew@get_list_site'); 
 		$app->post('/get_home_content_test', 'Api\DashboardController@get_data');
+
+		$app->group(
+			['prefix' => 'firebase'],
+			function () use ($app) {
+				$app->post('/send_notif', 'Api\FirebaseController@send_notif');
+			}
+		);
+
+
 		$app->group(
 			['middleware' => 'api_token'],
 			function () use ($app) {
     			//ambil data untuk dashboard
-				$app->post('/get_home_content', 'Api\DashboardController@get_data');
+				// $app->post('/get_home_content', 'Api\DashboardController@get_data');
+
 				$app->post('/get_home_content_test', 'Api\DashboardController@get_data_test');
 				$app->post('/get_dashboard_data', 'Api\DashboardController@get_data_filter');
 				$app->post('/get_dashboard_filter', 'Api\DashboardController@get_filter');
