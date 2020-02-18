@@ -789,6 +789,8 @@ class SupplyingPowerController extends Controller
 		$update_site_data = [];
 		$update_mbp_data = [];
 		$log_description = '';
+		//IMPORTANT :: respond next status
+		$res['data']['status'] = $status; //sesuai next status 
 
 		switch($status){
 			case 'ON_PROGRESS':
@@ -796,7 +798,6 @@ class SupplyingPowerController extends Controller
 				if($MBP->status=='ON_PROGRESS'){
 					$res['success'] = true;
 					$res['message'] = 'Success';
-					$res['data']['status'] = $MBP->status;
 					return response($res);
 
 				}elseif($MBP->status=='WAITING'){
@@ -824,7 +825,6 @@ class SupplyingPowerController extends Controller
 				if($MBP->status=='CHECK_IN'){
 					$res['success'] = true;
 					$res['message'] = 'Success';
-					$res['data']['status'] = $MBP->status;
 					return response($res);
 				}elseif($MBP->status=='ON_PROGRESS'){
 					
@@ -910,7 +910,7 @@ class SupplyingPowerController extends Controller
 
 		$res['success'] = true;
 		$res['message'] = 'SUCCESS';
-		$res['data']['status'] = $MBP->status;
+		// $res['data']['status'] = $MBP->status; diganti next status dan dipindah keatas
 		return response($res);
 	}
 
