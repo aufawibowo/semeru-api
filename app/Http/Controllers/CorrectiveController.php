@@ -495,8 +495,6 @@ class CorrectiveController extends Controller {
 		date_default_timezone_set("Asia/Jakarta");
 		$date_now =date('Y-m-d H:i:s');
 
-		// $time_limit = $request->input('time_limit');
-
 		$web = $request->input('web');
 		$test['web'] = $web;
 
@@ -743,19 +741,8 @@ class CorrectiveController extends Controller {
 
 
 		}else {
-			// $res['success'] = true;
-			// $res['message'] = 'notnull';
-			// return response($res);
-
-				// $res['success'] = false;
-				// $res['message'] = 'null';
-				// return response(null);
 
 			$data_corective = $request->input('data');
-
-				// $res['message'] = $data_corective['log'];
-				// return response($res);
-
 			if ($data_corective==null) {
 				$res['success'] = false;
 				$res['message'] = 'FAILLED_DATA_NULL';
@@ -936,49 +923,7 @@ class CorrectiveController extends Controller {
 
 		}
 
-
-		// $res['success'] = true;
-		// $res['message'] = 'SUCCESS';
-		// $res['data'] = $data;
-		// return response($res);
-		//--------------testing aja...................................
-
-		// if ($data['target_role_id']==7) {
-		// 	$users_data = DB::table('user_mbp_mt as ut')
-		// 	->join('users as u', 'ut.mbp_mt_username', 'u.username')
-		// 	->select('*', 'ut.mbp_mt_username as tsra_username')
-		// 	->where('ut.fmc_id','=',$data['fmc_id'])
-		// 	->where('ut.cluster','=',$data['cluster'])
-		// 	->get();
-		// }else if($data['target_role_id']==11) {
-		// 	$users_data = DB::table('user_tsra as ut')
-		// 	->join('users as u', 'ut.tsra_username', 'u.username')
-		// 	->select('*')
-		// 	->where('ut.fmc_id','=',$data['fmc_id'])
-		// 	->where('ut.cluster','=',$data['cluster'])
-		// 	->get();
-		// }
-
-
 		$notificationController = new NotificationController;
-
-		// $to_token_id = array();
-  //       $result = json_decode($users_data, true);
-  //       foreach ($result as $param => $row) {
-  //       	$tmp = $notificationController->setNotificationV1($data['user_cn'], $row['tsra_username'], 'RTPO_SEND_CORRECTIVE_TICKET', 'corrective_id', $data['corrective_id'], 'Tiket Corrective', 'RTPO_SEND_CORRECTIVE_TICKET', $data['user_cn'].' dari '.$data['rtpo'].' mengirimkan tiket korektive kepada fmc anda');
-
-		// 	// array_push($to_token_id,@$row['firebase_token']);
-		// }
-
-
-//================================================= di buka yang bawa kalao error
-		// $fmc_fc_data = DB::table('users')
-		// ->select('*')
-		// ->where('fmc_id','=',$data['fmc_id'])
-		// ->where('cluster','=',$data['cluster'])
-		// ->where('firebase_token','!=',null)
-		// ->get();
-
 
 		if ($data['target_role_id']==7) {
 			$fmc_fc_data = DB::table('user_mbp_mt as ut')
@@ -999,90 +944,65 @@ class CorrectiveController extends Controller {
 		$to_token_id = array();
         $result = json_decode($fmc_fc_data, true);
         foreach ($result as $param => $row) {
-
         	$tmp = $notificationController->setNotificationV1($data['user_cn'], $row['username'], 'RTPO_SEND_CORRECTIVE_TICKET', 'corrective_id', $data['corrective_id'], 'Tiket Corrective', 'RTPO_SEND_CORRECTIVE_TICKET', $data['user_cn'].' dari '.$data['rtpo'].' mengirimkan tiket corrective kepada fmc anda',2,'CORRECTIVE');
-
 			array_push($to_token_id,@$row['firebase_token']);
 		}
 
+		// $fbc = new FireBaseController;
+		// $tmp_fb = $fbc->sendNotification('CORRECTIVE', $data['user_cn'].' dari '.$data['rtpo'].' mengirimkan tiket corrective kepada fmc anda',$to_token_id,2,$data['corrective_id'],'RTPO_SEND_CORRECTIVE_TICKET');
+		
+		//FIREBASE NOTIFICATION
+		$notif_msg = $data['user_cn'].' dari '.$data['rtpo'].' mengirimkan Tiket Corrective kepada tim FMC Anda';
+		$url = 'http://suramadu.id:3000/firebase/sendNotification';
+		$params = [
+			'ids' => $to_token_id,
+			'type' => 2,
+			'title' => 'Corrective',
+			'message' => $notif_msg,
+		];
+		$header = [                                                                          
+			'Content-Type: application/json',                                                                  
+		];
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 0);
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params) );   
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		curl_exec($ch);
+		curl_close($ch);
 
-		$fbc = new FireBaseController;
-		$tmp_fb = $fbc->sendNotification('CORRECTIVE', $data['user_cn'].' dari '.$data['rtpo'].' mengirimkan tiket corrective kepada fmc anda',$to_token_id,2,$data['corrective_id'],'RTPO_SEND_CORRECTIVE_TICKET');
+		//TELEGRRAM NOTIFICATION
+		$admin_fmc_data = DB::table('users')
+			->select('*')
+			->where('fmc_id','=',$data['fmc_id'])
+			->where('cluster','=',$data['cluster'])
+			->where('chat_id','!=',null)
+			->where('chat_id','!=',"")
+			->get();
 
-// 		$fmc_fc_data = DB::table('user_fmc')
-// 		->select('*')
-// 		->where('fmc_id','=',$data['fmc_id'])
-// 		->where('cluster','=',$data['cluster'])
-// 		->where('chat_id','!=',null)
-// 		->get();
-
-// 		foreach ($fmc_fc_data as $param) {
-// 			$tmp_ftb = $fbc->formatTelegram('sendTicketCorrective', '
-// Dari : '.$data['user_cn'].'
-// RTPO : '.$data['rtpo'].'
-// ID Site : '.$data['site_id'].'
-// Nama site : '.$data['site_name'].'
-// Cluster : '.$data['cluster'].'
-// Deskripsi : '.$data['description'].'
-// Tanggal : '.$data['corrective_date'].'
-
-// Dihimbau untuk mengingatkan tim Corrective cluster tersebut, terimakasih.', $param->cluster);
-// 			$tmp_tb = $fbc->sendNotificationTelegram($tmp_ftb, $param->chat_id);
-// 		}
-
-		  $admin_fmc_data = DB::table('users')
-      ->select('*')
-      ->where('fmc_id','=',$data['fmc_id'])
-      ->where('cluster','=',$data['cluster'])
-      ->where('chat_id','!=',null)
-      ->where('chat_id','!=',"")
-      ->get();
-
-      foreach ($admin_fmc_data as $param) {
-
-        if (@$param->username!=null) {
-          
-        $subject_telegram = 'sendTicketCorrective';
-        // $title = strip_tags("<b><i> TIKET CORRECTIVE CLUSTER ".@$data['cluster']." </i></b>","<b>");
-// 		$text_telegram = '[ TIKET CORRECTIVE CLUSTER '.@$data['cluster'].' ]
-// Dari : '.$data['user_cn'].'
-// RTPO : '.$data['rtpo'].'
-// ID Site : '.$data['site_id'].'
-// Nama site : '.$data['site_name'].'
-// Cluster : '.$data['cluster'].'
-// Deskripsi : '.$data['description'].'
-// Tanggal : '.$data['corrective_date'].'
-
-// Dihimbau untuk mengingatkan tim Corrective cluster tersebut, terimakasih.';
-
-$text_telegram = "[ <b>TIKET CORRECTIVE</b> ] \nHalo, \nada Tiket Corrective untuk ".@$data["site_name"]." cluster ".@$data["cluster"]." dengan ID ".$data["site_id"].", dibuat oleh ".$data["user_cn"]." dari ".$data["rtpo"]." pada tanggal ".$data["corrective_date"].", dengan keterangan berikut : ".htmlspecialchars($data["description"]).". \n \nJangan lupa untuk mengingatkan tim corrective cluster ".@$data["cluster"]." mengenai hal ini. \nTerima Kasih. \n \n-NGSemeru Team-";
-// $text_telegram = htmlspecialchars($text_telegram, ENT_QUOTES);
-
-	        $inserQueueTelegram = DB::table('queue_telegram')   
-	        ->insert(
-	          [
-	            'subject' => @$subject_telegram,
-	            'message' => @$text_telegram,
-	            'chat_id' => @$param->chat_id,
-
-	            'send_to' => @$param->username,
-	            'fmc_id' => @$param->fmc_id,
-	            'cluster_id' => @$param->cluster_id,
-	            'rtpo_id' => @$data['rtpo_id'],
-
-	            'create_at' => @$date_now,
-
-	          ]
-	        );
-        }
-      }
-
+      	foreach ($admin_fmc_data as $param) {
+        	if (@$param->username!=null) {
+				$subject_telegram = 'sendTicketCorrective';
+				$text_telegram = "[ <b>TIKET CORRECTIVE</b> ] \nHalo, \nada Tiket Corrective untuk ".@$data["site_name"]." cluster ".@$data["cluster"]." dengan ID ".$data["site_id"].", dibuat oleh ".$data["user_cn"]." dari ".$data["rtpo"]." pada tanggal ".$data["corrective_date"].", dengan keterangan berikut : ".htmlspecialchars($data["description"]).". \n \nJangan lupa untuk mengingatkan tim corrective cluster ".@$data["cluster"]." mengenai hal ini. \nTerima Kasih. \n \n-NGSemeru Team-";
+				$inserQueueTelegram = DB::table('queue_telegram')->insert([
+					'subject' => @$subject_telegram,
+					'message' => @$text_telegram,
+					'chat_id' => @$param->chat_id,
+					'send_to' => @$param->username,
+					'fmc_id' => @$param->fmc_id,
+					'cluster_id' => @$param->cluster_id,
+					'rtpo_id' => @$data['rtpo_id'],
+					'create_at' => @$date_now,
+				]);
+        	}
+      	}
 
 		$res['success'] = true;
 		$res['message'] = 'SUCCESS';
-		// $res['user_fmc_data'] = $fmc_fc_data;
-		// $res['tmp_fb'] = $tmp_fb;
 		$res['data'] = $data;
+		// $res['debux'] = @$params;
 		return response($res);
 	}
 	public function appSetStatusAcceptCorrective(Request $request){
