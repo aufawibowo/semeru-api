@@ -964,13 +964,13 @@ class CorrectiveController extends Controller {
 			'Content-Type: application/json',                                                                  
 		];
 		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 0);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);//SET 1 SUPAYA TIDAK MENAMPILKAN RESPON DARI API
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params) );   
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-		curl_exec($ch);
+		$nodejs_response = curl_exec($ch);
 		curl_close($ch);
 
 		//TELEGRRAM NOTIFICATION
@@ -1003,7 +1003,8 @@ class CorrectiveController extends Controller {
 		$res['message'] = 'SUCCESS';
 		$res['data'] = $data;
 		// $res['debux'] = @$params;
-		return response($res);
+		// return response($res);
+		exit(json_encode($res));
 	}
 	public function appSetStatusAcceptCorrective(Request $request){
 
