@@ -1481,151 +1481,151 @@ public function cancellationStatementRtpo(Request $request){
 	}
 
 	public function sendCancellationLetterToRtpoNew(Request $request){
+		date_default_timezone_set("Asia/Jakarta");
+		$date_now = date('Y-m-d H:i:s');
+	
+		$rtpo_id 			= @$request->input('rtpo_id');
+		$user_id_mbp 		= @$request->input('user_id');
+		$mbp_id 			= $request->input('mbp_id');
+		$text_message 		= $request->input('text_message');
+		$cancel_category 	= @$request->input('cancel_category');
+		$available_status 	= $request->input('available_status');
+		$active_at 			= $request->input('time');
+		$sp_id				= $request->input('sp_id');
+
+		//AMBIL DATA SP BERDASARKAN SP ID
+		$sp_data 	= DB::table('supplying_power as sp')
+					->join('mbp as m', 'sp.mbp_id', 'm.mbp_id')
+					->join('site as s', 'sp.site_id', 's.site_id')
+					->select('*')
+					->where('sp.sp_id', $sp_id)
+					->orderBy('sp.sp_id', 'desc')
+					->first();
+	
+		//ambil data mbp
+		//ambil data site
+	
+		if ($sp_data==null) {
+			$res['success'] = false;
+			$res['message'] = 'FAILED_GET_SPA_DATA';
+			return response($res);
+		}
+	
+		$rtpo_id = $sp_data->rtpo_id;
 		
-	date_default_timezone_set("Asia/Jakarta");
-	$date_now = date('Y-m-d H:i:s');
-
-
-	$rtpo_id = @$request->input('rtpo_id');
-	$user_id_mbp = @$request->input('user_id');
-	$mbp_id = $request->input('mbp_id');
-	$text_message = $request->input('text_message');
-	$cancel_category = @$request->input('cancel_category');
-	$available_status = $request->input('available_status');
-	$active_at = $request->input('time');
-
-	$sp_data = DB::table('supplying_power as sp')
-	->join('mbp as m', 'sp.mbp_id', 'm.mbp_id')
-	->join('site as s', 'sp.site_id', 's.site_id')
-	->select('*')
-	->where('m.mbp_id', $mbp_id)
-	->orderBy('sp.sp_id', 'desc')
-	->first();
-
-	if ($sp_data==null) {
-		$res['success'] = false;
-		$res['message'] = 'FAILED_GET_SPA_DATA';
-		return response($res);
-	}
-
-	$rtpo_id = $sp_data->rtpo_id;
+		if(empty($rtpo_id) || $rtpo_id==0) {
+			$res['success'] = false;
+			$res['message'] = 'EMPTY_RTPO! Silakan logout dan login kembali';
+			return response($res);
+		}
 	
-	if(empty($rtpo_id) || $rtpo_id==0) {
-		$res['success'] = false;
-		$res['message'] = 'EMPTY_RTPO! Silakan logout dan login kembali';
-		return response($res);
-	}
-
-	$cek_duplicate = DB::table('mbp_trouble')
-	->select('*')
-	->where('sp_id',$sp_data->sp_id)
-	->where('is_active', '1')
-	->first();
-
-	if ($cek_duplicate){
-		$res['success'] = false;
-		$res['message'] = 'Gagal! Duplikasi Tiket!';
-		return response($res);
-	}
+		//??
+		$cek_duplicate = DB::table('mbp_trouble')
+		->select('*')
+		->where('sp_id',$sp_data->sp_id)
+		->where('is_active', '1')
+		->first();
+		
+		if ($cek_duplicate){
+			$res['success'] = false;
+			$res['message'] = 'Gagal! Sudah ada pengajuan!';
+			return response($res);
+		}
 	
-	$insert_mbp_trouble = DB::table('mbp_trouble')
-	->where('sp_id', $sp_data->sp_id)
-	->where('is_active', '1')
-	->delete();
-
-	$insert_message = DB::table('message')
-	->insert(
-		[
-		'subject' => @'CANCEL', 
-		'from' => @$user_id_mbp,
-		'text_message' => @$text_message,
-		'date_message' => @$date_now.'',
-		]
-	);
-
-	if (!$insert_message) {
-		$res['success'] = false;
-		$res['message'] = 'FAILED_INSERT_MESSAGE_DATA';
+		//MBP TROUBLE :TABLE UNTUK MENYIMPAN DATA PENGAJUAN CANCEL
+		// $insert_mbp_trouble = DB::table('mbp_trouble')
+		// ->where('sp_id', $sp_data->sp_id)
+		// ->where('is_active', '1')
+		// ->delete();
+	
+	
+		//BUAT APA TABLE MESSAGE
+		$insert_message = DB::table('message')
+		->insert(
+			[
+			'subject' => @'CANCEL', 
+			'from' => @$user_id_mbp,
+			'text_message' => @$text_message,
+			'date_message' => @$date_now.'',
+			]
+		);
+	
+		if (!$insert_message) {
+			$res['success'] = false;
+			$res['message'] = 'FAILED_INSERT_MESSAGE_DATA';
+			return response($res);
+		}
+	
+		if ($available_status=='UNAVAILABLE') {
+			$request_to_unavailable = 1;
+			$mbp_active_at = $active_at;
+		}elseif ($available_status=='AVAILABLE') {
+			$request_to_unavailable = 0;
+			$mbp_active_at = null;
+		}
+	
+		$insert_mbp_trouble = DB::table('mbp_trouble')
+		->insert([
+			'send_to_rtpo_id' => $rtpo_id,
+			'send_to_rtpo_name' => $sp_data->rtpo_name,
+			'desc' => $text_message,
+			'cancel_category' => @$cancel_category,
+			'send_by_nik' => $user_id_mbp,
+			'send_by_cn' => $sp_data->user_mbp_cn,
+			'type' => 'CANCEL',
+			'mbp_id' => $mbp_id,
+			'sp_id' => $sp_data->sp_id,
+			'send_date' => $date_now.'',
+			'request_to_unavailable' => $request_to_unavailable,
+			'mbp_active_at' => $mbp_active_at,
+			'is_active' => 1
+		]);
+	
+		if (!$insert_mbp_trouble) {
+			$res['success'] = false;
+			$res['message'] = 'FAILED_INSERT_MBP_TROUBLE';
+			return response($res);
+		}
+	
+		if (!$after_in_data) {
+			$res['success'] = false;
+			$res['message'] = 'FAILED_INSERT_DATA';
+			return response($res);
+		}
+	
+		$editMbp = DB::table('mbp')
+		->where('mbp_id', $mbp_id)
+		->update(
+			[
+			'submission' => 'CANCEL',
+			'submission_id' => $after_in_data->mtr_id,
+			'active_at' => $after_in_data->mbp_active_at,
+			'message_id' => $after_in_data->msg_id,
+			]
+		);
+	
+		$supplyingPowerController = new SupplyingPowerController;
+		$value_sp_log = $supplyingPowerController	->	saveLogSP1(
+															$sp_data->sp_id, 
+															$user_id_mbp, 
+															$sp_data->user_mbp_cn, 
+															'SUBMIT_CANCEL', 
+															$sp_data->user_mbp_cn.' mengajukan pembatalan penugasan kepada rtpo dengan alasan sebagai berikut : '.$text_message,
+															$text_message,
+															'',
+															$date_now);
+	
+		$notificationController = new NotificationController;
+		$tmp = $notificationController	->	setNotificationMbpSubmission(
+												$sp_data->mbp_name,
+												$sp_data->site_name,
+												$rtpo_id, 
+												$sp_data->message_id, 
+												'CANCEL');
+	
+		$res['success'] = true;
+		$res['message'] = 'SUCCESS';
 		return response($res);
-	}
-
-	if ($available_status=='UNAVAILABLE') {
-		$request_to_unavailable = 1;
-		$mbp_active_at = $active_at;
-	}elseif ($available_status=='AVAILABLE') {
-		$request_to_unavailable = 0;
-		$mbp_active_at = null;
-	}
-
-	$insert_mbp_trouble = DB::table('mbp_trouble')
-	->insert([
-		'send_to_rtpo_id' => $rtpo_id,
-		'send_to_rtpo_name' => $sp_data->rtpo_name,
-		'desc' => $text_message,
-		'cancel_category' => @$cancel_category,
-		'send_by_nik' => $user_id_mbp,
-		'send_by_cn' => $sp_data->user_mbp_cn,
-		'type' => 'CANCEL',
-		'mbp_id' => $mbp_id,
-		'sp_id' => $sp_data->sp_id,
-		'send_date' => $date_now.'',
-		'request_to_unavailable' => $request_to_unavailable,
-		'mbp_active_at' => $mbp_active_at,
-		'is_active' => 1
-	]);
-
-	if (!$insert_mbp_trouble) {
-		$res['success'] = false;
-		$res['message'] = 'FAILED_INSERT_MBP_TROUBLE';
-		return response($res);
-	}
-
-
-	$after_in_data = DB::table('mbp_trouble as mtr')
-	->join('message as msg', 'mtr.send_date', 'msg.date_message')
-	->select('*', 'msg.id as msg_id', 'mtr.id as mtr_id')
-	->where('mtr.send_date', $date_now)
-	->first();
-
-	if (!$after_in_data) {
-		$res['success'] = false;
-		$res['message'] = 'FAILED_INSERT_DATA';
-		return response($res);
-	}
-
-	$editMbp = DB::table('mbp')
-	->where('mbp_id', $mbp_id)
-	->update(
-		[
-		'submission' => 'CANCEL',
-		'submission_id' => $after_in_data->mtr_id,
-		'active_at' => $after_in_data->mbp_active_at,
-		'message_id' => $after_in_data->msg_id,
-		]
-	);
-
-	$supplyingPowerController = new SupplyingPowerController;
-	$value_sp_log = $supplyingPowerController	->	saveLogSP1(
-														$sp_data->sp_id, 
-														$user_id_mbp, 
-														$sp_data->user_mbp_cn, 
-														'SUBMIT_CANCEL', 
-														$sp_data->user_mbp_cn.' mengajukan pembatalan penugasan kepada rtpo dengan alasan sebagai berikut : '.$text_message,
-														$text_message,
-														'',
-														$date_now);
-
-	$notificationController = new NotificationController;
-	$tmp = $notificationController	->	setNotificationMbpSubmission(
-											$sp_data->mbp_name,
-											$sp_data->site_name,
-											$rtpo_id, 
-											$sp_data->message_id, 
-											'CANCEL');
-
-	$res['success'] = true;
-	$res['message'] = 'SUCCESS';
-	return response($res);
 	}
 
 	public function send_cancellation_letter_to_rtpo(Request $request){
