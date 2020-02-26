@@ -366,10 +366,33 @@ $app->post('/approvedTheCancellationLetter', 'CancelController@approvedTheCancel
 // acceptCancellationLetter
 $app->post('/acceptCancellationLetter', 'CancelController@acceptCancellationLetter'); 
 
-// ListChoiceDialog
-$app->post('/ListChoiceDialog', 'ShowChoiceDialogController@ListChoiceDialog'); 
+//##############################################################
+$app->post('/sendCancellationLetterToRtpoDummy', 'CancelControllerDummy@sendCancellationLetterToRtpo');
+$app->post('/sendCancellationLetterToRtpoNewDummy', 'CancelControllerDummy@sendCancellationLetterToRtpoNew'); 
+$app->post('/deleteCancellationLetterFromMbp1Dummy', 'CancelControllerDummy@deleteCancellationLetterFromMbp1');
+$app->post('/deleteCancellationLetterFromMbpDummy', 'CancelControllerDummy@deleteCancellationLetterFromMbp');
+$app->post('/deleteCancellationLetterFromMbpTestDummy', 'CancelControllerDummy@deleteCancellationLetterFromMbpTest');
+$app->post('/getCancellationLetter1Dummy', 'CancelControllerDummy@getCancellationLetter1');
+$app->post('/getCancellationLetterDummy', 'CancelControllerDummy@getCancellationLetter');
+$app->post('/getCancellationLetterPaginateDummy', 'CancelControllerDummy@getCancellationLetterPaginate');  
+$app->post('/getMessageDetil1Dummy', 'MessageController@getMessageDetil1');
+$app->post('/getMessageDetilDummy', 'MessageController@getMessageDetil'); 
+$app->post('/cancellationStatementRtpo1Dummy', 'CancelControllerDummy@cancellationStatementRtpo1');
+$app->post('/cancellationStatementRtpoDummy', 'CancelControllerDummy@cancellationStatementRtpo'); 
+$app->post('/sendDelayLetterToRtpoDummy', 'CancelControllerDummy@sendDelayLetterToRtpo');
+$app->post('/sendDelayLetterToRtpoNewDummy', 'CancelControllerDummy@sendDelayLetterToRtpoNew'); 
+$app->post('/getCancellationLetterDummy', 'CancelControllerDummy@getCancellationLetter');  
+$app->post('/finishDelayFromMbpDummy', 'CancelControllerDummy@finishDelayFromMbp'); //belim mencantumkan nama mbp
+$app->post('/delayStatementRtpo1Dummy', 'CancelControllerDummy@delayStatementRtpo1');
+$app->post('/delayStatementRtpoDummy', 'CancelControllerDummy@delayStatementRtpo');
+$app->post('/acceptCancellationLetterfromMbpDummy', 'CancelControllerDummy@acceptCancellationLetterfromMbp'); 
+$app->post('/approvedTheCancellationLetterDummy', 'CancelControllerDummy@approvedTheCancellationLetter'); 
+$app->post('/acceptCancellationLetterDummy', 'CancelControllerDummy@acceptCancellationLetter'); 
 
-// sendNewLocSite
+
+
+
+$app->post('/ListChoiceDialog', 'ShowChoiceDialogController@ListChoiceDialog'); 
 $app->post('/sendNewLocSite', 'SiteController@sendNewLocSite'); 
 // listReportNewSite
 $app->post('/listReportNewSite', 'SiteController@listReportNewSite'); 

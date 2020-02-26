@@ -3,7 +3,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 // use App\Bts;
 use DB;
-class CancelController extends Controller
+use DateTime;
+class CancelControllerDummy extends Controller
 {
 
 	public function sendCancellationLetterToRtpo(Request $request){
@@ -361,7 +362,8 @@ class CancelController extends Controller
 public function cancellationStatementRtpo(Request $request){
 
 	date_default_timezone_set("Asia/Jakarta");
-	$date_now = new DateTime('Y-m-d H:i:s');
+	$date_now = new DateTime();
+	$date_now = $date_now->format('Y-m-d H:i:s');
 
 	$type_approval = $request->input('type_approval');// (AGREE/DISAGREE)
 	$cancel_id = $request->input('cancel_id');
@@ -379,11 +381,11 @@ public function cancellationStatementRtpo(Request $request){
 							'mtr.cancel_category',
 							'mtr.send_by_cn',
 							'mtr.cancel_image',
-							'mbp.mbp_id',
+							'm.mbp_id',
 							'sp.site_id',
 							'u.id as user_id',
 							'u.username',
-							'mbp.mbp_name'
+							'm.mbp_name'
 							// 'mtr.id as mtr_id',
 							// 'm.status as mbp_status',
 							// 'mtr.respon_date as respon_date',
@@ -538,22 +540,32 @@ public function cancellationStatementRtpo(Request $request){
 						]);
 
 		$date_finish_raw 	= DB::table('supplying_power as sp')
-							->select('date_finish')
 							->join('mbp as mbp','sp.mbp_id','mbp.mbp_id')
+							->select('date_finish')
 							->where('sp_id', $mbp_trouble->sp_id)
-							->where('mbp.status','=','ON PROGRESS')
-							->orderBy('date_log', desc)
+							->where('mbp.status','=','ON_PROGRESS')
 							->first();
 
-		$date_pengajuan_raw	= DB::table('supplying_power as sp')
-							->select('date_mainsfail')
-							->join('mbp as mbp','sp.mbp_id','mbp.mbp_id')
+		$date_pengajuan_raw	= DB::table('mbp_trouble as mt')
+							->join('mbp as mbp','mt.mbp_id','mbp.mbp_id')
+							->select('send_date')
 							->where('sp_id', $mbp_trouble->sp_id)
-							->where('mbp.status','=','ON PROGRESS')
+							->where('mbp.status','=','ON_PROGRESS')
 							->first();
 						
-		$date_finish 	= new DateTime($date_finish_raw->date_log);
-		$date_pengajuan	= new DateTime($date_pengajuan_raw->date_log);
+		if(!$date_finish_raw){
+			$res['success'] = null;
+			$res['message']	= 'null';
+			return response($res);
+		}
+		else if(!$date_pengajuan_raw){
+			$res['success'] = null;
+			$res['message']	= 'null';
+			return response($res);
+		}
+
+		$date_finish 	= new DateTime($date_finish_raw->date_finish);
+		$date_pengajuan	= new DateTime($date_pengajuan_raw->send_date);
 		
 		if(date_diff($date_finish, $date_pengajuan) >= '0000-00-00 00:00:00'){
 			$date_now->add(date_diff($date_finish, $date_pengajuan));
@@ -1533,10 +1545,10 @@ public function cancellationStatementRtpo(Request $request){
 		}
 	
 		//MBP TROUBLE :TABLE UNTUK MENYIMPAN DATA PENGAJUAN CANCEL
-		// $insert_mbp_trouble = DB::table('mbp_trouble')
-		// ->where('sp_id', $sp_data->sp_id)
-		// ->where('is_active', '1')
-		// ->delete();
+		$insert_mbp_trouble = DB::table('mbp_trouble')
+		->where('sp_id', $sp_data->sp_id)
+		->where('is_active', '1')
+		->delete();
 	
 	
 		//BUAT APA TABLE MESSAGE
@@ -1544,9 +1556,9 @@ public function cancellationStatementRtpo(Request $request){
 		->insert(
 			[
 			'subject' => @'CANCEL', 
-			'from' => @$user_id_mbp,
-			'text_message' => @$text_message,
-			'date_message' => @$date_now.'',
+			'from' => $user_id_mbp,
+			'text_message' => $text_message,
+			'date_message' => $date_now.'',
 			]
 		);
 	
@@ -1587,6 +1599,12 @@ public function cancellationStatementRtpo(Request $request){
 			return response($res);
 		}
 	
+		$after_in_data = DB::table('mbp_trouble as mtr')
+						->join('message as msg', 'mtr.send_date', 'msg.date_message')
+						->select('*', 'msg.id as msg_id', 'mtr.id as mtr_id')
+						->where('mtr.send_date', $date_now)
+						->first();
+
 		if (!$after_in_data) {
 			$res['success'] = false;
 			$res['message'] = 'FAILED_INSERT_DATA';
