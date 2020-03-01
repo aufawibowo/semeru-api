@@ -1450,6 +1450,7 @@ class SupplyingPowerController extends Controller
 					->select(
 						'supplying_power.sp_id',
 						'users.name as person_in_charge',
+						'supplying_power.user_mbp_cn as driver_name',
 						'mbp.mbp_id',
 						'mbp.mbp_name',
 						'site.site_id',
