@@ -1437,98 +1437,121 @@ class SupplyingPowerController extends Controller
 	public function getDetailNotApprovedSP(Request $request)
 	{
 		date_default_timezone_set("Asia/Jakarta");
-		$date_now = date('Y-m-d H:i:s');
+		$date_now 	= date('Y-m-d H:i:s');
 		$time_2hour = strtotime($date_now." -2 hours");
 		$date_2hour = date('Y-m-d H:i:s',$time_2hour);
 
 		$sp_id = $request->input('sp_id');
 
-		$data_sp = DB::table('supplying_power')
-		->join('users', 'supplying_power.user_id', '=', 'users.id')
-		->join('mbp', 'supplying_power.mbp_id', '=', 'mbp.mbp_id')
-		->join('site', 'supplying_power.site_id', '=', 'site.site_id')
-		->select('supplying_power.sp_id','users.name as person_in_charge','mbp.mbp_id','mbp.mbp_name','site.site_id', 'site.site_name','supplying_power.finish','supplying_power.date_waiting','supplying_power.date_onprogress','supplying_power.date_checkin','supplying_power.date_finish','kwh_meter_before','kwh_meter_after','running_hour_before','running_hour_after','running_hour_before_image', 'running_hour_after_image','supplying_power.unique_id')
-		->where('supplying_power.sp_id',$sp_id)
-		->first();
+		$data_sp 	= DB::table('supplying_power')
+					->join('users', 'supplying_power.user_id', '=', 'users.id')
+					->join('mbp', 'supplying_power.mbp_id', '=', 'mbp.mbp_id')
+					->join('site', 'supplying_power.site_id', '=', 'site.site_id')
+					->select(
+						'supplying_power.sp_id',
+						'users.name as person_in_charge',
+						'supplying_power.user_mbp_cn as driver_name',
+						'mbp.mbp_id',
+						'mbp.mbp_name',
+						'site.site_id',
+						'site.site_name',
+						'supplying_power.finish',
+						'supplying_power.date_waiting',
+						'supplying_power.date_onprogress',
+						'supplying_power.date_checkin',
+						'supplying_power.date_finish',
+						'kwh_meter_before',
+						'kwh_meter_after',
+						'running_hour_before',
+						'running_hour_after',
+						'running_hour_before_image',
+						'running_hour_after_image',
+						'supplying_power.unique_id',
+						'users.name as operator_name'
+						)
+					->where('supplying_power.sp_id',$sp_id)
+					->first();
 
 		if ($data_sp) {
-		if (@$data_sp->date_onprogress==null || @$data_sp->date_onprogress>$date_2hour){
-			$data['flag_2hour'] = 0;
-		} else{
-			$data['flag_2hour'] = 1;
-		}
+			if (@$data_sp->date_onprogress==null || @$data_sp->date_onprogress>$date_2hour){
+				$data['flag_2hour'] = 0;
+			} 
+			else{
+				$data['flag_2hour'] = 1;
+			}
 
-		$datetime1 = new DateTime($data_sp->date_waiting);
-		$datetime2 = new DateTime($data_sp->date_onprogress);
-		$datetime3 = new DateTime($data_sp->date_checkin);
-		$datetime4 = new DateTime($data_sp->date_finish);
+			$datetime1 = new DateTime($data_sp->date_waiting);
+			$datetime2 = new DateTime($data_sp->date_onprogress);
+			$datetime3 = new DateTime($data_sp->date_checkin);
+			$datetime4 = new DateTime($data_sp->date_finish);
 
-		$response_time_tmp = $datetime1->diff($datetime2);
-		$time_to_site_tmp = $datetime2->diff($datetime3);
-		$backup_time_tmp = $datetime3->diff($datetime4);
+			$response_time_tmp = $datetime1->diff($datetime2);
+			$time_to_site_tmp = $datetime2->diff($datetime3);
+			$backup_time_tmp = $datetime3->diff($datetime4);
 
-		$response_time_hours   = ($data_sp->date_onprogress==null || $data_sp->date_onprogress==null) ? 0 : sprintf("%01d", $response_time_tmp->format('%H'));; 
-		$response_time_minutes = ($data_sp->date_onprogress==null || $data_sp->date_onprogress==null) ? 0 : sprintf("%01d", $response_time_tmp->format('%i'));;
-		$response_time = $response_time_hours .' jam '.$response_time_minutes.' Menit';
-		
-		$time_to_site_hours   = ($data_sp->date_onprogress==null || $data_sp->date_checkin==null) ? 0 : sprintf("%01d", $time_to_site_tmp->format('%H'));; 
-		$time_to_site_minutes = ($data_sp->date_onprogress==null || $data_sp->date_checkin==null) ? 0 : sprintf("%01d", $time_to_site_tmp->format('%i'));;
-		$time_to_site = $time_to_site_hours .' jam '.$time_to_site_minutes.' Menit';
+			$response_time_hours   = ($data_sp->date_onprogress==null || $data_sp->date_onprogress==null) ? 0 : sprintf("%01d", $response_time_tmp->format('%H'));; 
+			$response_time_minutes = ($data_sp->date_onprogress==null || $data_sp->date_onprogress==null) ? 0 : sprintf("%01d", $response_time_tmp->format('%i'));;
+			$response_time = $response_time_hours .' jam '.$response_time_minutes.' Menit';
+			
+			$time_to_site_hours   = ($data_sp->date_onprogress==null || $data_sp->date_checkin==null) ? 0 : sprintf("%01d", $time_to_site_tmp->format('%H'));; 
+			$time_to_site_minutes = ($data_sp->date_onprogress==null || $data_sp->date_checkin==null) ? 0 : sprintf("%01d", $time_to_site_tmp->format('%i'));;
+			$time_to_site = $time_to_site_hours .' jam '.$time_to_site_minutes.' Menit';
 
-		$backup_time_hours   = ($data_sp->date_checkin==null || $data_sp->date_finish==null) ? 0 : sprintf("%01d", $backup_time_tmp->format('%H'));; 
-		$backup_time_minutes = ($data_sp->date_checkin==null || $data_sp->date_finish==null) ? 0 : sprintf("%01d", $backup_time_tmp->format('%i'));;
-		$backup_time = $backup_time_hours .' jam '.$backup_time_minutes.' Menit';
+			$backup_time_hours   = ($data_sp->date_checkin==null || $data_sp->date_finish==null) ? 0 : sprintf("%01d", $backup_time_tmp->format('%H'));; 
+			$backup_time_minutes = ($data_sp->date_checkin==null || $data_sp->date_finish==null) ? 0 : sprintf("%01d", $backup_time_tmp->format('%i'));;
+			$backup_time = $backup_time_hours .' jam '.$backup_time_minutes.' Menit';
 
-		$data['sp_id'] = $data_sp->sp_id;
-		$data['person_in_charge'] = $data_sp->person_in_charge;
-		$data['mbp_id'] = $data_sp->mbp_id;
-		$data['mbp_name']  = $data_sp->mbp_name;
-		$data['site_id'] = $data_sp->site_id;
-		$data['site_name'] = $data_sp->site_name;
-		$data['finish'] = $data_sp->finish;
-		$data['date_waiting'] = ($data_sp->date_waiting==null) ? "-" : substr($this->tanggal_bulan_tahun_indo_tiga_char($data_sp->date_waiting),-5);
-		$data['date_onprogress'] = ($data_sp->date_onprogress==null) ? "-" : substr($this->tanggal_bulan_tahun_indo_tiga_char($data_sp->date_onprogress),-5);
-		$data['date_checkin'] = ($data_sp->date_checkin==null) ? "-" : substr($this->tanggal_bulan_tahun_indo_tiga_char($data_sp->date_checkin),-5);
-		$data['date_finish'] = ($data_sp->date_finish==null) ? "-" : substr($this->tanggal_bulan_tahun_indo_tiga_char($data_sp->date_finish),-5);
-		$data['kwh_meter_before'] = ($data_sp->kwh_meter_before==null) ? "-" : $data_sp->kwh_meter_before;
-		$data['kwh_meter_after'] = ($data_sp->kwh_meter_after==null) ? "-" : $data_sp->kwh_meter_after;
-		$data['running_hour_before'] = ($data_sp->running_hour_before==null) ? "-" : $data_sp->running_hour_before;
-		$data['running_hour_after'] = ($data_sp->running_hour_after==null) ? "-" : $data_sp->running_hour_after;
+			$data['sp_id'] = $data_sp->sp_id;
+			$data['person_in_charge'] = $data_sp->person_in_charge;
+			$data['mbp_id'] = $data_sp->mbp_id;
+			$data['mbp_name']  = $data_sp->mbp_name;
+			$data['site_id'] = $data_sp->site_id;
+			$data['site_name'] = $data_sp->site_name;
+			$data['finish'] = $data_sp->finish;
+			$data['date_waiting'] = ($data_sp->date_waiting==null) ? "-" : substr($this->tanggal_bulan_tahun_indo_tiga_char($data_sp->date_waiting),-5);
+			$data['date_onprogress'] = ($data_sp->date_onprogress==null) ? "-" : substr($this->tanggal_bulan_tahun_indo_tiga_char($data_sp->date_onprogress),-5);
+			$data['date_checkin'] = ($data_sp->date_checkin==null) ? "-" : substr($this->tanggal_bulan_tahun_indo_tiga_char($data_sp->date_checkin),-5);
+			$data['date_finish'] = ($data_sp->date_finish==null) ? "-" : substr($this->tanggal_bulan_tahun_indo_tiga_char($data_sp->date_finish),-5);
+			$data['kwh_meter_before'] = ($data_sp->kwh_meter_before==null) ? "-" : $data_sp->kwh_meter_before;
+			$data['kwh_meter_after'] = ($data_sp->kwh_meter_after==null) ? "-" : $data_sp->kwh_meter_after;
+			$data['running_hour_before'] = ($data_sp->running_hour_before==null) ? "-" : $data_sp->running_hour_before;
+			$data['running_hour_after'] = ($data_sp->running_hour_after==null) ? "-" : $data_sp->running_hour_after;
 
-		$data['response_time'] = $response_time.' ('.$this->setDateHi($data_sp->date_waiting.'').' - '.$this->setDateHi($data_sp->date_onprogress.'').')';
-		$data['time_to_site'] = $time_to_site.' ('.$this->setDateHi($data_sp->date_onprogress.'').' - '.$this->setDateHi($data_sp->date_checkin.'').')';
-		$data['backup_time'] = $backup_time.' ('.$this->setDateHi($data_sp->date_checkin.'').' - '.$this->setDateHi($data_sp->date_finish.'').')';
+			$data['response_time'] = $response_time.' ('.$this->setDateHi($data_sp->date_waiting.'').' - '.$this->setDateHi($data_sp->date_onprogress.'').')';
+			$data['time_to_site'] = $time_to_site.' ('.$this->setDateHi($data_sp->date_onprogress.'').' - '.$this->setDateHi($data_sp->date_checkin.'').')';
+			$data['backup_time'] = $backup_time.' ('.$this->setDateHi($data_sp->date_checkin.'').' - '.$this->setDateHi($data_sp->date_finish.'').')';
 
-		$data['send_date'] = $this->setDatedMYHis($data_sp->date_waiting);
-		$data['unique_id'] = $data_sp->unique_id;
+			$data['send_date'] = $this->setDatedMYHis($data_sp->date_waiting);
+			$data['unique_id'] = $data_sp->unique_id;
+			$data['operator_name'] = $data_sp->operator_name;
+			$url = 'http://103.253.107.45/semeru-api/upload_image/php/images/';
+			if ($data_sp->running_hour_before_image) {
+				$data['rh_before_image'] = $url.$data_sp->running_hour_before_image;
+			} else{
+				$data['rh_before_image'] = "-";
+			}
+			if ($data_sp->running_hour_after_image) {
+				$data['rh_after_image'] = $url.$data_sp->running_hour_after_image;
+			} else{
+				$data['rh_after_image'] = "-";
+			}
 
-		$url = 'http://103.253.107.45/semeru-api/upload_image/php/images/';
-		if ($data_sp->running_hour_before_image) {
-			$data['rh_before_image'] = $url.$data_sp->running_hour_before_image;
-		} else{
-			$data['rh_before_image'] = "-";
-		}
-		if ($data_sp->running_hour_after_image) {
-			$data['rh_after_image'] = $url.$data_sp->running_hour_after_image;
-		} else{
-			$data['rh_after_image'] = "-";
-		}
+			$data_mbp = DB::table('mbp')
+			->select('mbp_id','mbp_name','status','submission')
+			->where('mbp_id',$data_sp->mbp_id)
+			->first();
 
-		$data_mbp = DB::table('mbp')
-		->select('mbp_id','mbp_name','status','submission')
-		->where('mbp_id',$data_sp->mbp_id)
-		->first();
+			$data['status'] = str_replace("_", " ", $data_mbp->status);
 
-		$data['status'] = str_replace("_", " ", $data_mbp->status);
-
-		if ($data_mbp->submission=='DELAY') {
-			$data['status'] = 'DELAY';
-		}
-		
-		$res['success'] = true;
-		$res['message'] = 'SUCCESS';
-		$res['data'] = $data;
-		} else{
+			if ($data_mbp->submission=='DELAY') {
+				$data['status'] = 'DELAY';
+			}
+			
+			$res['success'] = true;
+			$res['message'] = 'SUCCESS';
+			$res['data'] = $data;
+		} 
+		else{
 		$res['success'] = false;
 		$res['message'] = 'Server Error';
 		$res['data'] = $data_sp;
