@@ -143,6 +143,15 @@ $app->post('/delayStatementRtpo1', 'CancelController@delayStatementRtpo1');
 /*cek pengiriman notif*/
 $app->post('/delayStatementRtpo', 'CancelController@delayStatementRtpo');
 
+$app->post('/sendDelayLetterToRtpoDummy', 'CancelControllerDummy@sendDelayLetterToRtpo');
+$app->post('/sendDelayLetterToRtpoNewDummy', 'CancelControllerDummy@sendDelayLetterToRtpoNew'); 
+$app->post('/getCancellationLetterDummy', 'CancelControllerDummy@getCancellationLetter');  
+$app->post('/finishDelayFromMbpDummy', 'CancelControllerDummy@finishDelayFromMbp'); //belim mencantumkan nama mbp
+$app->post('/delayStatementRtpoDummy', 'CancelControllerDummy@delayStatementRtpo');
+$app->post('/getMessageDetilDummy', 'MessageControllerDummy@getMessageDetil'); 
+
+
+
 
 //-> MELIHAT STATUS AKTIF DAN  TIDAK AKTIF DARI MBP -> DIA MERUBAH STATUSNYA SENDIRI
 // untuk melihat status mbp aktif g aktif
