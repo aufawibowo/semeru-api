@@ -2636,17 +2636,13 @@ public function getMyMbpPaginate(Request $request){
 	$offset = ($page-1)*$limit;
 
 
-	// $data_site = DB::table('mbp')->select('*')->where('rtpo_id','=',$rtpo_id)->get();
 	$data_site = DB::table('mbp')
-	// ->leftJoin('supplying_power as sp', 'mbp.mbp_id', 'sp.mbp_id')
-	// ->leftJoin('site as s', 'sp.site_id', 's.site_id')
 	->join('user_mbp', 'mbp.mbp_id', 'user_mbp.mbp_id')
 	->join('users', 'user_mbp.username', 'users.username')
 	->join('mbp_status', 'mbp.status', 'mbp_status.status')
 	->select('mbp.*','users.id as user_id','users.name as operator_name','mbp.latitude as m_lat','mbp.longitude as m_lon','bobot')
-	// ->where('finish','=',null)
-	// ->whereNull('sp.finish')
 	->where('mbp.rtpo_id','=',$rtpo_id)
+	->where('mbp.active','=','1')
 	->orWhere('mbp.rtpo_id_home','=',$rtpo_id)
 	->whereraw('(mbp.mbp_id like "%'.$search.'%" or mbp.mbp_name like "%'.$search.'%")')
 	->offset($offset)
