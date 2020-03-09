@@ -151,6 +151,13 @@ class CancelControllerDummy extends Controller
 						->where('mtr.id',$cancel_id)
 						->first();
 
+		$sp_id 					= $mbp_trouble->sp_id;
+		$sp_date_finish			= $mbp_trouble->date_finish;
+		$mbp_active_at			= $mbp_trouble->mbp_active_at;
+		$mbp_trouble_send_date 	= $mbp_trouble->send_date;
+		$mbp_trouble_active_at 	= $mbp_trouble->active_at;
+		$durasi_pengajuan 		= $mbp_trouble_active_at - $mbp_trouble_send_date;
+
 		if (!$mbp_trouble) {
 			$res['success'] = true;
 			$res['message'] = 'SUCCESS';
@@ -176,14 +183,19 @@ class CancelControllerDummy extends Controller
 						->where('m.submission_id',$cancel_id);
 
 		if ($type_approval=='AGREE') {
-			$update_mtr_m 
-			->update([
-				'mtr.respon_by_nik' => $user_data->id,
-				'mtr.respon_by_cn' => $user_data->username,
-				'mtr.respon_date' => $date_now,
-				'mtr.is_approved' => 1,
-				'mtr.is_active' => 0,
-			]);
+			$update_mtr_m 	->update([
+								'mtr.respon_by_nik' => $user_data->id,
+								'mtr.respon_by_cn' => $user_data->username,
+								'mtr.respon_date' => $date_now,
+								'mtr.is_approved' => 1,
+								'mtr.is_active' => 0,
+							]);
+
+			$update_date_finish_sp	= DB::table('supplying_power as sp')
+									->where('sp_id', '=', $sp_id)
+									->update([
+										'sp.date_finish'	=> $sp_date_finish + $durasi_pengajuan
+									]);
 
 			$supplyingPowerController = new SupplyingPowerController;
 			$value_sp_log 	= $supplyingPowerController	->saveLogSP1(
