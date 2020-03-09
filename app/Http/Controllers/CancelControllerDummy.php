@@ -313,4 +313,88 @@ class CancelControllerDummy extends Controller
 		}
 	}
 
+	public function acceptDelayFromMbp($cancel_id, $user_id_rtpo, $username){
+
+		date_default_timezone_set("Asia/Jakarta");
+		$date_now = date('Y-m-d H:i:s');
+	
+		$checkCancellationLetter 	= DB::table('cancel_details')
+									->join('users', 'cancel_details.user_id_mbp', '=', 'users.id')
+									->join('user_mbp', 'users.username', '=', 'user_mbp.username')        //get name_mbp
+									->join('mbp', 'cancel_details.mbp_id', '=', 'mbp.mbp_id')
+									->select('*')
+									->where('cancel_details.id', $cancel_id)
+									->where('cancel_details.user_id_rtpo', NULL)
+									->first();
+	
+		//bila cancel detil belum di tanda tangani maka
+		if ($checkCancellationLetter!=null) {
+	
+			$supplyingPowerController = new SupplyingPowerController;
+			$value_sp_log = $supplyingPowerController->saveLogSP1($checkCancellationLetter->sp_id, $checkCancellationLetter->id, $checkCancellationLetter->username, 'MBP_DELAY_FINISHED', 'user menyelesaikan delay mbpnya','' , '', $date_now);
+	
+			$updateCancellationLetter = DB::table('cancel_details')
+			->join('users', 'cancel_details.user_id_mbp', '=', 'users.id')
+			->join('user_mbp', 'users.username', '=', 'user_mbp.username')
+			->join('mbp', 'cancel_details.mbp_id', '=', 'mbp.mbp_id')
+			->where('cancel_details.id', $cancel_id)
+			->where('cancel_details.user_id_rtpo', NULL)
+			->update(
+			[
+			// 'cancel_details.user_id_rtpo' =>$user_id_rtpo,
+				'cancel_details.response_status' =>'1',
+				// 'cancel_details.respon_by' =>$username,
+				// 'cancel_details.respon_time' =>date('Y-m-d H:i:s'),
+				// 'cancel_details.user_id_responders' =>$user_id_rtpo,
+				'mbp.submission' =>null,
+				'mbp.submission_id' =>null,
+				'mbp.active_at' =>NULL,
+				'mbp.message_id' => NULL,
+			// 'mbp.delay' =>'0',
+			]
+			);
+	
+			if ($updateCancellationLetter) {
+	
+			return 'OK';
+			}else{
+			$res['success'] = false;
+			$res['message'] = 'FAILED_UPDATE_TABEL_CANCEL_DETAILS_1';
+	
+			return $res;
+			}
+		}else{//bila cancel detil sudah di tanda tangani maka
+	
+			$updateCancellationLetter = DB::table('cancel_details')
+			->join('users', 'cancel_details.user_id_mbp', '=', 'users.id')
+			->join('user_mbp', 'users.username', '=', 'user_mbp.username')
+			->join('mbp', 'cancel_details.mbp_id', '=', 'mbp.mbp_id')
+			->where('cancel_details.id', $cancel_id)
+			// ->where('cancel_details.user_id_rtpo', NULL)
+			->update(
+			[
+			// 'cancel_details.user_id_rtpo' =>$user_id_rtpo,
+				// 'cancel_details.response_status' =>'1',
+				// 'cancel_details.user_id_responders' =>$user_id_rtpo,
+				'mbp.submission' =>null,
+				'mbp.submission_id' =>null,
+				'mbp.active_at' =>NULL,
+				'mbp.message_id' => NULL,
+			// 'mbp.delay' =>'0',
+			]
+			);
+	
+			if ($updateCancellationLetter) {
+	
+			return 'OK';
+			}else{
+			$res['success'] = false;
+			$res['message'] = 'FAILED_UPDATE_TABEL_CANCEL_DETAILS_2';
+	
+			return $res;
+			}
+	
+		}  
+		}
+
 }
