@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 // use App\Bts;
 use DB;
+use DateTime;
 class CancelControllerDummy extends Controller
 {
 	public function sendDelayLetterToRtpo(Request $request){
@@ -134,8 +135,9 @@ class CancelControllerDummy extends Controller
 	}
 
 	public function delayStatementRtpo(Request $request){
-		date_default_timezone_set("Asia/Jakarta");      
-		$date_now = date('Y-m-d H:i:s');
+		date_default_timezone_set("Asia/Jakarta"); 
+		$date_now = new DateTime();     
+		$date_now = $date_now->format('Y-m-d H:i:s');
 
 		$type_approval = $request->input('type_approval');
 		$user_id = $request->input('user_id');
@@ -152,11 +154,11 @@ class CancelControllerDummy extends Controller
 						->first();
 
 		$sp_id 					= $mbp_trouble->sp_id;
-		$sp_date_finish			= $mbp_trouble->date_finish;
+		$sp_date_finish			= new DateTime($mbp_trouble->date_finish);
 		$mbp_active_at			= $mbp_trouble->mbp_active_at;
-		$mbp_trouble_send_date 	= $mbp_trouble->send_date;
-		$mbp_trouble_active_at 	= $mbp_trouble->active_at;
-		$durasi_pengajuan 		= $mbp_trouble_active_at - $mbp_trouble_send_date;
+		$mbp_trouble_send_date 	= new DateTime($mbp_trouble->send_date);
+		$mbp_trouble_active_at 	= new DateTime($mbp_trouble->active_at);
+		$durasi_pengajuan 		= date_diff($mbp_trouble_active_at, $mbp_trouble_send_date);
 
 		if (!$mbp_trouble) {
 			$res['success'] = true;
@@ -194,7 +196,7 @@ class CancelControllerDummy extends Controller
 			$update_date_finish_sp	= DB::table('supplying_power as sp')
 									->where('sp_id', '=', $sp_id)
 									->update([
-										'sp.date_finish'	=> $sp_date_finish + $durasi_pengajuan
+										'sp.date_finish'	=> $sp_date_finish->add($durasi_pengajuan)
 									]);
 
 			$supplyingPowerController = new SupplyingPowerController;
