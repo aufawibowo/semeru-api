@@ -153,12 +153,13 @@ class CancelControllerDummy extends Controller
 						->where('mtr.id',$cancel_id)
 						->first();
 
-		$sp_id 					= $mbp_trouble->sp_id;
-		$sp_date_finish			= new DateTime($mbp_trouble->date_finish);
-		$mbp_active_at			= $mbp_trouble->mbp_active_at;
-		$mbp_trouble_send_date 	= new DateTime($mbp_trouble->send_date);
-		$mbp_trouble_active_at 	= new DateTime($mbp_trouble->active_at);
-		$durasi_pengajuan 		= date_diff($mbp_trouble_active_at, $mbp_trouble_send_date);
+		$data['sp_id']					= $mbp_trouble->sp_id;
+		$data['sp_date_finish']			= new DateTime($mbp_trouble->date_finish);
+		$data['mbp_active_at']			= new DateTime($mbp_trouble->mbp_active_at);
+		$data['mbp_trouble_send_date'] 	= new DateTime($mbp_trouble->send_date);
+		$data['mbp_trouble_active_at'] 	= new DateTime($mbp_trouble->active_at);
+		$data['durasi_pengajuan'] 		= date_diff($data['mbp_trouble_send_date'], $data['mbp_trouble_active_at']);
+		$data['date_finish_baru']		= date_add($data['sp_date_finish'],$data['durasi_pengajuan']);
 
 		if (!$mbp_trouble) {
 			$res['success'] = true;
@@ -194,9 +195,9 @@ class CancelControllerDummy extends Controller
 							]);
 
 			$update_date_finish_sp	= DB::table('supplying_power as sp')
-									->where('sp_id', '=', $sp_id)
+									->where('sp_id', '=', $mbp_trouble->sp_id)
 									->update([
-										'sp.date_finish'	=> $sp_date_finish->add($durasi_pengajuan)
+										'sp.date_finish'	=> $data['date_finish_baru']
 									]);
 
 			$supplyingPowerController = new SupplyingPowerController;
@@ -261,6 +262,7 @@ class CancelControllerDummy extends Controller
 												);
 		}
 
+		$res['data']	= $data;
 		$res['success'] = true;
 		$res['message'] = 'SUCCESS';
 		return response($res);
