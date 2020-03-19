@@ -391,9 +391,9 @@ class UserController extends Controller
 			$data['user_type']="CPO";
 			$data['user_type_name']="CPO ".$login->regional;
 			$data['user_type_id']='-';
-			$data['rtpo_id']='-';
-			$data['rtpo_latitude']='-';
-			$data['rtpo_longitude']='-';
+			$data['rtpo_id']='-';//BIARKAN BEGINI
+			$data['cpo_latitude']='-';
+			$data['cpo_longitude']='-';
 
 			// jatim : -7.7212455,112.6922222
 			// jateng : -7.2889125,110.1303092
