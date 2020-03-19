@@ -40,36 +40,6 @@ class MessageControllerDummy extends Controller
 	return response($res);
 	}
 
-	// public function getMessageDetil(Request $request){
-
-	//   $message_id = $request->input('message_id');
-
-	//   $message_data = DB::table('message')
-	//   ->select('*')
-	//   ->where('id','=',$message_id)
-	//   ->first();
-
-	//   switch ($message_data->subject) {
-	//     case "MBP_INFORMATION_UNAVAILABLE":
-	//     // echo "Your favorite color is red!";
-	//     $tmp = $this->getMessageDetilUnavailable($message_id);
-	//     return response($tmp);
-	//     break;
-	//     case "CANCEL":
-	//     // echo "Your favorite color is blue!";
-	//     $tmp = $this->getMessageDetilCancelDelay($message_id);
-	//     return response($tmp);
-	//     break;
-	//     case "DELAY":
-	//     // echo "Your favorite color is green!";
-	//     $tmp = $this->getMessageDetilCancelDelay($message_id);
-	//     return response($tmp);
-	//     break;
-	//     default:
-	//     // echo "Your favorite color is neither red, blue, nor green!";
-	//   }
-	// }
-
 	public function getMessageDetil(Request $request){
 
 	$cancel_id = $request->input('cancel_id');
