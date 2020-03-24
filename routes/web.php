@@ -690,6 +690,7 @@ $app->post('/getImageSP', 'SupplyingPowerController@getImageSP');
 $app->post('/UpdateSyncImageSP', 'SupplyingPowerController@UpdateSyncImageSP');
 $app->post('/tesDelIm', 'SupplyingPowerController@tesDelIm');
 
+$app->post('/file_upload', 'FileController@upload');
 
 // $app->group(['prefix' => 'api'], function(){}
 // );
