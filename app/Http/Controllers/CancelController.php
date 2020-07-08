@@ -359,60 +359,46 @@ class CancelController extends Controller
 			return response($res);
 		}
 	}
-
-	//deprecated
-	public function getCancellationLetter1(Request $request){
-	$rtpo_id = $request->input('rtpo_id');
-
-	$mbp_trouble = DB::table('mbp_trouble as mtr')
-	->join('mbp as m', 'mtr.mbp_id', 'm.mbp_id')
-	->join('user_mbp as um', 'm.mbp_id', 'um.mbp_id')
-	->join('users as u', 'um.username', 'u.username')
-	->join('message as msg', 'mtr.send_date', 'msg.date_message')
-	->select('mtr.id as cancel_id','mtr.type as subject','mtr.desc as text_message','m.mbp_id as mbp_id','m.mbp_name','u.name','m.message_id as message_id','mtr.send_date as date')
-	->where('mtr.is_active',1)
-	->where('mtr.send_to_rtpo_id',$rtpo_id)
-	->get();
-
-	if ($mbp_trouble) {
-		$res['success'] = true;
-		$res['message'] = 'SUCCESS';
-		$res['data'] = $mbp_trouble;
-
-		return response($res);
-	}else{
-		$res['success'] = false;
-		$res['message'] = 'FAILED_GET_MESSAGE';
-		
-		return response($res);
-	}
-	}
 	
-	public function cancellationStatementRtpo(Request $request){
+public function cancellationStatementRtpo(Request $request){
+
 	date_default_timezone_set("Asia/Jakarta");
-	$date_now = date('Y-m-d H:i:s');
+	$date_now = new DateTime('Y-m-d H:i:s');
 
 	$type_approval = $request->input('type_approval');// (AGREE/DISAGREE)
 	$cancel_id = $request->input('cancel_id');
 	$user_id = $request->input('user_id');
 
-	// echo "type_approval ". $type_approval;
-	// echo "cancellationStatementRtpo /n";
-
-	$mbp_trouble = DB::table('mbp_trouble as mtr')
-	->join('mbp as m', 'mtr.mbp_id', 'm.mbp_id')
-	->join('user_mbp as um', 'm.mbp_id', 'um.mbp_id')
-	->join('users as u', 'um.username', 'u.username')
-	->join('message as msg', 'mtr.send_date', 'msg.date_message')
-	->join('supplying_power as sp', 'mtr.sp_id', 'sp.sp_id')
-	->select('*','u.id as user_id','mtr.id as mtr_id','m.status as mbp_status','mtr.respon_date as respon_date','mtr.cancel_category','mtr.cancel_image')
-	->where('mtr.id',$cancel_id)
-	->first();
+	$mbp_trouble 	= DB::table('mbp_trouble as mtr')
+					->join('mbp as m', 'mtr.mbp_id', 'm.mbp_id')
+					->join('user_mbp as um', 'm.mbp_id', 'um.mbp_id')
+					->join('users as u', 'um.username', 'u.username')
+					->join('supplying_power as sp', 'mtr.sp_id', 'sp.sp_id')
+					->select(
+							'sp.sp_id',
+							'mtr.request_to_unavailable',
+							'mtr.desc',
+							'mtr.cancel_category',
+							'mtr.send_by_cn',
+							'mtr.cancel_image',
+							'mbp.mbp_id',
+							'sp.site_id',
+							'u.id as user_id',
+							'u.username',
+							'mbp.mbp_name'
+							// 'mtr.id as mtr_id',
+							// 'm.status as mbp_status',
+							// 'mtr.respon_date as respon_date',
+							// 'mtr.cancel_category',
+							// 'mtr.cancel_image'
+							)
+					->where('mtr.id',$cancel_id)
+					->first();
 
 	if (!$mbp_trouble) {
 		$res['success'] = true;
-		$res['message'] = 'SUCCESS';
-		$res['wall'] = 'FAILED_GET_USER_DATA';  
+		$res['message'] = 'success';
+		$res['wall'] = 'Failed get user data';  
 		return response($res);
 	}
 
@@ -423,179 +409,214 @@ class CancelController extends Controller
 	
 	if (!$user_data) {
 		$res['success'] = false;
-		$res['message'] = 'FAILED_GET_USER_DATA';
+		$res['message'] = 'Failed get user data';
 		return response($res);
 	}
 
-	// $update_mtr_m = DB::table('mbp_trouble as mtr')
-	// ->join('mbp as m', 'mtr.id', 'm.submission_id')
-	// ->join('supplying_power as sp', 'mtr.sp_id', 'sp.sp_id')
-	// ->join('site as s', 'sp.site_id', 's.site_id')
-	// ->where('m.submission_id',$cancel_id);
-
 	if ($type_approval=='AGREE') {
-
-		$status = 'AVAILABLE';
+		
 		if ($mbp_trouble->request_to_unavailable == 1) {
-
-		$status = 'UNAVAILABLE';
-
-		$upd_mtr = DB::table('mbp_trouble as mtr')
-		->where('mtr.id', $cancel_id)
-		->update(
-			[
-			'mtr.respon_by_nik' => $user_data->id,
-			'mtr.respon_by_cn' => $user_data->username,
-			'mtr.respon_date' => $date_now,
-			'mtr.is_approved' => 1,
-			'mtr.is_active' => 0,
-			]
-		);
-
-		$upd_sp = DB::table('supplying_power as sp')
-		->where('sp.sp_id', $mbp_trouble->sp_id)
-		->update(
-			['sp.finish' =>'CANCEL',
-			'sp.date_finish' =>$date_now,
-
-			'sp.cancel_reason' => $mbp_trouble->desc,
-			'sp.cancel_category' => @$mbp_trouble->cancel_category,
-			'sp.reason_by' => $mbp_trouble->send_by_cn,
+			$status = 'UNAVAILABLE';
 			
-			'sp.cancel_image' => @$mbp_trouble->cancel_image,
-			'sp.is_sync' => 0,
-			'sp.cancel_approved_by' => $user_data->username,
-			'sp.detail_finish' =>4,
-			]
-		);
+			$upd_mtr = DB::table('mbp_trouble as mtr')
+					->where('mtr.id', $cancel_id)
+					->update([
+						'mtr.respon_by_nik' => $user_data->id,
+						'mtr.respon_by_cn' 	=> $user_data->username,
+						'mtr.respon_date' 	=> $date_now,
+						'mtr.is_approved' 	=> 1,
+						'mtr.is_active' 	=> 0,
+					]);
+
+			$upd_sp = DB::table('supplying_power as sp')
+					->where('sp.sp_id', $mbp_trouble->sp_id)
+					->update([
+						'sp.finish' 			=> 'CANCEL',
+						'sp.date_finish' 		=> $date_now,
+						'sp.cancel_reason' 		=> $mbp_trouble->desc,
+						'sp.cancel_category'	=> @$mbp_trouble->cancel_category,
+						'sp.reason_by' 			=> $mbp_trouble->send_by_cn,
+						'sp.cancel_image' 		=> @$mbp_trouble->cancel_image,
+						'sp.is_sync' 			=> 0,
+						'sp.cancel_approved_by' => $user_data->username,
+						'sp.detail_finish' 		=> 4,
+					]);
 
 
-		$upd_m = DB::table('mbp as m')
-		->where('m.mbp_id', $mbp_trouble->mbp_id)
-		->update(
-			[
-			'm.status' =>$status,
-			]
-		);
+			$upd_m = DB::table('mbp as m')
+					->where('m.mbp_id', $mbp_trouble->mbp_id)
+					->update([
+						'm.status'	=>	$status,
+					]);
 
-		$upd_s = DB::table('site as s')
-		->where('s.site_id', $mbp_trouble->site_id)
-		->update(
-			[
-			's.is_allocated' => 0,
-			]
-		);
-
-
+			$upd_s = DB::table('site as s')
+					->where('s.site_id', $mbp_trouble->site_id)
+					->update([
+						's.is_allocated'	=>	0,
+					]);
 		}
 		else{
+			$status = 'AVAILABLE';
 
 			$upd_mtr = DB::table('mbp_trouble as mtr')
-		->where('mtr.id', $cancel_id)
-		->update(
-			[
-			'mtr.respon_by_nik' => $user_data->id,
-			'mtr.respon_by_cn' => $user_data->username,
-			'mtr.respon_date' => $date_now,
-			'mtr.is_approved' => 1,
-			'mtr.is_active' => 0,
-			]
-		);
-		
-
-		$upd_sp = DB::table('supplying_power as sp')
-		->where('sp.sp_id', $mbp_trouble->sp_id)
-		->update(
-			['sp.finish' =>'CANCEL',
-			'sp.date_finish' =>$date_now,
-
-			'sp.cancel_reason' => $mbp_trouble->desc,
-			'sp.cancel_category' => @$mbp_trouble->cancel_category,
-			'sp.reason_by' => $mbp_trouble->send_by_cn,
+					->where('mtr.id', $cancel_id)
+					->update([
+						'mtr.respon_by_nik' => $user_data->id,
+						'mtr.respon_by_cn' 	=> $user_data->username,
+						'mtr.respon_date' 	=> $date_now,
+						'mtr.is_approved' 	=> 1,
+						'mtr.is_active' 	=> 0,
+					]);
 			
-			'sp.cancel_image' => @$mbp_trouble->cancel_image,
-			'sp.is_sync' => 0,
-			'sp.cancel_approved_by' => $user_data->username,
-			'sp.detail_finish' =>4,
-			]
-		);
+			$upd_sp = DB::table('supplying_power as sp')
+					->where('sp.sp_id', $mbp_trouble->sp_id)
+					->update([
+						'sp.finish'				=> 'CANCEL',
+						'sp.date_finish' 		=> $date_now,
+						'sp.cancel_reason' 		=> $mbp_trouble->desc,
+						'sp.cancel_category'	=> @$mbp_trouble->cancel_category,
+						'sp.reason_by' 			=> $mbp_trouble->send_by_cn,
+						'sp.cancel_image' 		=> @$mbp_trouble->cancel_image,
+						'sp.is_sync' 			=> 0,
+						'sp.cancel_approved_by'	=> $user_data->username,
+						'sp.detail_finish' 		=> 4,
+					]);
 
 
-		$upd_m = DB::table('mbp as m')
-		->where('m.mbp_id', $mbp_trouble->mbp_id)
-		->update(
-			[
-			'm.status' =>$status,
-			'm.submission' =>null,
-			'm.submission_id' =>null,
-			'm.active_at' =>null,
-			'm.message_id' =>null,
-			]
-		);
+			$upd_m = DB::table('mbp as m')
+					->where('m.mbp_id', $mbp_trouble->mbp_id)
+					->update([
+						'm.status' 			=>$status,
+						'm.submission'		=>null,
+						'm.submission_id' 	=>null,
+						'm.active_at' 		=>null,
+						'm.message_id' 		=>null,
+					]);
 
-		$upd_s = DB::table('site as s')
-		->where('s.site_id', $mbp_trouble->site_id)
-		->update(
-			[
-			's.is_allocated' => 0,
-			]
-		);
-
-
+			$upd_s = DB::table('site as s')
+					->where('s.site_id', $mbp_trouble->site_id)
+					->update([
+						's.is_allocated' => 0,
+					]);
 		}
 
-		$res['upd_mtr'] = $upd_mtr;
-		$res['upd_m'] = $upd_m;
-		$res['upd_s'] = $upd_s;
-		$res['upd_sp'] = $upd_sp;
+		$res['upd_mtr']	= $upd_mtr;
+		$res['upd_m']	= $upd_m;
+		$res['upd_s']	= $upd_s;
+		$res['upd_sp']	= $upd_sp;
 
-		$supplyingPowerController = new SupplyingPowerController;
-		$value_sp_log = $supplyingPowerController->saveLogSP1($mbp_trouble->sp_id, $mbp_trouble->user_id, $mbp_trouble->username, 'SUBMIT_CANCELING_APPROVED', 'Menyetujui pengajuan pembatalan terhadap mbp '.$mbp_trouble->mbp_name.' dengan alasan sebagai berikut : '.$mbp_trouble->desc, $mbp_trouble->desc,'', $date_now);
-
-		$notificationController = new NotificationController;
-		$tmp = $notificationController->setNotificationSubmissionAgreement('APPROVE_CANCEL',$mbp_trouble->mbp_name,$mbp_trouble->mbp_id);
+		$supplyingPowerController 	= new SupplyingPowerController;
+		$value_sp_log 				= $supplyingPowerController	->saveLogSP1(
+																	$mbp_trouble->sp_id, 
+																	$mbp_trouble->user_id, 
+																	$mbp_trouble->username, 
+																	'SUBMIT_CANCELING_APPROVED', 
+																	'Menyetujui pengajuan pembatalan terhadap mbp '.$mbp_trouble->mbp_name.' dengan alasan sebagai berikut : '.$mbp_trouble->desc, 
+																	$mbp_trouble->desc,'', $date_now);
+		$notificationController 	= new NotificationController;
+		$tmp 						= $notificationController	->setNotificationSubmissionAgreement(
+																	'APPROVE_CANCEL',
+																	$mbp_trouble->mbp_name,
+																	$mbp_trouble->mbp_id);
 
 	}
+	else if ($type_approval=='DISAGREE') {
+		
+		$update_mtr_m 	= DB::table('mbp_trouble as mtr')
+						->join('mbp as m', 'mtr.id', 'm.submission_id')
+						->join('supplying_power as sp', 'mtr.sp_id', 'sp.sp_id')
+						->join('site as s', 'sp.site_id', 's.site_id')
+						->where('mtr.id',$cancel_id)
+						->update([
+							'mtr.respon_by_nik' => $user_data->id,
+							'mtr.respon_by_cn' 	=> $user_data->username,
+							'mtr.respon_date' 	=> $date_now,
+							'mtr.is_approved' 	=> 0,
+							'mtr.is_active' 	=> 0,
+							'm.submission' 		=> null,
+							'm.submission_id' 	=> null,
+							'm.active_at' 		=> null,
+							'm.message_id' 		=> null
+						]);
 
-	if ($type_approval=='DISAGREE') {
+		$date_finish_raw 	= DB::table('supplying_power as sp')
+							->select('date_finish')
+							->join('mbp as mbp','sp.mbp_id','mbp.mbp_id')
+							->where('sp_id', $mbp_trouble->sp_id)
+							->where('mbp.status','=','ON PROGRESS')
+							->orderBy('date_log', desc)
+							->first();
 
-		$update_mtr_m = DB::table('mbp_trouble as mtr')
-		->join('mbp as m', 'mtr.id', 'm.submission_id')
-		->join('supplying_power as sp', 'mtr.sp_id', 'sp.sp_id')
-		->join('site as s', 'sp.site_id', 's.site_id')
-		->where('mtr.id',$cancel_id)
-		->update(
-		[
-			'mtr.respon_by_nik' => $user_data->id,
-			'mtr.respon_by_cn' => $user_data->username,
-			'mtr.respon_date' => $date_now,
-			'mtr.is_approved' => 0,
-			'mtr.is_active' => 0,
+		$date_pengajuan_raw	= DB::table('supplying_power as sp')
+							->select('date_mainsfail')
+							->join('mbp as mbp','sp.mbp_id','mbp.mbp_id')
+							->where('sp_id', $mbp_trouble->sp_id)
+							->where('mbp.status','=','ON PROGRESS')
+							->first();
+						
+		$date_finish 	= new DateTime($date_finish_raw->date_log);
+		$date_pengajuan	= new DateTime($date_pengajuan_raw->date_log);
+		
+		if(date_diff($date_finish, $date_pengajuan) >= '0000-00-00 00:00:00'){
+			$date_now->add(date_diff($date_finish, $date_pengajuan));
+			$update_date_finish	= DB::table('supplying_power as sp')
+								->where('sp_id', $mbp_trouble->sp_id)
+								->update([
+									'date_finish '	=> $date_finish
+								]);
+		}
+		else{
+			$update_mtr_m 	= DB::table('mbp_trouble as mtr')
+							->join('mbp as m', 'mtr.id', 'm.submission_id')
+							->join('supplying_power as sp', 'mtr.sp_id', 'sp.sp_id')
+							->join('site as s', 'sp.site_id', 's.site_id')
+							->where('mtr.id',$cancel_id)
+							->update([
+								'mtr.respon_by_nik' => $user_data->id,
+								'mtr.respon_by_cn' => $user_data->username,
+								'mtr.respon_date' => $date_now,
+								'mtr.is_approved' => 0,
+								'mtr.is_active' => 0,
 
-			'm.submission' =>null,
-			'm.submission_id' =>null,
-			'm.active_at' =>null,
-			'm.message_id' =>null,
-		]
-		);
+								'm.submission' =>null,
+								'm.submission_id' =>null,
+								'm.active_at' =>null,
+								'm.message_id' =>null,
+							]);
+
+			$res['data'] = $update_mtr_m;
+
+			$supplyingPowerController = new SupplyingPowerController;
+			$value_sp_log	= $supplyingPowerController	->	saveLogSP1(
+																$mbp_trouble->sp_id, 
+																$mbp_trouble->user_id,
+																$mbp_trouble->username, 
+																'AUTO_CLOSE', 
+																'Tidak menyetujui pengajuan pembatalan terhadap mbp '.$mbp_trouble->mbp_name.' dengan alasan sebagai berikut : AUTO_CLOSE', 
+																'',
+																'', 
+																$date_now
+															);
+
+			$notificationController = new NotificationController;
+			$tmp	= $notificationController	->	setNotificationSubmissionAgreement(
+														'AUTO_CLOSE',
+														$mbp_trouble->mbp_name,
+														$mbp_trouble->mbp_id
+													);
+		}
+	}
+	else{
+		$res['success'] = true;
+		$res['message']	= 'Type approval parameter unknown.';
+		return response($res);
+	}
 
 	$res['success'] = true;
 	$res['message'] = 'SUCCESS';
-	$res['data'] = $update_mtr_m;
 	return response($res);
-
-		$supplyingPowerController = new SupplyingPowerController;
-		$value_sp_log = $supplyingPowerController->saveLogSP1($mbp_trouble->sp_id, $mbp_trouble->user_id, $mbp_trouble->username, 'SUBMIT_CANCELING_NOT_APPROVED', 'Tidak menyetujui pengajuan pembatalan terhadap mbp '.$mbp_trouble->mbp_name.' dengan alasan sebagai berikut : '.$mbp_trouble->desc, $mbp_trouble->desc,'', $date_now);
-
-		$notificationController = new NotificationController;
-		$tmp = $notificationController->setNotificationSubmissionAgreement('DENY_CANCEL',$mbp_trouble->mbp_name,$mbp_trouble->mbp_id);
-	}
-
-
-	$res['success'] = true;
-	$res['message'] = 'SUCCESS';
-	return response($res);
-	}
+	
+}
 
 	public function delayStatementRtpo(Request $request){
 		date_default_timezone_set("Asia/Jakarta");      
@@ -1476,153 +1497,151 @@ class CancelController extends Controller
 	}
 
 	public function sendCancellationLetterToRtpoNew(Request $request){
+		date_default_timezone_set("Asia/Jakarta");
+		$date_now = date('Y-m-d H:i:s');
+	
+		$rtpo_id 			= @$request->input('rtpo_id');
+		$user_id_mbp 		= @$request->input('user_id');
+		$mbp_id 			= $request->input('mbp_id');
+		$text_message 		= $request->input('text_message');
+		$cancel_category 	= @$request->input('cancel_category');
+		$available_status 	= $request->input('available_status');
+		$active_at 			= $request->input('time');
+		$sp_id				= $request->input('sp_id');
+
+		//AMBIL DATA SP BERDASARKAN SP ID
+		$sp_data 	= DB::table('supplying_power as sp')
+					->join('mbp as m', 'sp.mbp_id', 'm.mbp_id')
+					->join('site as s', 'sp.site_id', 's.site_id')
+					->select('*')
+					->where('sp.sp_id', $sp_id)
+					->orderBy('sp.sp_id', 'desc')
+					->first();
+	
+		//ambil data mbp
+		//ambil data site
+	
+		if ($sp_data==null) {
+			$res['success'] = false;
+			$res['message'] = 'FAILED_GET_SPA_DATA';
+			return response($res);
+		}
+	
+		$rtpo_id = $sp_data->rtpo_id;
 		
-	date_default_timezone_set("Asia/Jakarta");
-	$date_now = date('Y-m-d H:i:s');
-
-
-	$rtpo_id = @$request->input('rtpo_id');
-	$user_id_mbp = @$request->input('user_id');
-	$mbp_id = $request->input('mbp_id');
-	$text_message = $request->input('text_message');
-	$cancel_category = @$request->input('cancel_category');
-	$available_status = $request->input('available_status');
-	$active_at = $request->input('time');
-
-	$sp_data = DB::table('supplying_power as sp')
-	->join('mbp as m', 'sp.mbp_id', 'm.mbp_id')
-	->join('site as s', 'sp.site_id', 's.site_id')
-	->select('*')
-	->where('m.mbp_id', $mbp_id)
-	->orderBy('sp.sp_id', 'desc')
-	->first();
-
-	if ($sp_data==null) {
-		$res['success'] = false;
-		$res['message'] = 'FAILED_GET_SPA_DATA';
-		return response($res);
-	}
-
-	$rtpo_id = $sp_data->rtpo_id;
+		if(empty($rtpo_id) || $rtpo_id==0) {
+			$res['success'] = false;
+			$res['message'] = 'EMPTY_RTPO! Silakan logout dan login kembali';
+			return response($res);
+		}
 	
-	if(empty($rtpo_id) || $rtpo_id==0) {
-		$res['success'] = false;
-		$res['message'] = 'EMPTY_RTPO! Silakan logout dan login kembali';
-		return response($res);
-	}
-
-	$cek_duplicate = DB::table('mbp_trouble')
-	->select('*')
-	->where('sp_id',$sp_data->sp_id)
-	->where('is_active', '1')
-	->first();
-
-	if ($cek_duplicate){
-		$res['success'] = false;
-		$res['message'] = 'Gagal! Duplikasi Tiket!';
-		return response($res);
-	}
+		//??
+		$cek_duplicate = DB::table('mbp_trouble')
+		->select('*')
+		->where('sp_id',$sp_data->sp_id)
+		->where('is_active', '1')
+		->first();
+		
+		if ($cek_duplicate){
+			$res['success'] = false;
+			$res['message'] = 'Gagal! Sudah ada pengajuan!';
+			return response($res);
+		}
 	
-	$insert_mbp_trouble = DB::table('mbp_trouble')
-	->where('sp_id', $sp_data->sp_id)
-	->where('is_active', '1')
-	->delete();
-
-	$insert_message = DB::table('message')
-	->insert(
-		[
-		'subject' => @'CANCEL', 
-		'from' => @$user_id_mbp,
-		'text_message' => @$text_message,
-		'date_message' => @$date_now.'',
-		]
-	);
-
-	if (!$insert_message) {
-		$res['success'] = false;
-		$res['message'] = 'FAILED_INSERT_MESSAGE_DATA';
+		//MBP TROUBLE :TABLE UNTUK MENYIMPAN DATA PENGAJUAN CANCEL
+		// $insert_mbp_trouble = DB::table('mbp_trouble')
+		// ->where('sp_id', $sp_data->sp_id)
+		// ->where('is_active', '1')
+		// ->delete();
+	
+	
+		//BUAT APA TABLE MESSAGE
+		$insert_message = DB::table('message')
+		->insert(
+			[
+			'subject' => @'CANCEL', 
+			'from' => @$user_id_mbp,
+			'text_message' => @$text_message,
+			'date_message' => @$date_now.'',
+			]
+		);
+	
+		if (!$insert_message) {
+			$res['success'] = false;
+			$res['message'] = 'FAILED_INSERT_MESSAGE_DATA';
+			return response($res);
+		}
+	
+		if ($available_status=='UNAVAILABLE') {
+			$request_to_unavailable = 1;
+			$mbp_active_at = $active_at;
+		}elseif ($available_status=='AVAILABLE') {
+			$request_to_unavailable = 0;
+			$mbp_active_at = null;
+		}
+	
+		$insert_mbp_trouble = DB::table('mbp_trouble')
+		->insert([
+			'send_to_rtpo_id' => $rtpo_id,
+			'send_to_rtpo_name' => $sp_data->rtpo_name,
+			'desc' => $text_message,
+			'cancel_category' => @$cancel_category,
+			'send_by_nik' => $user_id_mbp,
+			'send_by_cn' => $sp_data->user_mbp_cn,
+			'type' => 'CANCEL',
+			'mbp_id' => $mbp_id,
+			'sp_id' => $sp_data->sp_id,
+			'send_date' => $date_now.'',
+			'request_to_unavailable' => $request_to_unavailable,
+			'mbp_active_at' => $mbp_active_at,
+			'is_active' => 1
+		]);
+	
+		if (!$insert_mbp_trouble) {
+			$res['success'] = false;
+			$res['message'] = 'FAILED_INSERT_MBP_TROUBLE';
+			return response($res);
+		}
+	
+		if (!$after_in_data) {
+			$res['success'] = false;
+			$res['message'] = 'FAILED_INSERT_DATA';
+			return response($res);
+		}
+	
+		$editMbp = DB::table('mbp')
+		->where('mbp_id', $mbp_id)
+		->update(
+			[
+			'submission' => 'CANCEL',
+			'submission_id' => $after_in_data->mtr_id,
+			'active_at' => $after_in_data->mbp_active_at,
+			'message_id' => $after_in_data->msg_id,
+			]
+		);
+	
+		$supplyingPowerController = new SupplyingPowerController;
+		$value_sp_log = $supplyingPowerController	->	saveLogSP1(
+															$sp_data->sp_id, 
+															$user_id_mbp, 
+															$sp_data->user_mbp_cn, 
+															'SUBMIT_CANCEL', 
+															$sp_data->user_mbp_cn.' mengajukan pembatalan penugasan kepada rtpo dengan alasan sebagai berikut : '.$text_message,
+															$text_message,
+															'',
+															$date_now);
+	
+		$notificationController = new NotificationController;
+		$tmp = $notificationController	->	setNotificationMbpSubmission(
+												$sp_data->mbp_name,
+												$sp_data->site_name,
+												$rtpo_id, 
+												$sp_data->message_id, 
+												'CANCEL');
+	
+		$res['success'] = true;
+		$res['message'] = 'SUCCESS';
 		return response($res);
-	}
-
-	if ($available_status=='UNAVAILABLE') {
-		$request_to_unavailable = 1;
-		$mbp_active_at = $active_at;
-	}elseif ($available_status=='AVAILABLE') {
-		$request_to_unavailable = 0;
-		$mbp_active_at = null;
-	}
-
-	$insert_mbp_trouble = DB::table('mbp_trouble')
-	->insert(
-		[
-		'send_to_rtpo_id' => $rtpo_id,
-		'send_to_rtpo_name' => $sp_data->rtpo_name,
-		'desc' => $text_message,
-		'cancel_category' => @$cancel_category,
-		'send_by_nik' => $user_id_mbp,
-		'send_by_cn' => $sp_data->user_mbp_cn,
-		'type' => 'CANCEL',
-		'mbp_id' => $mbp_id,
-		'sp_id' => $sp_data->sp_id,
-		'send_date' => $date_now.'',
-		'request_to_unavailable' => $request_to_unavailable,
-		'mbp_active_at' => $mbp_active_at,
-		'is_active' => 1,
-		]
-	);
-
-	if (!$insert_mbp_trouble) {
-		$res['success'] = false;
-		$res['message'] = 'FAILED_INSERT_MBP_TROUBLE';
-		return response($res);
-	}
-
-
-	$after_in_data = DB::table('mbp_trouble as mtr')
-	->join('message as msg', 'mtr.send_date', 'msg.date_message')
-	->select('*', 'msg.id as msg_id', 'mtr.id as mtr_id')
-	->where('mtr.send_date', $date_now)
-	->first();
-
-	if (!$after_in_data) {
-		$res['success'] = false;
-		$res['message'] = 'FAILED_INSERT_DATA';
-		return response($res);
-	}
-
-	$editMbp = DB::table('mbp')
-	->where('mbp_id', $mbp_id)
-	->update(
-		[
-		'submission' => 'CANCEL',
-		'submission_id' => $after_in_data->mtr_id,
-		'active_at' => $after_in_data->mbp_active_at,
-		'message_id' => $after_in_data->msg_id,
-		]
-	);
-
-	$supplyingPowerController = new SupplyingPowerController;
-	$value_sp_log = $supplyingPowerController	->	saveLogSP1(
-														$sp_data->sp_id, 
-														$user_id_mbp, 
-														$sp_data->user_mbp_cn, 
-														'SUBMIT_CANCEL', 
-														$sp_data->user_mbp_cn.' mengajukan pembatalan penugasan kepada rtpo dengan alasan sebagai berikut : '.$text_message,
-														$text_message,
-														'',
-														$date_now);
-
-	$notificationController = new NotificationController;
-	$tmp = $notificationController	->	setNotificationMbpSubmission(
-											$sp_data->mbp_name,
-											$sp_data->site_name,
-											$rtpo_id, 
-											$sp_data->message_id, 
-											'CANCEL');
-
-	$res['success'] = true;
-	$res['message'] = 'SUCCESS';
-	return response($res);
 	}
 
 	public function send_cancellation_letter_to_rtpo(Request $request){

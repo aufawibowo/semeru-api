@@ -2636,19 +2636,17 @@ public function getMyMbpPaginate(Request $request){
 	$offset = ($page-1)*$limit;
 
 
-	// $data_site = DB::table('mbp')->select('*')->where('rtpo_id','=',$rtpo_id)->get();
-	$data_site = DB::table('mbp')
-	// ->leftJoin('supplying_power as sp', 'mbp.mbp_id', 'sp.mbp_id')
-	// ->leftJoin('site as s', 'sp.site_id', 's.site_id')
-	->join('user_mbp', 'mbp.mbp_id', 'user_mbp.mbp_id')
+	$data_site = DB::table('mbp as m')
+	->join('user_mbp', function($join){
+		$join->on('m.mbp_id','user_mbp.mbp_id');
+		$join->where('m.active', 1);
+	})
 	->join('users', 'user_mbp.username', 'users.username')
-	->join('mbp_status', 'mbp.status', 'mbp_status.status')
-	->select('mbp.*','users.id as user_id','users.name as operator_name','mbp.latitude as m_lat','mbp.longitude as m_lon','bobot')
-	// ->where('finish','=',null)
-	// ->whereNull('sp.finish')
-	->where('mbp.rtpo_id','=',$rtpo_id)
-	->orWhere('mbp.rtpo_id_home','=',$rtpo_id)
-	->whereraw('(mbp.mbp_id like "%'.$search.'%" or mbp.mbp_name like "%'.$search.'%")')
+	->join('mbp_status', 'm.status', 'mbp_status.status')
+	->select('m.*','users.id as user_id','users.name as operator_name','m.latitude as m_lat','m.longitude as m_lon','bobot')
+	->where('m.rtpo_id','=',$rtpo_id)
+	->orWhere('m.rtpo_id_home','=',$rtpo_id)
+	->whereraw('(m.mbp_id like "%'.$search.'%" or m.mbp_name like "%'.$search.'%")')
 	->offset($offset)
 	->limit($limit)
 	// ->orderBy('mbp_status.bobot', 'ASC')
