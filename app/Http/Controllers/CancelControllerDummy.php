@@ -1516,7 +1516,7 @@ public function cancellationStatementRtpo(Request $request){
 	
 		//ambil data mbp
 		//ambil data site
-	
+
 		if ($sp_data==null) {
 			$res['success'] = false;
 			$res['message'] = 'FAILED_GET_SPA_DATA';
@@ -1575,7 +1575,6 @@ public function cancellationStatementRtpo(Request $request){
 			$request_to_unavailable = 0;
 			$mbp_active_at = null;
 		}
-	
 		$insert_mbp_trouble = DB::table('mbp_trouble')
 		->insert([
 			'send_to_rtpo_id' => $rtpo_id,
@@ -1612,6 +1611,7 @@ public function cancellationStatementRtpo(Request $request){
 		}
 	
 		$editMbp = DB::table('mbp')
+
 		->where('mbp_id', $mbp_id)
 		->update(
 			[
@@ -1640,11 +1640,13 @@ public function cancellationStatementRtpo(Request $request){
 												$rtpo_id, 
 												$sp_data->message_id, 
 												'CANCEL');
+
 	
 		$res['success'] = true;
 		$res['message'] = 'SUCCESS';
 		return response($res);
 	}
+
 
 	public function send_cancellation_letter_to_rtpo(Request $request){
 	#no change yet
@@ -1937,4 +1939,5 @@ public function cancellationStatementRtpo(Request $request){
 	list($y,$m,$d) = explode('-', $param2[0]);
 	return $d.' '.$this->bulan_indo_tiga_char($m).' '.$y.', '.$jam.':'.$menit;
 	}
+
 }
