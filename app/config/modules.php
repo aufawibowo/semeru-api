@@ -1,12 +1,12 @@
 <?php
 
 return [
-    'account' => [
+    'vendor' => [
         'namespace' => 'Semeru\Account',
         'className' => Semeru\Account\Module::class,
-        'path' => APP_PATH . '/modules/account/Module.php',
+        'path' => APP_PATH . '/modules/vendor/Module.php',
         'controllerNamespace' => 'Semeru\Account\Presentation\Controllers',
-        'routePath' => APP_PATH . '/modules/account/Presentation/routes/api.php'
+        'routePath' => APP_PATH . '/modules/vendor/Presentation/routes/api.php'
     ],
     'apitu' => [
         'namespace' => 'Semeru\Apitu',
