@@ -1,35 +1,21 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Create The Application
-|--------------------------------------------------------------------------
-|
-| First we need to get an application instance. This creates an instance
-| of the application / container and bootstraps the application so it
-| is ready to receive HTTP / Console requests from the environment.
-|
-*/
+define('BASE_PATH', dirname(__DIR__));
+define('APP_PATH', BASE_PATH . '/app');
 
-$app = require __DIR__.'/../bootstrap/app.php';
+require __DIR__ . '/../vendor/autoload.php';
 
-/*
-|--------------------------------------------------------------------------
-| Run The Application
-|--------------------------------------------------------------------------
-|
-| Once we have the application, we can handle the incoming request
-| through the kernel, and send the associated response back to
-| the client's browser allowing them to enjoy the creative
-| and wonderful application we have prepared for them.
-|
-*/
+require_once APP_PATH . '/Application.php';
+
+$application = new Application();
+$application->initialize();
+
 try {
-    $app->run();
-} catch(\Exception $e) {
-    echo "<pre>";
-    echo $e;
-    echo "</pre>";
-}
+    $response = $application->handle(
+        $_SERVER["REQUEST_URI"]
+    );
 
-// $app->run();
+    $response->send();
+} catch (\Exception $e) {
+    $application->handleError($e);
+}
