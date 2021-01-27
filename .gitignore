@@ -3,4 +3,4 @@
 /vendor/
 /app/.env
 *.cache
-/app/modules/marketplace-customer/Tests/
+/app/modules/divisi-rtpo/Tests/
