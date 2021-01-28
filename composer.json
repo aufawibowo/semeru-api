@@ -16,7 +16,7 @@
     },
     "autoload": {
         "psr-4": {
-            "divisi-rtpo\\" : "app/modules/rtpo/",
+            "rtpo\\" : "app/modules/rtpo/",
             "vendor\\" : "app/modules/vendor"
         }
     }
