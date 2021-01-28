@@ -3,4 +3,4 @@
 /vendor/
 /app/.env
 *.cache
-/app/modules/divisi-rtpo/Tests/
+/app/modules/rtpo/Tests/

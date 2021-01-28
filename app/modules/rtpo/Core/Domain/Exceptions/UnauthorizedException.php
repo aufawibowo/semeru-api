@@ -1,6 +1,6 @@
 <?php
 
-namespace Semeru\divisi-rtpo\Core\Domain\Exceptions;
+namespace Semeru\Rtpo\Core\Domain\Exceptions;
 
 class UnauthorizedException extends \Exception
 {

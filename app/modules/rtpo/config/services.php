@@ -1,12 +1,12 @@
 <?php
 
-use Semeru\divisi-rtpo\Infrastructure\Services\JwtTokenService;
-use Semeru\divisi-rtpo\Infrastructure\Services\HashBasedOtpService;
-use Semeru\divisi-rtpo\Infrastructure\Services\GoSmsService;
-use Semeru\divisi-rtpo\Infrastructure\Services\Md5UrlSignerService;
-use Semeru\divisi-rtpo\Infrastructure\Services\ApiApituService;
-use Semeru\divisi-rtpo\Infrastructure\Persistence\SqlDpcRepository;
-use Semeru\divisi-rtpo\Infrastructure\Persistence\SqlUserRepository;
+use Semeru\Rtpo\Infrastructure\Services\JwtTokenService;
+use Semeru\Rtpo\Infrastructure\Services\HashBasedOtpService;
+use Semeru\Rtpo\Infrastructure\Services\GoSmsService;
+use Semeru\Rtpo\Infrastructure\Services\Md5UrlSignerService;
+use Semeru\Rtpo\Infrastructure\Services\ApiApituService;
+use Semeru\Rtpo\Infrastructure\Persistence\SqlDpcRepository;
+use Semeru\Rtpo\Infrastructure\Persistence\SqlUserRepository;
 
 $container->setShared('tokenService', function() use ($container) {
     return new JwtTokenService($container->get('config'));
