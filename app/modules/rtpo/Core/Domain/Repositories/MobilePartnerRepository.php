@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Rtpo\Core\Domain\Repositories;
+namespace Semeru\Rtpo\Core\Domain\Repositories;
 
 
 interface MobilePartnerRepository
 {
-
+    public function getAll();
 }
