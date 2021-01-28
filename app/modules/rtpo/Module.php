@@ -1,6 +1,6 @@
 <?php
 
-namespace Semeru\divisi-rtpo;
+namespace Semeru\Rtpo;
 
 use Phalcon\Db\Adapter\PdoFactory;
 use Phalcon\Loader;

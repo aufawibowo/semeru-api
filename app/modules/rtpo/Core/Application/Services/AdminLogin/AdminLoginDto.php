@@ -1,8 +1,8 @@
 <?php
 
-namespace Semeru\divisi-rtpo\Core\Application\Services\AdminLogin;
+namespace Semeru\Rtpo\Core\Application\Services\AdminLogin;
 
-use Semeru\divisi-rtpo\Core\Domain\Models\User;
+use Semeru\Rtpo\Core\Domain\Models\User;
 
 class AdminLoginDto
 {

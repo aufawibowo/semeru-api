@@ -1,6 +1,6 @@
 <?php
 
-namespace Semeru\divisi-rtpo\Core\Application\Services\AdminLogin;
+namespace Semeru\Rtpo\Core\Application\Services\AdminLogin;
 
 use A7Pro\Account\Core\Domain\Exceptions\InvalidOperationException;
 use A7Pro\Account\Core\Domain\Exceptions\UnauthorizedException;
