@@ -16,8 +16,8 @@
     },
     "autoload": {
         "psr-4": {
-            "rtpo\\" : "app/modules/rtpo/",
-            "vendor\\" : "app/modules/vendor"
+            "Semeru\\Rtpo\\" : "app/modules/rtpo/",
+            "Semeru\\Vendor\\" : "app/modules/vendor"
         }
     }
 }
