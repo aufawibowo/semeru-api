@@ -13,8 +13,7 @@ class MobilePartner
 {
     private MobilePartnerId $id;
     private string $name;
-    private ZipCode $zipCode;
-    private Coordinate $coordinate;
+    private Address $address;
     private Date $dateCreated;
     private Date $dateVerified;
     private Date $dateModified;
@@ -54,22 +53,6 @@ class MobilePartner
     public function getName(): string
     {
         return $this->name;
-    }
-
-    /**
-     * @return ZipCode
-     */
-    public function getZipCode(): ZipCode
-    {
-        return $this->zipCode;
-    }
-
-    /**
-     * @return Coordinate
-     */
-    public function getCoordinate(): Coordinate
-    {
-        return $this->coordinate;
     }
 
     /**

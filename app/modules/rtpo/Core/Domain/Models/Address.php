@@ -2,6 +2,9 @@
 
 namespace Rtpo\Core\Domain\Models;
 
+use Semeru\Rtpo\Core\Domain\Models\Coordinate;
+use Semeru\Rtpo\Core\Domain\Models\ZipCode;
+
 class Address
 {
     private string $address;
