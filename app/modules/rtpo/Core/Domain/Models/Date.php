@@ -51,4 +51,22 @@ class Date
     {
         return $this->toIsoDateString() === $datetime->toIsoDateString();
     }
+
+    /**
+     * Function getMonth() return month only.
+     * @return string
+     */
+    public function getMonth(): string
+    {
+        return date("m", $this->datetime);
+    }
+
+    /**
+     * Function getMonth() return three month character: Jan, Feb, Mar, etc.
+     * @return string
+     */
+    public function getMonthThreeChar(): string
+    {
+        return $this->getMonth();
+    }
 }
