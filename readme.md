@@ -1,5 +1,17 @@
+# refactoring
 # 1. Daftar Project
 # 2. Hasil Refactoring
+
+- [refactoring](#refactoring)
+- [1. Daftar Project](#1-daftar-project)
+- [2. Hasil Refactoring](#2-hasil-refactoring)
+  - [2.1 Aktivitas Refactoring: Implementing SRP](#21-aktivitas-refactoring-implementing-srp)
+  - [2.2 Aktivitas Refactoring: Implementing OCP](#22-aktivitas-refactoring-implementing-ocp)
+  - [2.3 Aktivitas Refactoring: Implementing LSP](#23-aktivitas-refactoring-implementing-lsp)
+  - [2.4 Aktivitas Refactoring: Implementing ISP](#24-aktivitas-refactoring-implementing-isp)
+  - [2.5 Aktivitas Refactoring: Implementing DIP](#25-aktivitas-refactoring-implementing-dip)
+  - [2.6 Aktivitas Refactoring: Naming Classes](#26-aktivitas-refactoring-naming-classes)
+
 ## 2.1 Aktivitas Refactoring: Implementing SRP
 - **Kategori**: SOLID
 - **Permasalahan**: Spaghetti Code didalam satu controller, dimana semua implementasi input/output handlers, implementasi bisnis, dan database query berada di dalam satu fungsi.
@@ -214,3 +226,116 @@ public function requestMBPToSiteDownAction()
     }
 }
 ```
+
+## 2.2 Aktivitas Refactoring: Implementing OCP
+- **Kategori**: SOLID
+- **Permasalahan**: Penempatan perintah SQL yang digunakan untuk mengambil data pada satu tempat yang sama dengan handler request, response service, dan implementasi bisnis.
+- **Solusi**: Membuat object repository yang digunakan oleh service. Sehingga, jika terdapat kebutuhan tambahan yang akan datang dapat melakukan ekstensi tanpa merusak existing query yang sudah ada.
+
+Potongan code sebelum refactoring
+```php
+/*
+https://github.com/aufawibowo/semeru-api/blob/2.9/app/Http/Controllers/RtpoControllerNew.php 1162
+*/
+public function approve_reschedule_sik(Request $request)
+{
+    //...
+
+	if($is_approved){
+	$approve = DB::table('propose_reschedule')
+	->where('sik_no',$sik_no)
+	->update([
+		'status' => 1,
+		'status_desc' => 'WAITING FOR NOS APPROVAL',
+		'rtpo_nik' => $rtpo_nik,
+		'rtpo_cn' => $rtpo_cn,
+		'last_updated' => $date_now,
+		'is_sync' => 0,
+	]);
+
+	$res['success'] = 'OK';
+	$res['message'] = 'Success';
+	
+	return response($res); 
+	}
+	else{
+	$approve = DB::table('propose_reschedule')
+	->where('sik_no',$sik_no)
+	->update([
+		'status' => 2,
+		'status_desc' => 'REJECTED BY RTPO',
+		'reject_reason' => $reason,
+		'rtpo_nik' => $rtpo_nik,
+		'rtpo_cn' => $rtpo_cn,
+		'last_updated' => $date_now,
+		'is_sync' => 0,
+		]);
+
+	$res['success'] = 'OK';
+	$res['message'] = 'Success';
+	
+	return response($res); 
+	}
+}
+```
+
+Potongan code setelah refactoring
+```php
+
+<?php
+
+
+namespace Semeru\Rtpo\Core\Domain\Repositories;
+
+
+use Semeru\Rtpo\Core\Domain\Models\Rtpo;
+
+interface SikRepository
+{
+    public function setWaitingForApproval(Rtpo $rtpo);
+    public function rejectByRtpo(Rtpo $rtpo);
+}
+```
+
+```php
+
+<?php
+
+
+namespace Semeru\Rtpo\Core\Domain\Repositories;
+
+
+interface RtpoRepository
+{
+    public function getRtpoUserData(string $username);
+    public function getRtpoId();
+}
+```
+
+## 2.3 Aktivitas Refactoring: Implementing LSP
+- **Kategori**: SOLID
+- **Permasalahan**: Spaghetti Code didalam satu controller, dimana semua implementasi input/output handlers, implementasi bisnis, dan database query berada di dalam satu fungsi.
+- **Solusi**: Untuk handlers, dipecah menjadi kelas request dan service sendiri\
+
+Potongan code sebelum refactoring
+
+## 2.4 Aktivitas Refactoring: Implementing ISP
+- **Kategori**: SOLID
+- **Permasalahan**: Spaghetti Code didalam satu controller, dimana semua implementasi input/output handlers, implementasi bisnis, dan database query berada di dalam satu fungsi.
+- **Solusi**: Untuk handlers, dipecah menjadi kelas request dan service sendiri\
+
+Potongan code sebelum refactoring
+
+## 2.5 Aktivitas Refactoring: Implementing DIP
+- **Kategori**: SOLID
+- **Permasalahan**: Spaghetti Code didalam satu controller, dimana semua implementasi input/output handlers, implementasi bisnis, dan database query berada di dalam satu fungsi.
+- **Solusi**: Untuk handlers, dipecah menjadi kelas request dan service sendiri\
+
+Potongan code sebelum refactoring
+
+## 2.6 Aktivitas Refactoring: Naming Classes
+- **Kategori**: Clean Code
+- **Permasalahan**: Spaghetti Code didalam satu controller, dimana semua implementasi input/output handlers, implementasi bisnis, dan database query berada di dalam satu fungsi.
+- **Solusi**: Untuk handlers, dipecah menjadi kelas request dan service sendiri\
+
+Potongan code sebelum refactoring
