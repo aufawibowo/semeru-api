@@ -7,7 +7,7 @@
 - [2. Hasil Refactoring](#2-hasil-refactoring)
   - [2.1 Aktivitas Refactoring: Implementing SRP](#21-aktivitas-refactoring-implementing-srp)
   - [2.2 Aktivitas Refactoring: Implementing OCP](#22-aktivitas-refactoring-implementing-ocp)
-  - [2.3 Aktivitas Refactoring: Implementing LSP](#23-aktivitas-refactoring-implementing-lsp)
+  - [2.3 Aktivitas Refactoring: Be strongly typed](#23-aktivitas-refactoring-be-strongly-typed)
   - [2.4 Aktivitas Refactoring: Implementing ISP](#24-aktivitas-refactoring-implementing-isp)
   - [2.5 Aktivitas Refactoring: Implementing DIP](#25-aktivitas-refactoring-implementing-dip)
   - [2.6 Aktivitas Refactoring: Naming Classes](#26-aktivitas-refactoring-naming-classes)
@@ -18,6 +18,16 @@
   - [2.10 Aktivitas Refactoring: Fail fast](#210-aktivitas-refactoring-fail-fast)
   - [2.11 Aktivitas Refactoring: Validating Null](#211-aktivitas-refactoring-validating-null)
   - [2.12 Aktivitas Refactoring: Handling dates using date objects instead of strings](#212-aktivitas-refactoring-handling-dates-using-date-objects-instead-of-strings)
+  - [2.13 Aktivitas Refactoring: Positive conditionals](#213-aktivitas-refactoring-positive-conditionals)
+  - [2.14 Aktivitas Refactoring: Removing defect log](#214-aktivitas-refactoring-removing-defect-log)
+  - [2.15 Aktivitas Refactoring: Return early](#215-aktivitas-refactoring-return-early)
+  - [2.16 Aktivitas Refactoring: Choosing the right exceptions](#216-aktivitas-refactoring-choosing-the-right-exceptions)
+  - [2.17 Aktivitas Refactoring: Removing warning code](#217-aktivitas-refactoring-removing-warning-code)
+  - [2.18 Aktivitas Refactoring: Removing redundant comment](#218-aktivitas-refactoring-removing-redundant-comment)
+  - [2.19 Aktivitas Refactoring: Return empty collections instead of null](#219-aktivitas-refactoring-return-empty-collections-instead-of-null)
+  - [2.20 Aktivitas Refactoring: Choosing the right exceptions](#220-aktivitas-refactoring-choosing-the-right-exceptions)
+  - [2.21 Aktivitas Refactoring: Add unit test](#221-aktivitas-refactoring-add-unit-test)
+  - [2.22 Aktivitas Refactoring: Removing apology comment](#222-aktivitas-refactoring-removing-apology-comment)
 
 ## 2.1 Aktivitas Refactoring: Implementing SRP
 - **Kategori**: SOLID
@@ -319,26 +329,160 @@ interface RtpoRepository
 }
 ```
 
-## 2.3 Aktivitas Refactoring: Implementing LSP
-- **Kategori**: SOLID
-- **Permasalahan**: Spaghetti Code didalam satu controller, dimana semua implementasi input/output handlers, implementasi bisnis, dan database query berada di dalam satu fungsi.
-- **Solusi**: Untuk handlers, dipecah menjadi kelas request dan service sendiri\
+## 2.3 Aktivitas Refactoring: Be strongly typed
+- **Kategori**: Clean Code / Defensive Coding
+- **Permasalahan**: Terkadang sebuah object creation dapat mengandung nilai yang tidak diharapkan.
+- **Solusi**: Dapat dibuat kelas sendiri, dalam konteks DDD, terdapat domain untuk setiap konteks
 
 Potongan code sebelum refactoring
+```php
+<?php
 
+
+namespace Semeru\Rtpo\Core\Domain\Models;
+
+
+class Rtpo
+{
+    private RtpoNik $rtpoNik;
+    private string $rtpoCn;
+    private SikNo $sikNo;
+    private Date $last_updated;
+
+    /**
+     * Rtpo constructor.
+     * @param RtpoNik $rtpoNik
+     * @param string $rtpoCn
+     * @param SikNo $sikNo
+     * @param Date $last_updated
+     */
+    public function __construct(RtpoNik $rtpoNik, string $rtpoCn, SikNo $sikNo, Date $last_updated)
+    {
+        $this->rtpoNik = $rtpoNik;
+        $this->rtpoCn = $rtpoCn;
+        $this->sikNo = $sikNo;
+        $this->last_updated = $lastUpdated;
+    }
+
+    /**
+     * @return RtpoNik
+     */
+    public function rtpoNik(): RtpoNik
+    {
+        return $this->rtpoNik;
+    }
+
+    /**
+     * @return string
+     */
+    public function rtpoCn(): string
+    {
+        return $this->rtpoCn;
+    }
+
+    /**
+     * @return SikNo
+     */
+    public function sikNo(): SikNo
+    {
+        return $this->sikNo;
+    }
+
+    /**
+     * @return Date
+     */
+    public function lastUpdated(): Date
+    {
+        return $this->lastUpdated;
+    }
+
+
+}
+```
 ## 2.4 Aktivitas Refactoring: Implementing ISP
 - **Kategori**: SOLID
-- **Permasalahan**: Spaghetti Code didalam satu controller, dimana semua implementasi input/output handlers, implementasi bisnis, dan database query berada di dalam satu fungsi.
-- **Solusi**: Untuk handlers, dipecah menjadi kelas request dan service sendiri\
+- **Permasalahan**: Implementasi interface dapat digunakan oleh banyak query.
+- **Solusi**: Satu interface diimplementasikan oleh satu methode.
 
-Potongan code sebelum refactoring
+Potongan code
+```php
+<?php
+
+
+namespace Semeru\Rtpo\Core\Domain\Repositories;
+
+
+interface RtpoRepository
+{
+    public function getRtpoUserData(string $username);
+    public function getRtpoId();
+}
+```
+
+```php
+<?php
+
+
+namespace Semeru\Rtpo\Infrastructure\Persistence;
+
+
+use Phalcon\Db\Adapter\Pdo\AbstractPdo;
+use Semeru\Rtpo\Core\Domain\Repositories\RtpoRepository;
+
+class SqlRtpoRepository implements  RtpoRepository
+{
+    private AbstractPdo $db;
+
+    public function __construct(AbstractPdo $db)
+    {
+        $this->db = $db;
+    }
+
+    public function getRtpoUserData(string $username)
+    {
+        $sql = "select *
+        from users
+        where username = :username";
+
+        $params = [
+            'username' => $username
+        ];
+
+        return $this->db->fetchAll($sql, PDO::FETCH_ASSOC, $params);
+    }
+
+    public function getRtpoId()
+    {
+        $data = $this->getRtpoUserData();
+        return $data['name'];
+    }
+
+
+}
+```
 
 ## 2.5 Aktivitas Refactoring: Implementing DIP
 - **Kategori**: SOLID
-- **Permasalahan**: Spaghetti Code didalam satu controller, dimana semua implementasi input/output handlers, implementasi bisnis, dan database query berada di dalam satu fungsi.
-- **Solusi**: Untuk handlers, dipecah menjadi kelas request dan service sendiri\
+- **Permasalahan**: Perubahan bisnis jika ingin  menggunakan database lain.
+- **Solusi**: Implementasi DIP pada AbstractPdo Phalcon
 
-Potongan code sebelum refactoring
+Potongan code
+```php
+abstract class AbstractPdo extends AbstractAdapter
+{
+    return "sql adapter";
+}
+
+class SqlRtpoRepository implements RtpoRepository
+{
+    private AbstractPdo $db;
+
+    public function __construct(AbstractPdo $db)
+    {
+        $this->db = $db;
+    }
+}
+```
 
 ## 2.6 Aktivitas Refactoring: Naming Classes
 - **Kategori**: Clean Code
@@ -580,4 +724,174 @@ public function execute(ApproveRescheduleSIKRequest $request)
         );
 
     }
+```
+
+## 2.13 Aktivitas Refactoring: Positive conditionals
+- **Kategori**: Clean code
+- **Permasalahan**: Penamaan variabel boolean.
+- **Solusi**: Positive conditionals.
+
+Cuplikan code
+```php
+public function execute(AdminLoginRequest $request)
+    {
+        // validate request
+        $errors = $request->validate();
+
+        if (count($errors) > 0) {
+            throw new ValidationException($errors);
+        }
+
+        // get user
+        $user = null;
+
+        if (is_numeric($request->id)) {
+            $user = $this->userRepository->getByPhone($request->id);
+        }
+```
+
+## 2.14 Aktivitas Refactoring: Removing defect log
+- **Kategori**: Clean code
+- **Permasalahan**: Logging yang tidak terpakai.
+- **Solusi**: Hapus defect log.
+
+Cuplikan code yang dihapus
+```php
+// $value_log = $this->saveLogSP1($sp_id, $user_nik, $user_cn, $status, $description, $image, $date_log);
+```
+
+## 2.15 Aktivitas Refactoring: Return early
+- **Kategori**: Clean code
+- **Permasalahan**: Sphagetti code 
+- **Solusi**: Return early.
+
+Cuplikan code
+```php
+    if($waitingForApprovalAccepted)
+    {
+        return 'OK';
+    }
+    else{
+        $this->sikRepository->rejectByRtpo($rtpo);
+        return 'Rejected';
+    }
+```
+
+## 2.16 Aktivitas Refactoring: Choosing the right exceptions
+- **Kategori**: Defensive coding
+- **Permasalahan**: Response message error yang beragam
+- **Solusi**: Menggunakan `InvalidOperationException` untuk operasi yang tidak berhasil ditemukan.
+
+Cuplikan code
+```php
+if (is_null($user)) {
+    throw new InvalidOperationException('user_not_found');
+}
+
+// check if user administrator
+if (!$user->isAdministrator()) {
+    throw new InvalidOperationException('credentials_does_not_match');
+}
+
+// verify password
+if (!$user->verifyPassword($request->password)) {
+    throw new InvalidOperationException('credentials_does_not_match');
+}
+```
+
+## 2.17 Aktivitas Refactoring: Removing warning code
+- **Kategori**: Clean coding
+- **Permasalahan**: Comment error namun fungsi tetap exist
+- **Solusi**: Dihapus atau dihapus komen kemudian dijalankan.
+
+Cuplikan code yang dihapus
+```php
+//ERROR
+public function acceptDelayFromMbp($cancel_id, $user_id_rtpo, $username){
+
+date_default_timezone_set("Asia/Jakarta");
+```
+
+## 2.18 Aktivitas Refactoring: Removing redundant comment
+- **Kategori**: Clean coding
+- **Permasalahan**: Comment yang redundat.
+- **Solusi**: Dihapus.
+
+Cuplikan code yang dihapus
+```php
+//bila cancel detil belum di tanda tangani maka
+	if ($checkCancellationLetter!=null) {
+
+		$supplyingPowerController = new SupplyingPowerController;
+		$value_sp_log = $supplyingPowerController->saveLogSP1($checkCancellationLetter->sp_id, $checkCancellationLetter->id, $checkCancellationLetter->username, 'MBP_DELAY_FINISHED', 'user menyelesaikan delay mbpnya','' , '', $date_now);
+
+```
+
+## 2.19 Aktivitas Refactoring: Return empty collections instead of null
+- **Kategori**: Defensive
+- **Permasalahan**: Beberapa method mengubah state tanpa mengembalikan object apapun
+- **Solusi**: Mengembalikan dengan null
+```php
+public function setDone(OrderId $orderId)
+{
+    $sql = "update orders set status = :status where id = :id";
+
+    $params = [
+        'status' => Order::STATUS_RECEIVED,
+        'id' => $orderId->id(),
+    ];
+
+    $this->db->begin();
+    $this->db->execute($sql, $params);
+    $this->db->commit();
+
+    return null;
+}
+```
+
+## 2.20 Aktivitas Refactoring: Choosing the right exceptions
+- **Kategori**: Defensive
+- **Permasalahan**: Ada kemungkinan gagal menulis data ke database
+- **Solusi**: Menggunakan try and catch
+
+```php
+public function setDone(OrderId $orderId)
+{
+    $sql = "update orders set status = :status where id = :id";
+
+    $params = [
+        'status' => Order::STATUS_RECEIVED,
+        'id' => $orderId->id(),
+    ];
+
+    try {
+        $this->db->begin();
+        $this->db->execute($sql, $params);
+        $this->db->commit();
+
+        return true;
+    } catch (\Exception $e) {
+        var_dump($e->getMessage());
+        $this->db->rollback();
+
+        return false;
+    }
+}
+```
+
+## 2.21 Aktivitas Refactoring: Add unit test
+- **Kategori**: Automated Testing
+- **Permasalahan**: Terkadang terdapat kelalaian dalam pembuatan kelas seperti apakah kelas tersebut dapat menerima nilai null dsb
+- **Solusi**: Menambahkan unit test.
+
+
+## 2.22 Aktivitas Refactoring: Removing apology comment
+- **Kategori**: Clean code
+- **Permasalahan**: Code yang hanya dicomment tapi tidak dikerjakan
+- **Solusi**: Diimplementasikan atau dihapus.
+```php
+if ($updateMbp) {
+    # kirim notif..:D mbp ini siap bertugas kembali
+}
+}
 ```
