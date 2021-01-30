@@ -7,14 +7,14 @@ use GuzzleHttp\Client;
 trait ExternalService
 {
     /**
-     * Sends a Custom Guzzle Request.
+     * Sends a Custom Guzzle ApproveRescheduleSIKRequest.
      *
      * Sends a custom Guzzle request removing empty body params and standardizing thown Exceptions
      *
-     * @param string $url Request's URL
-     * @param string $method Request's Method (GET, POST, etc)
-     * @param array $body Request's Body
-     * @param array $headers Request's Header
+     * @param string $url ApproveRescheduleSIKRequest's URL
+     * @param string $method ApproveRescheduleSIKRequest's Method (GET, POST, etc)
+     * @param array $body ApproveRescheduleSIKRequest's Body
+     * @param array $headers ApproveRescheduleSIKRequest's Header
      * @param array $guzzleClientConfig Custom Guzzle Client configuration
      *
      * @return array Guzzle Response and Http Code

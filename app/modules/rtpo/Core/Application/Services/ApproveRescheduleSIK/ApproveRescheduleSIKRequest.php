@@ -4,7 +4,7 @@
 namespace Semeru\Rtpo\Core\Application\Services\ApproveRescheduleSIK;
 
 
-class Request
+class ApproveRescheduleSIKRequest
 {
     public ?string $sik_no;
     public ?string $username;
@@ -12,7 +12,7 @@ class Request
     public ?string $is_approved;
 
     /**
-     * Request constructor.
+     * ApproveRescheduleSIKRequest constructor.
      * @param string|null $sik_no
      * @param string|null $username
      * @param string|null $reason
@@ -26,5 +26,26 @@ class Request
         $this->is_approved = $is_approved;
     }
 
+    public function validate()
+    {
+        $errors = [];
 
+        if (!isset($this->sik_no)) {
+            $errors[] = 'sik no must be specified';
+        }
+
+        if (!isset($this->username)) {
+            $errors[] = 'username must be specified';
+        }
+
+        if (!isset($this->reason)) {
+            $errors[] = 'reason must be specified';
+        }
+
+        if (!isset($this->is_approved)) {
+            $errors[] = 'is approved must be specified';
+        }
+
+        return $errors;
+    }
 }
