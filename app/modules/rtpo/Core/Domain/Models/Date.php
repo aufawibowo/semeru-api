@@ -65,7 +65,7 @@ class Date
      * Function getMonth() return three month character: Jan, Feb, Mar, etc.
      * @return string
      */
-    public function getMonthThreeChar(): string
+    public function getMonthInThreeCharacters(): string
     {
         return $this->getMonth();
     }
